@@ -20,7 +20,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button myButton;
+    Button loadImageButton;
+    Button approveButton;
     ImageView myImageView;
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
@@ -31,15 +32,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Create pointers
-        myButton = findViewById(R.id.imageButton);
+        // save the elements we are using
+        loadImageButton = findViewById(R.id.loadButton);
         myImageView = findViewById(R.id.centerView);
 
-
         // Button Click
-        myButton.setOnClickListener(new View.OnClickListener() {
-
-
+        loadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -52,13 +50,11 @@ public class MainActivity extends AppCompatActivity {
                         openCamera();
                     }
                 } else {
-                    // OS is  old
+                    // OS is old
                     openCamera();
                 }
-
             }
         });
-
     }
 
     private void openCamera() {
@@ -77,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case PERMISSION_CODE:{
+            case PERMISSION_CODE: {
                 if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 } else {
@@ -85,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
 
     @Override
@@ -93,7 +88,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             myImageView.setImageURI(image_uri);
+            try {
+                approveButton.setVisibility(View.VISIBLE);
+            }
+            catch (Exception ex) {
 
+            }
         }
     }
 }
