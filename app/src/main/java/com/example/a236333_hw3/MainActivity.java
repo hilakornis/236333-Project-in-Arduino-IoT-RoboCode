@@ -10,9 +10,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Handler handler = new Handler();
 
     Button loadImageButton;
     Button approveButton;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         // save the elements we are using
         loadImageButton = findViewById(R.id.loadButton);
         myImageView = findViewById(R.id.centerView);
+        approveButton = findViewById(R.id.approveButton);
 
         // Button Click
         loadImageButton.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ) {
+                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ) {
                         String[] permission = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                         requestPermissions(permission, PERMISSION_CODE);
                     } else {
@@ -89,19 +92,10 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             myImageView.setImageURI(image_uri);
-            //new showSubmitButton().execute("");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {  approveButton.setVisibility(View.VISIBLE); }
+            });
         }
     }
-
-    /*private class showSubmitButton extends AsyncTask<String, Integer, Integer> {
-
-        protected Integer doInBackground(String ... strings) {
-            return 0;
-        }
-
-        protected void onProgressUpdate(Integer result) {
-            approveButton.setVisibility(View.VISIBLE);
-        }
-    }*/
-
 }
