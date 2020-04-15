@@ -1,10 +1,7 @@
 package com.example.a236333_hw3;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -12,20 +9,31 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Handler handler = new Handler();
+    // Title
+    TextView titleText;
+    TextView titlePoints;
 
-    Button loadImageButton;
-    Button approveButton;
-    ImageView myImageView;
+    // Description
+    TextView DescriptionData;
+    TextView DescriptionHints;
+    TextView DescriptionArrangement;
+
+    // Action
+    Button      loadImageButton;
+    ImageView   myImageView;
+    Button      approveButton;
+
+    // ============================================================================================
+
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Uri image_uri;
@@ -39,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         loadImageButton = findViewById(R.id.loadButton);
         myImageView = findViewById(R.id.centerView);
         approveButton = findViewById(R.id.approveButton);
+        titleText = findViewById(R.id.titleText);
+        titlePoints = findViewById(R.id.pointsText);
+        DescriptionData = findViewById(R.id.taskInfo);
+        DescriptionHints = findViewById(R.id.hints);
+        DescriptionArrangement = findViewById(R.id.arrangement);
 
         // Button Click
         loadImageButton.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +70,30 @@ public class MainActivity extends AppCompatActivity {
                     // OS is old
                     openCamera();
                 }
+            }
+        });
+    }
+
+    public void setTask(final roboCodeTask task) {
+
+        image_uri = Uri.EMPTY;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // reset the approve solution option
+                approveButton           .setVisibility(View.GONE);
+                myImageView             .setImageURI(Uri.EMPTY);
+                loadImageButton         .setText("Upload Solution");
+
+                // Set the task title
+                titleText               .setText("Task #" + task.ID + ":" + task.Title);
+                titlePoints             .setText("| " + task.Points +" Points");
+
+                // Set the task details
+                DescriptionData         .setText(task.Description);
+                DescriptionHints        .setText(task.Hints);
+                DescriptionArrangement  .setText(task.Arrangement);
             }
         });
     }
@@ -94,7 +131,10 @@ public class MainActivity extends AppCompatActivity {
             myImageView.setImageURI(image_uri);
             runOnUiThread(new Runnable() {
                 @Override
-                public void run() {  approveButton.setVisibility(View.VISIBLE); }
+                public void run() {
+                    loadImageButton.setText("Change Solution");
+                    approveButton.setVisibility(View.VISIBLE);
+                }
             });
         }
     }

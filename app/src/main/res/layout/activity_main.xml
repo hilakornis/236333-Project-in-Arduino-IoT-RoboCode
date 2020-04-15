@@ -102,7 +102,7 @@
                             android:text="Board arragment"
                             android:textStyle="bold" />
                         <TextView
-                            android:id="@+id/noArragment"
+                            android:id="@+id/arrangement"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Arragment fot this task will only be given after a solution is uploaded." />
