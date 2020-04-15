@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -88,12 +89,19 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             myImageView.setImageURI(image_uri);
-            try {
-                approveButton.setVisibility(View.VISIBLE);
-            }
-            catch (Exception ex) {
-
-            }
+            //new showSubmitButton().execute("");
         }
     }
+
+    /*private class showSubmitButton extends AsyncTask<String, Integer, Integer> {
+
+        protected Integer doInBackground(String ... strings) {
+            return 0;
+        }
+
+        protected void onProgressUpdate(Integer result) {
+            approveButton.setVisibility(View.VISIBLE);
+        }
+    }*/
+
 }
