@@ -1,141 +1,92 @@
 package com.example.a236333_hw3;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
-import android.Manifest;
-import android.content.ContentValues;
+
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.os.Bundle;
+import android.view.View;
+import java.util.Vector;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Title
-    TextView titleText;
-    TextView titlePoints;
+    LinearLayout ButtonsLayout;
 
-    // Description
-    TextView DescriptionData;
-    TextView DescriptionHints;
-    TextView DescriptionArrangement;
-
-    // Action
-    Button      loadImageButton;
-    ImageView   myImageView;
-    Button      approveButton;
-
-    // ============================================================================================
-
-    private static final int PERMISSION_CODE = 1000;
-    private static final int IMAGE_CAPTURE_CODE = 1001;
-    Uri image_uri;
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButtonsLayout = findViewById(R.id.ButtonsLayout);
 
-        // save the elements we are using
-        loadImageButton = findViewById(R.id.loadButton);
-        myImageView = findViewById(R.id.centerView);
-        approveButton = findViewById(R.id.approveButton);
-        titleText = findViewById(R.id.titleText);
-        titlePoints = findViewById(R.id.pointsText);
-        DescriptionData = findViewById(R.id.taskInfo);
-        DescriptionHints = findViewById(R.id.hints);
-        DescriptionArrangement = findViewById(R.id.arrangement);
+        setTitle("Tasks");
 
-        // Button Click
-        loadImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ) {
-                        String[] permission = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                        requestPermissions(permission, PERMISSION_CODE);
-                    } else {
-                        // permission already given
-                        openCamera();
-                    }
-                } else {
-                    // OS is old
-                    openCamera();
-                }
-            }
-        });
-    }
-
-    public void setTask(final roboCodeTask task) {
-
-        image_uri = Uri.EMPTY;
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // reset the approve solution option
-                approveButton           .setVisibility(View.GONE);
-                myImageView             .setImageURI(Uri.EMPTY);
-                loadImageButton         .setText("Upload Solution");
-
-                // Set the task title
-                titleText               .setText("Task #" + task.ID + ":" + task.Title);
-                titlePoints             .setText("| " + task.Points +" Points");
-
-                // Set the task details
-                DescriptionData         .setText(task.Description);
-                DescriptionHints        .setText(task.Hints);
-                DescriptionArrangement  .setText(task.Arrangement);
-            }
-        });
-    }
-
-    private void openCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "New Picture");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
-        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        // Camera intent
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
-        startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case PERMISSION_CODE: {
-                if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openCamera();
-                } else {
-                    Toast.makeText(this, "Permission denied...", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            myImageView.setImageURI(image_uri);
-            runOnUiThread(new Runnable() {
+        for (roboCodeTask task : getTasks()) {
+            final roboCodeTaskButton btn = new roboCodeTaskButton(this);
+            btn.RCTask = task;
+            btn.setText(task.Title);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 300
+            );
+            params.setMargins(10, 10, 10, 0);
+            btn.setLayoutParams(params);
+            ButtonsLayout.addView(btn);
+            btn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void run() {
-                    loadImageButton.setText("Change Solution");
-                    approveButton.setVisibility(View.VISIBLE);
+                public void onClick(View v) {
+                    roboCodeTask.current = ((roboCodeTaskButton)v).RCTask;
+                    startActivity(new Intent(MainActivity.this, roboCodeTaskActivity.class));
                 }
             });
         }
+    }
+
+    private List<roboCodeTask> getTasks() {
+        List<roboCodeTask> lst = new Vector<roboCodeTask>();
+        roboCodeTask task;
+
+        task = new roboCodeTask();
+        task.ID             = 1;
+        task.Points         = 2;
+        task.Title          = "Do the Robot Dance";
+        task.Description    = "It's the annual forklift machines dancing competition, and roboCode wants to show off his own unique dance. Could you make roboCode do his own special dance? RoboCode must drive 5 tiles forward, 3 turns in its place and then turn around and drive 5 tiles back to its first position?";
+        task.Hints          = "You only have two 'half turn' cards you can use - think about how your gonna make roboCode make three full turns.";
+        task.Arrangement    = "Full arrangement fot this task will only be given after a solution is uploaded. for now, assume the boxes will be arranged in a long line.";
+        task.Accomplished   = false;
+        lst.add(task);
+
+        task = new roboCodeTask();
+        task.ID             = 2;
+        task.Points         = 10;
+        task.Title          = "Track the Package";
+        task.Description    = "Robocode's warehouse is a complete mess! Robocode must find package number 7 and bring it to the end point (white tile). Can you manage to get Robocode to bring package # 7?";
+        task.Hints          = "The package might be anywhere, and there might also be other packages, that does not have the number seven on them. think about what you should make roboCode search any package, and then what do to in case the package is package #7 or in case it is not.";
+        task.Arrangement    = "Arrangement fot this task will only be given after a solution is uploaded.";
+        task.Accomplished   = false;
+        lst.add(task);
+
+        task = new roboCodeTask();
+        task.ID             = 3;
+        task.Points         = 20;
+        task.Title          = "Sort It Up!";
+        task.Description    = "A new delivery of packages has just arrived, all marked with numbers. RoboCode wants to impress its manager by sorting them in a line, arranged from the smallest number to the biggest. could you help him do that?";
+        task.Hints          = "How can you compare two packages? three? Four? how many pairs of packages should be compared in order to sort any given numbers of packages, and what should be done after each compression?";
+        task.Arrangement    = "Full arrangement fot this task will only be given after a solution is uploaded. for now, assume the boxes will be arranged in a long line.";
+        task.Accomplished   = false;
+        lst.add(task);
+
+        task = new roboCodeTask();
+        task.ID             = 4;
+        task.Points         = 30;
+        task.Title          = "Exit a Maze";
+        task.Description    = "My oh my! It seems that RoboCode is stuck inside a maze and cannot find its way out. Can you arrange that card in such way that roboCode will find its way out? notice - roboCode can only drive  through red tiles!";
+        task.Hints          = "think about what roboCode should do each time he runs into a non red tile. Could there be a permanent action he can always select to do when he runs into such tile?";
+        task.Arrangement    = "Arrangement fot this task will only be given after a solution is uploaded.";
+        task.Accomplished   = false;
+        lst.add(task);
+
+        return lst;
     }
 }
