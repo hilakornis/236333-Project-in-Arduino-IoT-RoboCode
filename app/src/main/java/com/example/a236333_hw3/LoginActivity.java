@@ -3,6 +3,7 @@ package com.example.a236333_hw3;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -98,23 +100,29 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = firebaseAuthenticator.getCurrentUser();
-                            // TODO : go to main activity
+                            RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
+                            startActivity(new Intent(LoginActivity.this, TasksActivity.class));
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    logInButton.setEnabled(true);
+                                    signUpButton.setEnabled(true);
+                                }
+                            });
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, "Authentication failed",
                                     Toast.LENGTH_SHORT).show();
-                            // TODO : something
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    logInButton.setEnabled(true);
+                                    signUpButton.setEnabled(true);
+                                }
+                            });
                         }
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                logInButton.setEnabled(true);
-                                signUpButton.setEnabled(true);
-                            }
-                        });
                     }
                 });
     }
