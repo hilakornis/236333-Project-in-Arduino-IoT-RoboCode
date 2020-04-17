@@ -28,7 +28,7 @@ public class SignupActivity extends AppCompatActivity {
 
     // ============================================================================================
 
-    String TAG = "LoginActivity";
+    String TAG = "SignupActivity";
     FirebaseAuth firebaseAuthenticator;
 
 
@@ -148,5 +148,8 @@ public class SignupActivity extends AppCompatActivity {
             }
             }
         });
+
+
+
     }
 }
