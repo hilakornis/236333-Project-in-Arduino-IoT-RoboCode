@@ -56,7 +56,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        setTitle("Login");
+        setTitle("Sign up");
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
