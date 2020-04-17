@@ -8,6 +8,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import android.content.Intent;
 import android.text.TextUtils;
@@ -30,6 +32,7 @@ public class SignupActivity extends AppCompatActivity {
 
     String TAG = "SignupActivity";
     FirebaseAuth firebaseAuthenticator;
+    FirebaseFirestore firebaseFirestore;
 
 
     @Override
@@ -128,9 +131,17 @@ public class SignupActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "signUpWithEmail:success");
+                Toast.makeText(SignupActivity.this,"User Created.",Toast.LENGTH_SHORT).show();
                 RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
 
                 // TODO : add document to USERS collection
+
+                // ------------------------------------
+//                DocumentReference
+
+                // ------------------------------------
+
+
 
                 startActivity(new Intent(SignupActivity.this, TasksActivity.class));
             } else {

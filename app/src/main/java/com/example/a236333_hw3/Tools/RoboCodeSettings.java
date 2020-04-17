@@ -28,6 +28,8 @@ public class RoboCodeSettings {
     // Fields
     public FirebaseUser user;
     public List<roboCodeTask> roboCodeTasks;
+//    public List<roboCodeUser> roboCodeUsers;
+
 
     public static RoboCodeSettings getInstance() {
         if (_inst == null) _inst = new RoboCodeSettings();
@@ -37,6 +39,7 @@ public class RoboCodeSettings {
     private RoboCodeSettings() {
         db = FirebaseFirestore.getInstance();
         roboCodeTasks = null;
+//        roboCodeUsers = null;
     }
 
     public void getRoboCodeTasksAsync(final SuccessFailureHandler handler) {
@@ -45,6 +48,8 @@ public class RoboCodeSettings {
         }
 
         CollectionReference tasks = db.collection("Tasks");
+
+
         tasks.get().addOnSuccessListener(
             new OnSuccessListener<QuerySnapshot>() {
                 @Override
@@ -127,5 +132,13 @@ public class RoboCodeSettings {
         return lst;
     }
 */
+
+    public void setupNewUserInDataBase(){
+
+
+
+
+
+    }
 }
 
