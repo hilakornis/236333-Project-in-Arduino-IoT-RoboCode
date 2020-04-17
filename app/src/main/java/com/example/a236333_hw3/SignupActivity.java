@@ -38,7 +38,7 @@ public class SignupActivity extends AppCompatActivity {
     String TAG = "SignupActivity";
 
     FirebaseAuth firebaseAuthenticator;
-    FirebaseFirestore firebaseFirestore;
+    FirebaseFirestore db;
 
     String userID;
     String userEmail;
@@ -48,7 +48,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         firebaseAuthenticator = FirebaseAuth.getInstance();
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         initUI();
     }
 
@@ -140,14 +140,14 @@ public class SignupActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "signUpWithEmail:success");
-                Toast.makeText(SignupActivity.this,"User Created.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignupActivity.this,"C.",Toast.LENGTH_SHORT).show();
                 RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
 
                 // TODO : add document to USERS collection
 
                 // ------------------------------------
                 userID = firebaseAuthenticator.getCurrentUser().getUid();
-//                userEmail = firebaseAuthenticator.getCurrentUser().getEmail();
+                userEmail = firebaseAuthenticator.getCurrentUser().getEmail();
 
 
 //                DocumentReference userDocumentRef = firebaseFirestore.collection("Users").document(userEmail);
@@ -155,25 +155,42 @@ public class SignupActivity extends AppCompatActivity {
                 user.put("Grade",0);
                 user.put("Name",nickname);
                 user.put("UID",userID);
-//                user.put("FinishedTasks",new int[]());
-//
-//                userDocumentRef.set(user);//todo not working!
 
-                // Add a new document with a generated ID
-                firebaseFirestore.collection("Users")
-                        .add(user)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                db.collection("Users").document(email)
+                        .set(user)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                            public void onSuccess(Void aVoid) {
+                                Log.w(TAG, "Setting new user data base: success");
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
+                                Log.w(TAG, "Setting new user data base: failure", e);
                             }
                         });
+//                db.collection("Users").document(userEmail).set(user);
+
+//                //                user.put("FinishedTasks",new int[]());
+////
+////                userDocumentRef.set(user);//todo not working!
+//
+//                // Add a new document with a generated ID
+//                firebaseFirestore.collection("Users")
+//                        .add(user)
+//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                            @Override
+//                            public void onSuccess(DocumentReference documentReference) {
+//                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                Log.w(TAG, "Error adding document", e);
+//                            }
+//                        });
 //                DocumentReference
 
                 // ------------------------------------
