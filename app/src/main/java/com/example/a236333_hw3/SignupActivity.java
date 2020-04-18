@@ -148,13 +148,15 @@ public class SignupActivity extends AppCompatActivity {
                 // ------------------------------------
                 userID = firebaseAuthenticator.getCurrentUser().getUid();
                 userEmail = firebaseAuthenticator.getCurrentUser().getEmail();
-
+//                int[] emptyArray={-1};
 
 //                DocumentReference userDocumentRef = firebaseFirestore.collection("Users").document(userEmail);
+
                 Map<String,Object> user = new HashMap<>();
                 user.put("Grade",0);
                 user.put("Name",nickname);
                 user.put("UID",userID);
+//                user.put("FinishedTasks",emptyArray);//todo
 
                 db.collection("Users").document(email)
                         .set(user)
