@@ -17,6 +17,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a236333_hw3.Tools.roboCodeTask;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 
 public class roboCodeTaskActivity extends AppCompatActivity {
 
@@ -35,19 +42,24 @@ public class roboCodeTaskActivity extends AppCompatActivity {
     ImageView   myImageView;
     Button      approveButton;
 
+    private StorageReference mStorageRef;
+
     // ============================================================================================
 
     private static final int PERMISSION_CODE = 1000;
     private static final int IMAGE_CAPTURE_CODE = 1001;
-    Uri image_uri;
+//    Uri image_uri;//where the image is located.
+    public Uri image_uri;//where the image is located.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_robo_code_task);
 
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
         // save the elements we are using
-        loadImageButton = findViewById(R.id.loadButton);
+        loadImageButton = findViewById(R.id.uploadButton);
         myImageView = findViewById(R.id.centerView);
         approveButton = findViewById(R.id.approveButton);
         titleText = findViewById(R.id.titleText);
@@ -85,6 +97,36 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                 }
             }
         });
+
+        approveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(roboCodeTaskActivity.this, "Image is been uploaded ...", Toast.LENGTH_SHORT).show();
+//                Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
+                //this is image_uri
+
+                StorageReference riversRef = mStorageRef.child("images/rivers.jpg");
+
+                riversRef.putFile(image_uri)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get a URL to the uploaded content
+                                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                                Toast.makeText(roboCodeTaskActivity.this, "Image was uploaded", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                                // ...
+                                Toast.makeText(roboCodeTaskActivity.this, "Failure! image was not uploaded", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
+
     }
 
     public void setTask(final roboCodeTask task) {
@@ -121,6 +163,8 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
         startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
+
+
     }
 
     @Override
