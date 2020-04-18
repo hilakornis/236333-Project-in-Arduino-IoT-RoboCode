@@ -20,6 +20,7 @@ import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.Tools.roboCodeTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -105,8 +106,10 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                 Toast.makeText(roboCodeTaskActivity.this, "Image is been uploaded ...", Toast.LENGTH_SHORT).show();
 //                Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
                 //this is image_uri
-
-                StorageReference riversRef = mStorageRef.child("images/rivers.jpg");
+                FirebaseUser user = RoboCodeSettings.getInstance().user;
+//                Toast.makeText(roboCodeTaskActivity.this, "User is "+user.getEmail()+" image_uri.toString(): "+ image_uri.toString(), Toast.LENGTH_SHORT).show();//todo remove
+                StorageReference riversRef = mStorageRef.child("Users/"+user.getEmail()+"/"+RoboCodeSettings.getInstance().current.ID+"/task_possible_solution.jpg");
+//                StorageReference riversRef = mStorageRef.child(user.getEmail().toString()+image_uri.toString());
 
                 riversRef.putFile(image_uri)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
