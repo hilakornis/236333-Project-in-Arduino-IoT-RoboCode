@@ -143,18 +143,19 @@ public class SignupActivity extends AppCompatActivity {
                 Toast.makeText(SignupActivity.this,"C.",Toast.LENGTH_SHORT).show();
                 RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
 
-                // TODO : add document to USERS collection
-
                 // ------------------------------------
                 userID = firebaseAuthenticator.getCurrentUser().getUid();
                 userEmail = firebaseAuthenticator.getCurrentUser().getEmail();
 
 
-//                DocumentReference userDocumentRef = firebaseFirestore.collection("Users").document(userEmail);
+
                 Map<String,Object> user = new HashMap<>();
+                Map<String,Integer> finTasks =new HashMap<>();
+
                 user.put("Grade",0);
                 user.put("Name",nickname);
                 user.put("UID",userID);
+                user.put("FinishedTasks",finTasks);
 
                 db.collection("Users").document(email)
                         .set(user)
@@ -170,29 +171,6 @@ public class SignupActivity extends AppCompatActivity {
                                 Log.w(TAG, "Setting new user data base: failure", e);
                             }
                         });
-//                db.collection("Users").document(userEmail).set(user);
-
-//                //                user.put("FinishedTasks",new int[]());
-////
-////                userDocumentRef.set(user);//todo not working!
-//
-//                // Add a new document with a generated ID
-//                firebaseFirestore.collection("Users")
-//                        .add(user)
-//                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                            @Override
-//                            public void onSuccess(DocumentReference documentReference) {
-//                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener() {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error adding document", e);
-//                            }
-//                        });
-//                DocumentReference
-
                 // ------------------------------------
 
 
