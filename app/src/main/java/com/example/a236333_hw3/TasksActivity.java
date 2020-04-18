@@ -54,7 +54,7 @@ public class TasksActivity extends AppCompatActivity {
                             btn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    roboCodeTask.current = ((roboCodeTaskButton) v).RCTask;
+                                    RoboCodeSettings.getInstance().current = ((roboCodeTaskButton) v).RCTask;
                                     startActivity(new Intent(TasksActivity.this, roboCodeTaskActivity.class));
                                 }
                             });

@@ -28,6 +28,7 @@ public class RoboCodeSettings {
     // Fields
     public FirebaseUser user;
     public List<roboCodeTask> roboCodeTasks;
+    public roboCodeTask current;
 //    public List<roboCodeUser> roboCodeUsers;
 
 
@@ -73,9 +74,9 @@ public class RoboCodeSettings {
                     }
                     /*roboCodeTasks = getTasksHardCoded();*/
                     handler.onSuccess();
+                    }
                 }
-            }
-        ).addOnFailureListener(new OnFailureListener() {
+            ).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     handler.onFailure();

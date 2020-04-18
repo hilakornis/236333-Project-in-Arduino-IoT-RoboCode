@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.Tools.roboCodeTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -69,7 +70,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         DescriptionArrangement = findViewById(R.id.arrangement);
         backButton = findViewById(R.id.backButton);
 
-        setTask(roboCodeTask.current);
+        setTask(RoboCodeSettings.getInstance().current);
 
         // Button Click
         backButton.setOnClickListener(new View.OnClickListener() {

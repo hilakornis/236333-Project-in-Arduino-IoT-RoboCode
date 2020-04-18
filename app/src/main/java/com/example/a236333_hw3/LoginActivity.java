@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -94,36 +95,42 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         firebaseAuthenticator.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
-                            startActivity(new Intent(LoginActivity.this, TasksActivity.class));
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithEmail:success");
+                    RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
+                    startActivity(new Intent(LoginActivity.this, NavigationActivity.class));
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    logInButton.setEnabled(true);
-                                    signUpButton.setEnabled(true);
-                                }
-                            });
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed",
-                                    Toast.LENGTH_SHORT).show();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    logInButton.setEnabled(true);
-                                    signUpButton.setEnabled(true);
-                                }
-                            });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            logInButton.setEnabled(true);
+                            signUpButton.setEnabled(true);
                         }
-                    }
-                });
-    }
+                    });
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                    Toast.makeText(LoginActivity.this, "Authentication failed",
+                            Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            logInButton.setEnabled(true);
+                            signUpButton.setEnabled(true);
+                        }
+                    });
+                }
+                }
+            }).addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(LoginActivity.this, "Authentication failure",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 }
