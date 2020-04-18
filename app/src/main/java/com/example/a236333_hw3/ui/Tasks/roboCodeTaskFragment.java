@@ -1,40 +1,46 @@
-package com.example.a236333_hw3;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import android.Manifest;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+package com.example.a236333_hw3.ui.Tasks;
 
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.Tools.roboCodeTask;
+import android.content.pm.PackageManager;
+import androidx.fragment.app.Fragment;
+import android.content.ContentValues;
+import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.content.Intent;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
+import android.app.Activity;
+import android.view.View;
+import android.os.Bundle;
+import android.os.Build;
+import android.Manifest;
+import android.net.Uri;
 
-public class roboCodeTaskActivity extends AppCompatActivity {
+import com.example.a236333_hw3.R;
+
+public class roboCodeTaskFragment extends Fragment {
 
     // Title
-    TextView titleText;
-    TextView titlePoints;
+    TextView    titleText;
+    TextView    titlePoints;
 
     // Description
-    TextView DescriptionData;
-    TextView DescriptionHints;
-    TextView DescriptionArrangement;
+    TextView    DescriptionData;
+    TextView    DescriptionHints;
+    TextView    DescriptionArrangement;
 
     // Action
     Button      backButton;
     Button      loadImageButton;
     ImageView   myImageView;
     Button      approveButton;
+    ViewGroup       selfContainer;
 
     // ============================================================================================
 
@@ -42,21 +48,26 @@ public class roboCodeTaskActivity extends AppCompatActivity {
     private static final int IMAGE_CAPTURE_CODE = 1001;
     Uri image_uri;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_robo_code_task);
+    public roboCodeTaskFragment() {
+        // Required empty public constructor
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_robo_code_task, container, false);
+        selfContainer = container;
         // save the elements we are using
-        loadImageButton = findViewById(R.id.loadButton);
-        myImageView = findViewById(R.id.centerView);
-        approveButton = findViewById(R.id.approveButton);
-        titleText = findViewById(R.id.titleText);
-        titlePoints = findViewById(R.id.pointsText);
-        DescriptionData = findViewById(R.id.taskInfo);
-        DescriptionHints = findViewById(R.id.hints);
-        DescriptionArrangement = findViewById(R.id.arrangement);
-        backButton = findViewById(R.id.backButton);
+        loadImageButton = v.findViewById(R.id.loadButton);
+        myImageView = v.findViewById(R.id.centerView);
+        approveButton = v.findViewById(R.id.approveButton);
+        titleText = v.findViewById(R.id.TitleText);
+        titlePoints = v.findViewById(R.id.pointsText);
+        DescriptionData = v.findViewById(R.id.taskInfo);
+        DescriptionHints = v.findViewById(R.id.hints);
+        DescriptionArrangement = v.findViewById(R.id.arrangement);
+        backButton = v.findViewById(R.id.backButton);
 
         setTask(RoboCodeSettings.getInstance().current);
 
@@ -64,7 +75,14 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                RoboCodeSettings.getInstance().current = null;
+                Fragment fragment = new TasksFragment();
+                getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(roboCodeTaskFragment.this)
+                    .add(selfContainer.getId(), fragment)
+                    .commit();
             }
         });
 
@@ -72,8 +90,8 @@ public class roboCodeTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ) {
+                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
+                        getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ) {
                         String[] permission = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                         requestPermissions(permission, PERMISSION_CODE);
                     } else {
@@ -86,13 +104,15 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                 }
             }
         });
+
+        return v;
     }
 
     public void setTask(final roboCodeTask task) {
 
         image_uri = Uri.EMPTY;
 
-        runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // reset the approve solution option
@@ -102,7 +122,6 @@ public class roboCodeTaskActivity extends AppCompatActivity {
 
                 // Set the task title
                 titleText               .setText("Task #" + task.ID + ": " + task.Title);
-                setTitle("Task #" + task.ID + ": " + task.Title);
                 titlePoints             .setText("| " + task.Points +" Points");
 
                 // Set the task details
@@ -117,7 +136,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
-        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        image_uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         // Camera intent
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
@@ -133,18 +152,18 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                 if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 } else {
-                    Toast.makeText(this, "Permission denied...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Permission denied...", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             myImageView.setImageURI(image_uri);
-            runOnUiThread(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     loadImageButton.setText("Change Solution");

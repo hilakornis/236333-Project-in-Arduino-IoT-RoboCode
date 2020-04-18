@@ -1,8 +1,6 @@
 package com.example.a236333_hw3.Tools;
 
 public class roboCodeTask {
-    public static roboCodeTask current;
-
     public int      ID;
     public int      Points;
     public String   Title;

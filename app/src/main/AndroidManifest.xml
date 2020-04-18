@@ -17,20 +17,15 @@
             android:name=".NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".TasksActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".roboCodeTaskActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_robo_code_task"
-            android:theme="@style/FullscreenTheme" />
+        <activity android:name=".TasksActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".roboCodeTaskActivity" />
     </application>
 
 </manifest>

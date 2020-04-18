@@ -3,41 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_whats_new">
 
     <fragment
-        android:id="@+id/nav_home"
+        android:id="@+id/nav_whats_new"
         android:name="com.example.a236333_hw3.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home">
-
-        <action
-            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_home_second"
-        android:name="com.example.a236333_hw3.ui.home.HomeSecondFragment"
-        android:label="@string/home_second"
-        tools:layout="@layout/fragment_home_second">
-        <action
-            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
-            app:destination="@id/nav_home" />
-
-        <argument
-            android:name="myArg"
-            app:argType="string" />
-    </fragment>
+        tools:layout="@layout/fragment_home"/>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.a236333_hw3.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
+        android:id="@+id/nav_tasks"
+        android:name="com.example.a236333_hw3.ui.Tasks.TasksFragment"
+        android:label="Tasks"
+        tools:layout="@layout/fragment_tasks" />
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_high_score"
         android:name="com.example.a236333_hw3.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
+        android:label="High Scores"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.a236333_hw3.ui.gallery.GalleryFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_gallery" />
 </navigation>
