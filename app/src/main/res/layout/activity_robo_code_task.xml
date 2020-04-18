@@ -124,7 +124,7 @@
             </androidx.cardview.widget.CardView>
 
             <Button
-                android:id="@+id/loadButton"
+                android:id="@+id/uploadButton"
                 style="@style/Widget.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
