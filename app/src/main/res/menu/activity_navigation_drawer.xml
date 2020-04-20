@@ -9,6 +9,10 @@
             android:icon="@drawable/nav_home"
             android:title="Home" />
         <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/nav_help"
+            android:title="Help" />
+        <item
             android:id="@+id/nav_tasks"
             android:icon="@drawable/nav_tasks"
             android:title="Tasks" />
@@ -19,9 +23,9 @@
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/nav_settings"
-            android:title="Settings" />
+            android:title="User Settings" />
         <item
-            android:id="@+id/nav_log_out"
+            android:id="@+id/nav_logout"
             android:icon="@drawable/nav_signout"
             android:title="Log Out" />
 
