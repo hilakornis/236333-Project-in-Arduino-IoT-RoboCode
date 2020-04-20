@@ -9,7 +9,6 @@
     tools:openDrawer="start">
 
     <include
-        android:id="@+id/testing"
         layout="@layout/app_bar_navigation"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

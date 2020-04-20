@@ -1,8 +1,13 @@
 package com.example.a236333_hw3;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
@@ -32,7 +37,9 @@ public class NavigationActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });*/
-        //fab.setVisibility(View.GONE);
+        fab.setVisibility(View.GONE);
+
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -47,7 +54,15 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        /*final TextView tv = findViewById(R.id.nav_textUserEmail);
 
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String mail = "fghgfh";///RoboCodeSettings.getInstance().user.getEmail();
+                tv.setText(mail == null ? "no mail today" : mail);
+            }
+        });*/
     }
 
     @Override
