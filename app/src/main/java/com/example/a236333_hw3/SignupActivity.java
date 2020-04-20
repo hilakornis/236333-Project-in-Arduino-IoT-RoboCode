@@ -175,7 +175,7 @@ public class SignupActivity extends AppCompatActivity {
 
 
 
-                startActivity(new Intent(SignupActivity.this, TasksActivity.class));
+                startActivity(new Intent(SignupActivity.this, NavigationActivity.class));
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(TAG, "signUpWithEmail:failure", task.getException());
