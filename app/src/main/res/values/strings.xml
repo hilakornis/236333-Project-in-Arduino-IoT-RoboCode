@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">236333-hw3</string>
+    <string name="app_name">RoboCode</string>
 
     <string name="title_activity_robo_code_task">roboCodeTaskActivity</string>
     <string name="dummy_button">Dummy Button</string>
@@ -15,7 +15,6 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-
     <string name="home_second">Home Second</string>
 
     <!-- TODO: Remove or change this placeholder text -->

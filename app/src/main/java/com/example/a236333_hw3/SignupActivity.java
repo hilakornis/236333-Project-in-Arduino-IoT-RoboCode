@@ -140,7 +140,6 @@ public class SignupActivity extends AppCompatActivity {
             if (task.isSuccessful()) {
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "signUpWithEmail:success");
-                Toast.makeText(SignupActivity.this,"C.",Toast.LENGTH_SHORT).show();
                 RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
 
                 // ------------------------------------
@@ -174,7 +173,7 @@ public class SignupActivity extends AppCompatActivity {
                 // ------------------------------------
 
 
-
+                RoboCodeSettings.getInstance().user = firebaseAuthenticator.getCurrentUser();
                 startActivity(new Intent(SignupActivity.this, NavigationActivity.class));
                 SignupActivity.this.finish();
             } else {
