@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.Pairing.PairingFragment">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:visibility="visible"
+                    android:id="@+id/PairingFragment_doPairing"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" >
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Enter pairing code to connect devices"
+                                    android:textSize="20dp"
+                                    android:layout_marginTop="30dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:layout_marginBottom="0dp" />
+                                <ImageView
+                                    android:id="@+id/imageView3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:src="@drawable/pairing" />
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:layout_marginBottom="20dp" >
+                                        <EditText
+                                            android:maxLength="1"
+                                            android:id="@+id/paringAText"
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:ems="10"
+                                            android:textAlignment="center"
+                                            android:gravity="center"
+                                            android:layout_marginRight="15dp"
+                                            android:inputType="numberSigned"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                                        <EditText
+                                            android:maxLength="1"
+                                            android:id="@+id/paringBText"
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginRight="15dp"
+                                            android:ems="10"
+                                            android:textAlignment="center"
+                                            android:gravity="center"
+                                            android:inputType="numberSigned"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                                        <EditText
+                                            android:maxLength="1"
+                                            android:id="@+id/paringCText"
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:ems="10"
+                                            android:textAlignment="center"
+                                            android:gravity="center"
+                                            android:layout_marginRight="15dp"
+                                            android:inputType="numberSigned"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                                        <EditText
+                                            android:maxLength="1"
+                                            android:id="@+id/paringDText"
+                                            android:layout_width="40dp"
+                                            android:layout_height="wrap_content"
+                                            android:ems="10"
+                                            android:textAlignment="center"
+                                            android:gravity="center"
+                                            android:inputType="numberSigned"
+                                            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                                </LinearLayout>
+                                <Button
+                                    android:layout_gravity="center"
+                                    android:id="@+id/DoParingButton"
+                                    android:layout_width="100dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="Connect" />
+                        </LinearLayout>
+                        <View
+                            android:id="@+id/divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginRight="20dp"
+                            android:background="@color/black_overlay" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" >
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Switch to capture-device mode"
+                                    android:textSize="20dp"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:layout_marginBottom="0dp" />
+                                <Button
+                                    android:layout_gravity="center"
+                                    android:id="@+id/SwitchModeButton"
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="Turn On Capture Mode"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:layout_marginBottom="0dp"/>
+                        </LinearLayout>
+                </LinearLayout>
+
+        </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

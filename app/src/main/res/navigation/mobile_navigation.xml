@@ -31,4 +31,9 @@
         android:name="com.example.a236333_hw3.ui.logout.logoutFragment"
         android:label="logout"
         tools:layout="@layout/fragment_logout" />
+    <fragment
+        android:id="@+id/nav_pairing"
+        android:name="com.example.a236333_hw3.ui.Pairing.PairingFragment"
+        android:label="pairing"
+        tools:layout="@layout/fragment_pairing" />
 </navigation>

@@ -87,10 +87,24 @@ public class LoginActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(LoginActivity.this, "Please enter email!", Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    logInButton.setEnabled(true);
+                    signUpButton.setEnabled(true);
+                }
+            });
             return;
         }
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(LoginActivity.this, "Please enter password!", Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    logInButton.setEnabled(true);
+                    signUpButton.setEnabled(true);
+                }
+            });
             return;
         }
 
