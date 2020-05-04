@@ -7,6 +7,8 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
+const uuidv4 = require('uuid/v4');
+const uuid = uuidv4();
 const gcs = require('@google-cloud/storage');
 //const mkdirp = require('mkdirp-promise');
 // [END import]
@@ -63,8 +65,8 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     const tempLocalFile = path.join(os.tmpdir(), filePath);
     const tempLocalDir = path.dirname(tempLocalFile);
     const tempLocalCropedFile = path.join(os.tmpdir(), cropedFilePath);
-    const crop = "1500x650+0+0";
-    const size = "1500x650^";
+    const crop = "88x88+115+11";
+    const size = "176X88^";
 
     // Exit if this is triggered on a file that is not an image.
     if (!contentType.startsWith('image/')) {
@@ -82,8 +84,11 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     const cropedFile = bucket.file(cropedFilePath);
     const metadata = {
         contentType: contentType,
+        metadata: {
+            firebaseStorageDownloadTokens: uuid
+        },
         // To enable Client-side caching you can set the Cache-Control headers here. Uncomment below.
-        // 'Cache-Control': 'public,max-age=3600',
+        'Cache-Control': 'public,max-age=3600'
     };
 
     // Create the temp directory where the storage file will be downloaded.
@@ -93,35 +98,35 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     console.log('The file has been downloaded to', tempLocalFile);
 
     // Generate a croped using ImageMagick.
-    await spawn('convert', [tempLocalFile, '-geometry', size, '-gravity', 'center', '-crop', crop, tempLocalCropedFile], {
+    await spawn('convert', [tempLocalFile, '-geometry', size, '-gravity', 'North-West', '-crop', crop, tempLocalCropedFile], {
         capture: ['stdout', 'stderr']
     });
-    await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '90', tempLocalFile]);
+    await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
 
     console.log('croped image created at', tempLocalCropedFile);
     // Uploading the croped.
-    await bucket.upload(tempLocalCropedFile, { destination: cropedFilePath, metadata: metadata });
+    await bucket.upload(tempLocalCropedFile, { destination: cropedFilePath, uploadType: "media", metadata: metadata });
     console.log('croped uploaded to Storage at', cropedFilePath);
     // Once the image has been uploaded delete the local files to free up disk space.
     fs.unlinkSync(tempLocalFile);
     fs.unlinkSync(tempLocalCropedFile);
     // Get the Signed URLs for the croped and original image.
-    const config = {
-        action: 'read',
-        expires: '03-01-2500',
-    };
-    const results = await Promise.all([
-        cropedFile.getSignedUrl(config),
-        file.getSignedUrl(config),
-    ]);
-    console.log('Got Signed URLs.');
-    const cropedResult = results[0];
-    const originalResult = results[1];
-    const cropedFileUrl = cropedResult[0];
-    const fileUrl = originalResult[0];
-    // Add the URLs to the Database
-    await admin.database().ref('images').push({ path: fileUrl, croped: cropedFileUrl });
-    return console.log('croped URLs saved to database.');
+    // const config = {
+    //     action: 'read',
+    //     expires: '03-01-2500',
+    // };
+    // const results = await Promise.all([
+    //     cropedFile.getSignedUrl(config),
+    //     file.getSignedUrl(config),
+    // ]);
+    // console.log('Got Signed URLs.');
+    // const cropedResult = results[0];
+    // const originalResult = results[1];
+    // const cropedFileUrl = cropedResult[0];
+    // const fileUrl = originalResult[0];
+    // // Add the URLs to the Database
+    // await admin.database().ref('images').push({ path: fileUrl, croped: cropedFileUrl });
+    // return console.log('croped URLs saved to database.');
 
 
 
