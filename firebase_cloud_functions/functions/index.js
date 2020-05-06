@@ -21,23 +21,42 @@ const croped_PREFIX = 'croped_';
 // Retrieve Firebase Messaging object.
 const messaging = firebase.messaging();
 
-// Take the text parameter passed to this HTTP endpoint and insert it into the
-// Realtime Database under the path /messages/:pushId/original
-exports.CaptureImageReq = functions.https.onRequest(async(req, res) => {
-	// Grab the text parameter - the ID of the capture device
-    const original = req.query.text;
+exports.notifyCaptureImageReq = functions.firestore
+    .document('requestMessages/{message}')
+    .onCreate((docSnapshot, context) => {
+        const message = docSnapshot.data();
+        const senderName = message['senderName'];
 
-	// process the tokens
-	const message = {
-		data: { title: "CaptureRequest", body: "request for an image", message: "request for an image", cap_id: original  }
-	};
+		console.log('Hello, Im running for senderName ' + senderName);
 
-	messaging.sendMulticast(message).then(response => {
-		console.log(
-			response.successCount + " messages were sent successfully"
-		);
-	});
-});
+        return admin.firestore().doc('Users/' + senderName).get().then(userDoc => {
+            const registrationTokens = userDoc.get('registrationTokens')
+            const notificationBody = message['text']
+			// The topic name can be optionally prefixed with "/topics/".
+			var topic = 'CaptureRequests';
+
+			var myMessage = {
+			  data: {
+				title: senderName + ' sent you a message.',
+				message: message['senderId'],
+				pairingCode: message['pairingCode']
+
+			  },
+			  topic: topic
+			};
+
+			// Send a message to devices subscribed to the provided topic.
+			return admin.messaging().send(myMessage)
+			  .then((response) => {
+				// Response is a message ID string.
+				console.log('Successfully sent message:', response);
+				return admin.firestore().doc("users/" + senderName).update({
+                    registrationTokens: registrationTokens
+                })
+			  });
+
+        })
+    })
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
