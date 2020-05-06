@@ -7,8 +7,10 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
-const uuidv4 = require('uuid/v4');
+
+const { v4: uuidv4 } = require('uuid');
 const uuid = uuidv4();
+
 const gcs = require('@google-cloud/storage');
 //const mkdirp = require('mkdirp-promise');
 // [END import]
@@ -79,12 +81,12 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     const contentType = object.contentType; // This is the image MIME type
     const fileDir = path.dirname(filePath);
     const fileName = path.basename(filePath);
-    const cropedFilePath = path.normalize(path.join(fileDir, `${croped_PREFIX}${fileName}`));
+
     const tempLocalFile = path.join(os.tmpdir(), filePath);
     const tempLocalDir = path.dirname(tempLocalFile);
-    const tempLocalCropedFile = path.join(os.tmpdir(), cropedFilePath);
-    const crop = "88x88+115+11";
-    const size = "176X88^";
+
+    var QR_grid = ["100X100+0+0", "100X100+120+0", "100X100+0+120", "100X100+110+110"];
+
 
     // Exit if this is triggered on a file that is not an image.
     if (!contentType.startsWith('image/')) {
@@ -99,7 +101,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     // Cloud Storage files.
     const bucket = admin.storage().bucket(object.bucket);
     const file = bucket.file(filePath);
-    const cropedFile = bucket.file(cropedFilePath);
+
     const metadata = {
         contentType: contentType,
         metadata: {
@@ -115,93 +117,50 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     await file.download({ destination: tempLocalFile });
     console.log('The file has been downloaded to', tempLocalFile);
 
-    // Generate a croped using ImageMagick.
-    await spawn('convert', [tempLocalFile, '-geometry', size, '-gravity', 'North-West', '-crop', crop, tempLocalCropedFile], {
-        capture: ['stdout', 'stderr']
+    var i = 0;
+    promises = [];
+    const temp_crop_pic_location = [];
+    const final_pic_location = []
+    QR_grid.forEach(QR_position => {
+        cropedFilePath = path.normalize(path.join(fileDir, `${croped_PREFIX}${i}_${fileName}`));
+        current_location = path.join(os.tmpdir(), cropedFilePath);
+
+        final_pic_location.push(cropedFilePath)
+        temp_crop_pic_location.push(current_location);
+
+        // Generate a croped using ImageMagick.
+        const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', QR_position, current_location], {
+            capture: ['stdout', 'stderr']
+        });
+        //await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
+        promises.push(p);
+        console.log('croped image created at', current_location);
+        i++;
     });
-    await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
 
-    console.log('croped image created at', tempLocalCropedFile);
-    // Uploading the croped.
-    await bucket.upload(tempLocalCropedFile, { destination: cropedFilePath, uploadType: "media", metadata: metadata });
-    console.log('croped uploaded to Storage at', cropedFilePath);
+    // Wait for all pictures to be croped 
+    await Promise.all(promises)
+
+    promises = [];
+    i = 0;
+
+    // upload pics from temp location to directory
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
+        promises.push(p)
+        console.log('croped uploaded to Storage at', final_pic_location[i]);
+        i++;
+    })
+
+    // Wait for all croped pics to be uploaded
+    await Promise.all(promises)
+
     // Once the image has been uploaded delete the local files to free up disk space.
+    temp_crop_pic_location.forEach(current_temp_location => {
+        fs.unlinkSync(current_temp_location);
+    })
     fs.unlinkSync(tempLocalFile);
-    fs.unlinkSync(tempLocalCropedFile);
-    // Get the Signed URLs for the croped and original image.
-    // const config = {
-    //     action: 'read',
-    //     expires: '03-01-2500',
-    // };
-    // const results = await Promise.all([
-    //     cropedFile.getSignedUrl(config),
-    //     file.getSignedUrl(config),
-    // ]);
-    // console.log('Got Signed URLs.');
-    // const cropedResult = results[0];
-    // const originalResult = results[1];
-    // const cropedFileUrl = cropedResult[0];
-    // const fileUrl = originalResult[0];
-    // // Add the URLs to the Database
-    // await admin.database().ref('images').push({ path: fileUrl, croped: cropedFileUrl });
-    // return console.log('croped URLs saved to database.');
 
+    return console.log('Function done');
 
-
-
-
-
-
-
-
-
-    // // [END generateThumbnailTrigger]
-    // // [START eventAttributes]
-    // const fileBucket = object.bucket; // The Storage bucket that contains the file.
-    // const filePath = object.name; // File path in the bucket.
-    // const fileName = path.basename(filePath);
-    // const contentType = object.contentType; // File content type.
-    // const metageneration = object.metageneration; // Number of times metadata has been generated. New objects have a value of 1.
-    // const crop = "1500x650+0+0";
-    // const size = "1500x650^";
-    // // [END eventAttributes]
-
-    // // [START stopConditions]
-    // // Exit if this is triggered on a file that is not an image.
-    // if (!contentType.startsWith('image/')) {
-    //     return console.log('This is not an image.');
-    // }
-
-    // if (fileName.startsWith('croped_')) {
-    //     return console.log('Already a croped.');
-    // }
-
-    // // Exit if the image is already a thumbnail.
-
-    // // [END stopConditions]
-
-    // // [START thumbnailGeneration]
-    // // Download file from bucket.
-    // const bucket = admin.storage().bucket(fileBucket);
-    // const tempFilePath = path.join(os.tmpdir(), fileName);
-    // const metadata = {
-    //     contentType: contentType,
-    // };
-    // await bucket.file(filePath).download({ destination: tempFilePath });
-    // console.log('Image downloaded locally to', tempFilePath);
-    // // Generate a thumbnail using ImageMagick.
-    // await spawn('convert', [tempFilePath, '-geometry', size, '-gravity', 'center', '-crop', crop, tempFilePath]);
-    // console.log('Thumbnail created at', tempFilePath);
-    // // We add a 'thumb_' prefix to thumbnails file name. That's where we'll upload the thumbnail.
-    // const thumbFileName = `croped_${fileName}`;
-    // const thumbFilePath = path.join(path.dirname(filePath), thumbFileName);
-    // // Uploading the thumbnail.
-    // await bucket.upload(tempFilePath, {
-    //     destination: thumbFilePath,
-    //     metadata: metadata,
-    // });
-    // // Once the thumbnail has been uploaded delete the local file to free up disk space.
-    // return fs.unlinkSync(tempFilePath);
-    // // [END thumbnailGeneration]
 });
-// [END generateThumbnail]
