@@ -16,8 +16,26 @@ const gcs = require('@google-cloud/storage');
 // Thumbnail prefix added to file names.
 const croped_PREFIX = 'croped_';
 
+// Retrieve Firebase Messaging object.
+const messaging = firebase.messaging();
 
+// Take the text parameter passed to this HTTP endpoint and insert it into the
+// Realtime Database under the path /messages/:pushId/original
+exports.CaptureImageReq = functions.https.onRequest(async(req, res) => {
+	// Grab the text parameter - the ID of the capture device
+    const original = req.query.text;
 
+	// process the tokens
+	const message = {
+		data: { title: "CaptureRequest", body: "request for an image", message: "request for an image", cap_id: original  }
+	};
+
+	messaging.sendMulticast(message).then(response => {
+		console.log(
+			response.successCount + " messages were sent successfully"
+		);
+	});
+});
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions

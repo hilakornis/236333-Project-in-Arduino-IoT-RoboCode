@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,18 +18,38 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.PowerManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 import com.example.a236333_hw3.Camera.APictureCapturingService;
 import com.example.a236333_hw3.Camera.PictureCapturingListener;
 import com.example.a236333_hw3.Camera.PictureCapturingServiceImpl;
+import com.example.a236333_hw3.CaptureService.CaptureMessage;
+import com.example.a236333_hw3.CaptureService.CaptureMessagingService;
+import com.example.a236333_hw3.Tools.RoboCodeSettings;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+import com.google.firestore.v1.WriteResult;
 
 public class CaptureModeActivity extends AppCompatActivity implements
         PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -40,6 +61,9 @@ public class CaptureModeActivity extends AppCompatActivity implements
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
 
     // UI Elements ================================================================================
+    private Button backButton;
+    private TextView ARand, BRand, CRand, DRand;
+    // For Debug
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
     private Button uploadButton;
@@ -50,34 +74,120 @@ public class CaptureModeActivity extends AppCompatActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             CaptureModeActivity.this.showToast("Starting capture!");
-            APictureCapturingService pictureService =
-                    PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
-            pictureService.startCapturing(CaptureModeActivity.this);
-        }
-    };
-    // ============================================================================================
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageHandler, new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
-
-        setContentView(R.layout.activity_capture_mode);
-        checkPermissions();
-        uploadBackPhoto     = (ImageView) findViewById(R.id.backIV);
-        uploadFrontPhoto    = (ImageView) findViewById(R.id.frontIV);
-        uploadButton        = (Button) findViewById(R.id.startCaptureBtn);
-
-        uploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CaptureModeActivity.this.showToast("Starting capture!");
+            try {
                 APictureCapturingService pictureService =
                         PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
                 pictureService.startCapturing(CaptureModeActivity.this);
             }
+            catch (Exception ex) {
+
+                showToast("Error :( ... message: " + ex.getMessage());
+            }
+
+        }
+    };
+    // ============================================================================================
+
+    // WakeLock Service ===========================================================================
+    PowerManager.WakeLock wakeLock;
+    // ============================================================================================
+
+    static int id = 0;
+    @SuppressLint("InvalidWakeLockTag")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_capture_mode);
+
+        // Make sure I have the right permissions
+        checkPermissions();
+
+        // UI Elements
+        ARand               = (TextView) findViewById(R.id.paringCodeRandA);
+        BRand               = (TextView) findViewById(R.id.paringCodeRandB);
+        CRand               = (TextView) findViewById(R.id.paringCodeRandC);
+        DRand               = (TextView) findViewById(R.id.paringCodeRandD);
+        backButton          = (Button)   findViewById(R.id.backToRegularModeBtn);
+
+        // Debug Features
+        uploadBackPhoto     = (ImageView) findViewById(R.id.backIV);
+        uploadFrontPhoto    = (ImageView) findViewById(R.id.frontIV);
+        uploadButton        = (Button)    findViewById(R.id.startCaptureBtn);
+
+        // register to receive notifications and capture requests
+        LocalBroadcastManager.getInstance(this).
+                registerReceiver(messageHandler,
+                        new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
+        FirebaseMessaging.getInstance().subscribeToTopic("CaptureRequests");
+
+        // Clicking the back button will exit the activity
+        // note that more actions are done in the OnDestroy
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CaptureModeActivity.this.finish();
+            }
         });
+
+        // This button inits a capture request
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+                String time = sdf.format(cal.getTime());
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Map<String, Object> docData = new HashMap<>();
+                docData.put("senderId",     RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("recipientId",  RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("senderName",   RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("text",         "A picture of the board is required");
+                docData.put("date",         sdf.format(cal.getTime()));
+                String ps = ARand.getText().toString() +
+                            BRand.getText().toString() +
+                            CRand.getText().toString() +
+                            DRand.getText().toString();
+                docData.put("pairingCode", ps);
+
+                String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
+                                 time +"_" + RoboCodeSettings.getInstance().user.getUid();
+
+                db.collection("requestMessages").document(docName).set(docData)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                            showToast( "Setting new user data base: success");
+                                }
+                            })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            showToast("Setting new user data base: failure");
+                            }
+                        });;
+
+            }
+        });
+
+        // Randomize a Pairing code
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Random randomer = new Random();
+                    ARand.setText(Integer. toString(randomer.nextInt(9)));
+                    BRand.setText(Integer. toString(randomer.nextInt(9)));
+                    CRand.setText(Integer. toString(randomer.nextInt(9)));
+                    DRand.setText(Integer. toString(randomer.nextInt(9)));
+                } catch (Exception ex) {}
+            }
+        });
+
+        // Make sure that the screen will not get locked
+        PowerManager powerManager = (PowerManager)this.getBaseContext().getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON , "myLock");
+        wakeLock.acquire();
     }
 
     /**
@@ -95,6 +205,19 @@ public class CaptureModeActivity extends AppCompatActivity implements
         if (!neededPermissions.isEmpty()) {
             requestPermissions(neededPermissions.toArray(new String[]{}),
                     MY_PERMISSIONS_REQUEST_ACCESS_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_CODE: {
+                if (!(grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    checkPermissions();
+                }
+            }
         }
     }
 
@@ -144,25 +267,37 @@ public class CaptureModeActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_CODE: {
-                if (!(grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    checkPermissions();
-                }
-            }
-        }
-    }
-
-
 
     // Capture Service ============================================================================
     @Override
     protected void onPause() {
         super.onPause();
+        try{
+            wakeLock.release();
+        } catch (Exception ex) {}
+        try{
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(messageHandler);
+        } catch (Exception ex) {}
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try{
+            wakeLock.acquire();
+        } catch (Exception ex) {}
+        try{
+            LocalBroadcastManager.getInstance(this).registerReceiver(messageHandler, new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
+        } catch (Exception ex) {}
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("CaptureRequests");
+        try{
+            wakeLock.release();
+        } catch (Exception ex) {}
         try{
             LocalBroadcastManager.getInstance(this).unregisterReceiver(messageHandler);
         } catch (Exception ex) {}
@@ -171,6 +306,9 @@ public class CaptureModeActivity extends AppCompatActivity implements
     @Override
     public void onPanelClosed(int featureId, Menu menu) {
         super.onPanelClosed(featureId, menu);
+        try{
+            wakeLock.release();
+        } catch (Exception ex) {}
         try{
             LocalBroadcastManager.getInstance(this).unregisterReceiver(messageHandler);
         } catch (Exception ex) {}
