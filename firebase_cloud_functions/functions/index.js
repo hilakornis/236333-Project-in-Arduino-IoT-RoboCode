@@ -13,6 +13,10 @@ const uuid = uuidv4();
 
 const gcs = require('@google-cloud/storage');
 //const mkdirp = require('mkdirp-promise');
+
+const jpeg = require("jpeg-js");
+const jsqr_1 = require("jsqr");
+
 // [END import]
 
 // Thumbnail prefix added to file names.
@@ -182,4 +186,46 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
     return console.log('Function done');
 
+});
+
+exports.QrReader = functions.storage.object().onFinalize(async (object) => {
+    // File and directory paths.
+    const filePath = object.name;
+    const contentType = object.contentType; // This is the image MIME type
+    const fileDir = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    if (!contentType.startsWith('image/')) {
+        console.log('This is not an image.');
+        return;
+    }
+    if (!fileName.startsWith('croped_')) {
+        console.log('This is not an qr image we test for.');
+        return;
+    }
+    console.log('This is the filePath: ' + filePath);
+    console.log('This is the fileDir: ' + fileDir);
+    console.log('This is the fileName: ' + fileName);
+    const tempLocalFile = path.join(os.tmpdir(), filePath);
+    // // Cloud Storage files.
+    const bucket = admin.storage().bucket(object.bucket);
+    const file = bucket.file(filePath);
+    await file.download({ destination: tempLocalFile });
+    console.log('The file has been downloaded to', tempLocalFile);
+    const width = 100; //in pixels
+    const height = 100; //in pixels
+    const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
+    const jpegData = fs.readFileSync(tempLocalFile);
+    const rawImageData = jpeg.decode(jpegData);
+    let clampedArray = new Uint8ClampedArray(rawImageData.data.length);
+    let i;
+    for (i = 0; i < rawImageData.data.length; i++) {
+        clampedArray[i] = rawImageData.data[i];
+    }
+    const code = jsqr_1.default(clampedArray, width, height);
+    if (code) {
+        console.log("Found QR code", code);
+    }
+    if (!code) {
+        console.log("Not found any");
+    }
 });
