@@ -1,11 +1,5 @@
 package com.example.a236333_hw3;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -16,11 +10,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.PowerManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -28,28 +21,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.a236333_hw3.Camera.APictureCapturingService;
 import com.example.a236333_hw3.Camera.PictureCapturingListener;
 import com.example.a236333_hw3.Camera.PictureCapturingServiceImpl;
-import com.example.a236333_hw3.CaptureService.CaptureMessage;
-import com.example.a236333_hw3.CaptureService.CaptureMessagingService;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
-import com.google.firestore.v1.WriteResult;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.TreeMap;
 
 public class CaptureModeActivity extends AppCompatActivity implements
         PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -60,32 +57,14 @@ public class CaptureModeActivity extends AppCompatActivity implements
     };
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
 
+    private String pairingCode;
+
     // UI Elements ================================================================================
     private Button backButton;
     private TextView ARand, BRand, CRand, DRand;
     // For Debug
-    private ImageView uploadBackPhoto;
-    private ImageView uploadFrontPhoto;
-    private Button uploadButton;
-    // ============================================================================================
-
-    // Capture Service ============================================================================
-    private BroadcastReceiver messageHandler = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            CaptureModeActivity.this.showToast("Starting capture!");
-            try {
-                APictureCapturingService pictureService =
-                        PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
-                pictureService.startCapturing(CaptureModeActivity.this);
-            }
-            catch (Exception ex) {
-
-                showToast("Error :( ... message: " + ex.getMessage());
-            }
-
-        }
-    };
+    //private ImageView uploadBackPhoto;
+    //private ImageView uploadFrontPhoto;
     // ============================================================================================
 
     // WakeLock Service ===========================================================================
@@ -110,65 +89,8 @@ public class CaptureModeActivity extends AppCompatActivity implements
         backButton          = (Button)   findViewById(R.id.backToRegularModeBtn);
 
         // Debug Features
-        uploadBackPhoto     = (ImageView) findViewById(R.id.backIV);
-        uploadFrontPhoto    = (ImageView) findViewById(R.id.frontIV);
-        uploadButton        = (Button)    findViewById(R.id.startCaptureBtn);
-
-        // register to receive notifications and capture requests
-        LocalBroadcastManager.getInstance(this).
-                registerReceiver(messageHandler,
-                        new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
-        FirebaseMessaging.getInstance().subscribeToTopic("CaptureRequests");
-
-        // Clicking the back button will exit the activity
-        // note that more actions are done in the OnDestroy
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CaptureModeActivity.this.finish();
-            }
-        });
-
-        // This button inits a capture request
-        uploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-                String time = sdf.format(cal.getTime());
-
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                Map<String, Object> docData = new HashMap<>();
-                docData.put("senderId",     RoboCodeSettings.getInstance().user.getEmail());
-                docData.put("recipientId",  RoboCodeSettings.getInstance().user.getEmail());
-                docData.put("senderName",   RoboCodeSettings.getInstance().user.getEmail());
-                docData.put("text",         "A picture of the board is required");
-                docData.put("date",         sdf.format(cal.getTime()));
-                String ps = ARand.getText().toString() +
-                            BRand.getText().toString() +
-                            CRand.getText().toString() +
-                            DRand.getText().toString();
-                docData.put("pairingCode", ps);
-
-                String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
-                                 time +"_" + RoboCodeSettings.getInstance().user.getUid();
-
-                db.collection("requestMessages").document(docName).set(docData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                            showToast( "Setting new user data base: success");
-                                }
-                            })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                            showToast("Setting new user data base: failure");
-                            }
-                        });;
-
-            }
-        });
+        //uploadBackPhoto     = (ImageView) findViewById(R.id.backIV);
+        //uploadFrontPhoto    = (ImageView) findViewById(R.id.frontIV);
 
         // Randomize a Pairing code
         this.runOnUiThread(new Runnable() {
@@ -180,7 +102,26 @@ public class CaptureModeActivity extends AppCompatActivity implements
                     BRand.setText(Integer. toString(randomer.nextInt(9)));
                     CRand.setText(Integer. toString(randomer.nextInt(9)));
                     DRand.setText(Integer. toString(randomer.nextInt(9)));
+                    pairingCode = ARand.getText().toString() +
+                            BRand.getText().toString() +
+                            CRand.getText().toString() +
+                            DRand.getText().toString();
                 } catch (Exception ex) {}
+            }
+        });
+
+        // register to receive notifications and capture requests
+        LocalBroadcastManager.getInstance(this).
+                registerReceiver(messageHandler,
+                        new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
+        FirebaseMessaging.getInstance().subscribeToTopic("CaptureRequests_"+pairingCode);
+
+        // Clicking the back button will exit the activity
+        // note that more actions are done in the OnDestroy
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CaptureModeActivity.this.finish();
             }
         });
 
@@ -248,32 +189,86 @@ public class CaptureModeActivity extends AppCompatActivity implements
      */
     @Override
     public void onCaptureDone(final String pictureUrl, final byte[] pictureData) {
-        if (pictureData != null && pictureUrl != null) {
-            runOnUiThread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        final Bitmap bitmap = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
-                        final int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
-                        final Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
-                        if (pictureUrl.contains("0_pic.jpg")) {
-                            uploadBackPhoto.setImageBitmap(scaled);
-                        } else if (pictureUrl.contains("1_pic.jpg")) {
-                            uploadFrontPhoto.setImageBitmap(scaled);
-                        }
-                    }
-                });
-            showToast("Picture saved to " + pictureUrl);
+        try {
+            if (pictureData != null && pictureUrl != null) {
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                final Bitmap bitmap = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
+                                final int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
+                                final Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
+                                if (pictureUrl.contains("0_pic.jpg")) {
+                                    //uploadBackPhoto.setImageBitmap(scaled)
+                                    // ;
+                                    showToast("Image is been uploaded ...");
+
+                                    //this is image_uri
+                                    FirebaseUser user = RoboCodeSettings.getInstance().user;
+                                    StorageReference riversRef =
+                                        FirebaseStorage.getInstance().getReference().
+                                            child("Users" + "/" +
+                                                    user.getEmail() + "/" +
+                                                    "8" + "/" +
+                                                    "my_test.jpg");
+
+                                    try {
+                                        InputStream stream = new FileInputStream(new File(pictureUrl));
+
+                                        riversRef.putStream(stream)//putFile(Uri.parse(pictureUrl))
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        // Get a URL to the uploaded content
+                                                        Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                                                        showToast("Image was uploaded");
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception exception) {
+                                                        showToast("Failure! image was not uploaded");
+                                                    }
+                                                });
+
+                                    } catch (FileNotFoundException e) {
+                                        showToast("Failure! image was not uploaded! file stream error!");
+                                    }
+                                }// else if (pictureUrl.contains("1_pic.jpg")) {
+                                    //uploadFrontPhoto.setImageBitmap(scaled);
+                                //}
+                            }
+                        });
+                //showToast("Picture saved to " + pictureUrl);
+            }
+        } catch (Exception ex) {
+            showToast("Error! message: " + ex.getMessage());
         }
     }
 
 
     // Capture Service ============================================================================
+    private BroadcastReceiver messageHandler = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            CaptureModeActivity.this.showToast("Starting capture!");
+            try {
+                APictureCapturingService pictureService =
+                        PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
+                pictureService.startCapturing(CaptureModeActivity.this);
+            }
+            catch (Exception ex) {
+
+                showToast("Error :( ... message: " + ex.getMessage());
+            }
+        }
+    };
+
     @Override
     protected void onPause() {
         super.onPause();
         try{
-            wakeLock.release();
+            //wakeLock.release();
         } catch (Exception ex) {}
         try{
             LocalBroadcastManager.getInstance(this).unregisterReceiver(messageHandler);
@@ -284,7 +279,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         try{
-            wakeLock.acquire();
+           //wakeLock.acquire();
         } catch (Exception ex) {}
         try{
             LocalBroadcastManager.getInstance(this).registerReceiver(messageHandler, new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
@@ -294,7 +289,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        FirebaseMessaging.getInstance().unsubscribeFromTopic("CaptureRequests");
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("CaptureRequests_"+pairingCode);
         try{
             wakeLock.release();
         } catch (Exception ex) {}
