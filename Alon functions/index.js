@@ -17,27 +17,25 @@ exports.notifyCaptureImageReq = functions.firestore
         return admin.firestore().doc('Users/' + senderName).get().then(userDoc => {
             const registrationTokens = userDoc.get('registrationTokens')
             const notificationBody = message['text']
-			// The topic name can be optionally prefixed with "/topics/".
 			var topic = 'CaptureRequests_' + message['pairingCode'];
 
 			var myMessage = {
-			  data: {
-				title: senderName + ' sent you a message.',
-				message: message['senderId'],
-				pairingCode: message['pairingCode']
-			  },
-			  topic: topic
+			    data: {
+			        title: senderName + ' sent you a message.',
+			        message: message['senderId'],
+			        pairingCode: message['pairingCode']
+			    },
+			    topic: topic
 			};
 
 			// Send a message to devices subscribed to the provided topic.
 			return admin.messaging().send(myMessage)
-			  .then((response) => {
-				// Response is a message ID string.
-				console.log('Successfully sent message:', response);
-				return admin.firestore().doc("users/" + senderName).update({
+			    .then((response) => {
+			    // Response is a message ID string.
+			    console.log('Successfully sent message:', response);
+			    return admin.firestore().doc("users/" + senderName).update({
                     registrationTokens: registrationTokens
-                })
-			  });
-
-        })
-    })
+                });
+			});
+        });
+    });
