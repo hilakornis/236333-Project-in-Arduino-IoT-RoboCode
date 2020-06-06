@@ -38,9 +38,9 @@
                 android:layout_marginBottom="5dp"
                 android:ems="10"
                 android:hint="Email"
-                android:text="alonbind@gmail.com"
-                android:inputType="textEmailAddress" />
 
+                android:inputType="textEmailAddress" />
+            <!--android:text="alonbind@gmail.com"-->
             <EditText
                 android:id="@+id/textPassword"
                 android:layout_width="200dp"
@@ -51,9 +51,8 @@
                 android:layout_marginBottom="5dp"
                 android:ems="10"
                 android:hint="Password"
-                android:text="123456"
                 android:inputType="textPassword" />
-
+            <!--android:text="123456"-->
             <Button
                 android:id="@+id/logInButton"
                 android:layout_width="wrap_content"

@@ -30,6 +30,11 @@ public class RoboCodeSettings {
     public String userNickname;
     public List<roboCodeTask> roboCodeTasks;
     public roboCodeTask current;
+
+    // paring code
+    public String a, b, c, d;
+    public Boolean hasPairingCode;
+
 //    public List<roboCodeUser> roboCodeUsers;
 
 
@@ -42,6 +47,7 @@ public class RoboCodeSettings {
         db = FirebaseFirestore.getInstance();
         roboCodeTasks = null;
         userNickname = null;
+        hasPairingCode = false;
 //        roboCodeUsers = null;
     }
 
@@ -62,11 +68,11 @@ public class RoboCodeSettings {
                         }
                     }
             ).addOnFailureListener(new OnFailureListener() {
-                       @Override
-                       public void onFailure(@NonNull Exception e) {
-                           handler.onFailure();
-                       }
-                   }
+                                       @Override
+                                       public void onFailure(@NonNull Exception e) {
+                                           handler.onFailure();
+                                       }
+                                   }
             );
         }
     }
@@ -79,36 +85,36 @@ public class RoboCodeSettings {
             CollectionReference tasks = db.collection("Tasks");
 
             tasks.get().addOnSuccessListener(
-                new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        roboCodeTasks = new Vector<roboCodeTask>();
+                    new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot documentSnapshots) {
+                            roboCodeTasks = new Vector<roboCodeTask>();
 
-                        if (!documentSnapshots.isEmpty()) {
-                            for (DocumentSnapshot documentSnapshot : documentSnapshots) {
-                                if (documentSnapshot.exists()) {
-                                    roboCodeTask task = new roboCodeTask();
-                                    task.ID             = documentSnapshot.getLong("ID").intValue();
-                                    task.Points         = documentSnapshot.getLong("Points").intValue();
-                                    task.Title          = documentSnapshot.getString("Title");
-                                    task.Description    = documentSnapshot.getString("Description");
-                                    task.Hints          = documentSnapshot.getString("Hints");
-                                    task.Arrangement    = documentSnapshot.getString("Arrangement");
-                                    task.Accomplished   = false;
-                                    roboCodeTasks.add(task);
+                            if (!documentSnapshots.isEmpty()) {
+                                for (DocumentSnapshot documentSnapshot : documentSnapshots) {
+                                    if (documentSnapshot.exists()) {
+                                        roboCodeTask task = new roboCodeTask();
+                                        task.ID             = documentSnapshot.getLong("ID").intValue();
+                                        task.Points         = documentSnapshot.getLong("Points").intValue();
+                                        task.Title          = documentSnapshot.getString("Title");
+                                        task.Description    = documentSnapshot.getString("Description");
+                                        task.Hints          = documentSnapshot.getString("Hints");
+                                        task.Arrangement    = documentSnapshot.getString("Arrangement");
+                                        task.Accomplished   = false;
+                                        roboCodeTasks.add(task);
+                                    }
                                 }
                             }
-                        }
-                        /*roboCodeTasks = getTasksHardCoded();*/
-                        handler.onSuccess();
+                            /*roboCodeTasks = getTasksHardCoded();*/
+                            handler.onSuccess();
                         }
                     }
-                ).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        handler.onFailure();
-                    }
-                }
+            ).addOnFailureListener(new OnFailureListener() {
+                                       @Override
+                                       public void onFailure(@NonNull Exception e) {
+                                           handler.onFailure();
+                                       }
+                                   }
             );
         }
     }

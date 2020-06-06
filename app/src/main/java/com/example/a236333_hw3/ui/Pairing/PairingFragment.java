@@ -31,26 +31,13 @@ public class PairingFragment extends Fragment {
     // UI Elements ================================================================================
     private EditText ARand, BRand, CRand, DRand;
     // For Debug
-    private Button uploadButton;
+    private Button uploadButton, doParingButton, switchModeButton;
+    private TextView devicePairedTxt;
     // ============================================================================================
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_pairing, container, false);
-
-        Button btn = v.findViewById(R.id.SwitchModeButton);
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    getActivity().startActivity(new Intent(getActivity(), CaptureModeActivity.class));
-                }
-            });
-            }
-        });
 
         // UI Elements
         ARand               = (EditText) v.findViewById(R.id.paringAText);
@@ -58,6 +45,80 @@ public class PairingFragment extends Fragment {
         CRand               = (EditText) v.findViewById(R.id.paringCText);
         DRand               = (EditText) v.findViewById(R.id.paringDText);
         uploadButton        = (Button)v.findViewById(R.id.startCaptureBtn);
+        doParingButton      = (Button)v.findViewById(R.id.DoParingButton);
+        switchModeButton    = (Button)v.findViewById(R.id.SwitchModeButton);
+        devicePairedTxt     = (TextView)v.findViewById(R.id.devicePaired);
+
+        if (RoboCodeSettings.getInstance().hasPairingCode) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    doParingButton.setText("DISCONNECT");
+                    switchModeButton.setEnabled(false);
+                    ARand.setEnabled(false);
+                    ARand.setText(RoboCodeSettings.getInstance().a);
+                    BRand.setEnabled(false);
+                    BRand.setText(RoboCodeSettings.getInstance().b);
+                    CRand.setEnabled(false);
+                    CRand.setText(RoboCodeSettings.getInstance().c);
+                    DRand.setEnabled(false);
+                    DRand.setText(RoboCodeSettings.getInstance().d);
+                    devicePairedTxt.setText("This device is paired!");
+                }
+            });
+        } else {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    doParingButton.setText("CONNECT");
+                    switchModeButton.setEnabled(true);
+                    ARand.setEnabled(true);
+                    BRand.setEnabled(true);
+                    CRand.setEnabled(true);
+                    DRand.setEnabled(true);
+                    devicePairedTxt.setText("Enter pairing code to connect devices");
+                }
+            });
+        }
+
+        doParingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (RoboCodeSettings.getInstance().hasPairingCode) {
+                    RoboCodeSettings.getInstance().hasPairingCode = false;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            doParingButton.setText("CONNECT");
+                            switchModeButton.setEnabled(true);
+                            ARand.setEnabled(true);
+                            BRand.setEnabled(true);
+                            CRand.setEnabled(true);
+                            DRand.setEnabled(true);
+                            devicePairedTxt.setText("Enter pairing code to connect devices");
+                        }
+                    });
+                } else {
+                    RoboCodeSettings.getInstance().hasPairingCode = true;
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            doParingButton.setText("DISCONNECT");
+                            switchModeButton.setEnabled(false);
+                            ARand.setEnabled(false);
+                            BRand.setEnabled(false);
+                            CRand.setEnabled(false);
+                            DRand.setEnabled(false);
+                            RoboCodeSettings.getInstance().a = ARand.getText().toString();
+                            RoboCodeSettings.getInstance().b = BRand.getText().toString();
+                            RoboCodeSettings.getInstance().c = CRand.getText().toString();
+                            RoboCodeSettings.getInstance().d = DRand.getText().toString();
+                            devicePairedTxt.setText("This device is paired!");
+                        }
+                    });
+                }
+            }
+        });
 
         // This button inits a capture request
         uploadButton.setOnClickListener(new View.OnClickListener() {
@@ -75,9 +136,9 @@ public class PairingFragment extends Fragment {
                 docData.put("text",         "A picture of the board is required");
                 docData.put("date",         sdf.format(cal.getTime()));
                 String ps = ARand.getText().toString() +
-                            BRand.getText().toString() +
-                            CRand.getText().toString() +
-                            DRand.getText().toString();
+                        BRand.getText().toString() +
+                        CRand.getText().toString() +
+                        DRand.getText().toString();
                 docData.put("pairingCode", ps);
 
                 String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
@@ -97,6 +158,18 @@ public class PairingFragment extends Fragment {
                             }
                         });;
 
+            }
+        });
+
+        switchModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().startActivity(new Intent(getActivity(), CaptureModeActivity.class));
+                    }
+                });
             }
         });
 
