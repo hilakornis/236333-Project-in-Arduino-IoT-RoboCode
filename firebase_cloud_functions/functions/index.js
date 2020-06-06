@@ -23,7 +23,7 @@ const jsqr_1 = require("jsqr");
 const croped_PREFIX = 'croped_';
 
 // Retrieve Firebase Messaging object.
-const messaging = firebase.messaging();
+const messaging = admin.messaging();
 
 exports.notifyCaptureImageReq = functions.firestore
     .document('requestMessages/{message}')
@@ -31,33 +31,33 @@ exports.notifyCaptureImageReq = functions.firestore
         const message = docSnapshot.data();
         const senderName = message['senderName'];
 
-		console.log('Hello, Im running for senderName ' + senderName);
+        console.log('Hello, Im running for senderName ' + senderName);
 
         return admin.firestore().doc('Users/' + senderName).get().then(userDoc => {
             const registrationTokens = userDoc.get('registrationTokens')
             const notificationBody = message['text']
-			// The topic name can be optionally prefixed with "/topics/".
-			var topic = 'CaptureRequests';
+                // The topic name can be optionally prefixed with "/topics/".
+            var topic = 'CaptureRequests_' + message['pairingCode'];
 
-			var myMessage = {
-			  data: {
-				title: senderName + ' sent you a message.',
-				message: message['senderId'],
-				pairingCode: message['pairingCode']
+            var myMessage = {
+                data: {
+                    title: senderName + ' sent you a message.',
+                    message: message['senderId'],
+                    pairingCode: message['pairingCode']
 
-			  },
-			  topic: topic
-			};
+                },
+                topic: topic
+            };
 
-			// Send a message to devices subscribed to the provided topic.
-			return admin.messaging().send(myMessage)
-			  .then((response) => {
-				// Response is a message ID string.
-				console.log('Successfully sent message:', response);
-				return admin.firestore().doc("users/" + senderName).update({
-                    registrationTokens: registrationTokens
-                })
-			  });
+            // Send a message to devices subscribed to the provided topic.
+            return admin.messaging().send(myMessage)
+                .then((response) => {
+                    // Response is a message ID string.
+                    console.log('Successfully sent message:', response);
+                    return admin.firestore().doc("users/" + senderName).update({
+                        registrationTokens: registrationTokens
+                    })
+                });
 
         })
     })
@@ -188,7 +188,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
 });
 
-exports.QrReader = functions.storage.object().onFinalize(async (object) => {
+exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     // File and directory paths.
     const filePath = object.name;
     const contentType = object.contentType; // This is the image MIME type
