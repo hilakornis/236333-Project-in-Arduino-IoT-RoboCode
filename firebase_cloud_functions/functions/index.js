@@ -179,10 +179,10 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     await Promise.all(promises)
 
     // Once the image has been uploaded delete the local files to free up disk space.
-    temp_crop_pic_location.forEach(current_temp_location => {
-        fs.unlinkSync(current_temp_location);
-    })
-    fs.unlinkSync(tempLocalFile);
+    // temp_crop_pic_location.forEach(current_temp_location => {
+    //     fs.unlinkSync(current_temp_location);
+    // })
+    // fs.unlinkSync(tempLocalFile);
 
     return console.log('Function done');
 
@@ -206,9 +206,11 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     console.log('This is the fileDir: ' + fileDir);
     console.log('This is the fileName: ' + fileName);
     const tempLocalFile = path.join(os.tmpdir(), filePath);
+    const tempLocalDir = path.dirname(tempLocalFile);
     // // Cloud Storage files.
     const bucket = admin.storage().bucket(object.bucket);
     const file = bucket.file(filePath);
+    await mkdirp(tempLocalDir);
     await file.download({ destination: tempLocalFile });
     console.log('The file has been downloaded to', tempLocalFile);
     const width = 100; //in pixels
@@ -228,4 +230,5 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     if (!code) {
         console.log("Not found any");
     }
+    fs.unlinkSync(tempLocalFile);
 });
