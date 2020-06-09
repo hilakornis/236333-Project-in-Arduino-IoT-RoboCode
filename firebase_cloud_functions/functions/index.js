@@ -39,6 +39,16 @@ exports.notifyCaptureImageReq = functions.firestore
                 // The topic name can be optionally prefixed with "/topics/".
             var topic = 'CaptureRequests_' + message['pairingCode'];
 
+            // Alon ::
+            // Here we build the message that will be sent to the capturing device that has
+            // the paring code message['pairingCode'].
+            // This device is subscribed to the topic 'CaptureRequests_' + message['pairingCode'],
+            // so by sending this message to this topic, it will receive it.
+            //
+            // Hila, you should send the result in your function to the topic:
+            //      'captured_' + message['pairingCode']
+            // which will also be the name of the captured image file uploaded to the server and
+            // given to shahaf's function.
             var myMessage = {
                 data: {
                     title: senderName + ' sent you a message.',
@@ -49,10 +59,12 @@ exports.notifyCaptureImageReq = functions.firestore
                 topic: topic
             };
 
-            // Send a message to devices subscribed to the provided topic.
+            // Alon ::
+            // Here we send the message to devices subscribed to the provided topic.
             return admin.messaging().send(myMessage)
                 .then((response) => {
                     // Response is a message ID string.
+                    // Here we can add a log to see how the sending went
                     console.log('Successfully sent message:', response);
                     return admin.firestore().doc("users/" + senderName).update({
                         registrationTokens: registrationTokens
@@ -230,5 +242,9 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     if (!code) {
         console.log("Not found any");
     }
+    // create .txt file called 'final_fileName', which will contain the qr code , or 0 if no code
     fs.unlinkSync(tempLocalFile);
 });
+
+// Create function which couts the 'finish_...'.txt files, and if count == 48' creates string,
+// sends to LAVA, and delete all .txt files

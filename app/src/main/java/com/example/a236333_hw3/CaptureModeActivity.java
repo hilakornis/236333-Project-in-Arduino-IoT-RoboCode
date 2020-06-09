@@ -204,13 +204,19 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                     showToast("Image is been uploaded ...");
 
                                     //this is image_uri
+                                    // Alon :: Here I send the picture to shahaf's function
                                     FirebaseUser user = RoboCodeSettings.getInstance().user;
                                     StorageReference riversRef =
                                         FirebaseStorage.getInstance().getReference().
-                                            child("Users" + "/" +
-                                                    user.getEmail() + "/" +
-                                                    "8" + "/" +
-                                                    "my_test.jpg");
+                                            child("Users" +
+                                                    "/" + user.getEmail() +
+                                                    "/8" + // here we will put the task ID
+                                                    "/" + System.currentTimeMillis() +
+                                                    "/captured_" +
+                                                    RoboCodeSettings.getInstance().a +
+                                                    RoboCodeSettings.getInstance().b +
+                                                    RoboCodeSettings.getInstance().c +
+                                                    RoboCodeSettings.getInstance().d + ".jpg");
 
                                     try {
                                         InputStream stream = new FileInputStream(new File(pictureUrl));
