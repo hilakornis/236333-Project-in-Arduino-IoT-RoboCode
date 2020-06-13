@@ -258,6 +258,13 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     }
     const code = jsqr_1.default(clampedArray, width, height);
 
+
+    //finding the index:
+    let remove_from_end = "captured_1234";
+    let last_digit_index = fileName.length-remove_from_end;
+    let first_digit_index = fileName.length - remove_from_end - 1;
+    console.log('this is the index of the cropped image: '+fileName.substring(first_digit_index,last_digit_index));
+
         if (code) {
             console.log("Found QR code", code);
 
@@ -265,6 +272,12 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
         // var usersRef = ref.child(current_user);
             var original_pic_name = fileName.substring(7, fileName.length - 4)
             console.log('This is the original pic name: ' + original_pic_name);
+
+            //finding the index:
+            let remove_from_end = "captured_1234";
+            let last_digit_index = fileName.length-remove_from_end;
+            let first_digit_index = fileName.length - remove_from_end - 1;
+            console.log('this is the index of the cropped image: '+fileName.substring(first_digit_index,last_digit_index));
 
             var usersRef = ref.child(original_pic_name);
             usersRef.child(fileName.substring(0, fileName.length - 4)).set( {
