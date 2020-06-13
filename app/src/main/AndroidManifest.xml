@@ -3,10 +3,12 @@
     package="com.example.a236333_hw3">
     <!-- Adding Camera & Write to external permission -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- Allows access to the flashlight -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher2"

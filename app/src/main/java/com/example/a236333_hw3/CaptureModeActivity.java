@@ -10,12 +10,14 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,6 +80,15 @@ public class CaptureModeActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture_mode);
 
+
+        /*try {
+            CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            String cameraId = camManager.getCameraIdList()[0]; // Usually front camera is at 0 position.
+            camManager.setTorchMode(cameraId, true);
+        } catch (Exception ex) {
+            showToast("Error with start flash :( ... message: " + ex.getMessage());
+        }*/
+
         // Make sure I have the right permissions
         checkPermissions();
 
@@ -124,6 +135,8 @@ public class CaptureModeActivity extends AppCompatActivity implements
                 CaptureModeActivity.this.finish();
             }
         });
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Make sure that the screen will not get locked
         PowerManager powerManager = (PowerManager)this.getBaseContext().getSystemService(Context.POWER_SERVICE);
@@ -177,6 +190,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
      */
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
+
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
             showToast("Done capturing all photos!");
             return;
@@ -212,11 +226,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                                     "/" + user.getEmail() +
                                                     "/8" + // here we will put the task ID
                                                     "/" + System.currentTimeMillis() +
-                                                    "/captured_" +
-                                                    RoboCodeSettings.getInstance().a +
-                                                    RoboCodeSettings.getInstance().b +
-                                                    RoboCodeSettings.getInstance().c +
-                                                    RoboCodeSettings.getInstance().d + ".jpg");
+                                                    "/captured_" + pairingCode + ".jpg");
 
                                     try {
                                         InputStream stream = new FileInputStream(new File(pictureUrl));
@@ -258,9 +268,11 @@ public class CaptureModeActivity extends AppCompatActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             CaptureModeActivity.this.showToast("Starting capture!");
+
             try {
                 APictureCapturingService pictureService =
                         PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
+
                 pictureService.startCapturing(CaptureModeActivity.this);
             }
             catch (Exception ex) {
@@ -296,6 +308,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         FirebaseMessaging.getInstance().unsubscribeFromTopic("CaptureRequests_"+pairingCode);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         try{
             wakeLock.release();
         } catch (Exception ex) {}
