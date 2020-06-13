@@ -181,7 +181,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
             // Generate a croped using ImageMagick.
             const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', basic_qr_size + "+" +
-                (go_left + 475 * QR_coulume) + "+" + (go_down + 475 * QR_line), current_location
+                (go_left + 480 * QR_coulume) + "+" + (go_down + 470 * QR_line), current_location
             ], {
                 capture: ['stdout', 'stderr']
             });
@@ -273,8 +273,8 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     // const width = 100; //in pixels
     // const height = 100; //in pixels
 
-    const width = 375; //in pixels
-    const height = 390; //in pixels
+    const width = 100; //in pixels
+    const height = 100; //in pixels
 
     const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
     const jpegData = fs.readFileSync(tempLocalFile);
@@ -289,31 +289,31 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
 
     //finding the index:
     let remove_from_end = "captured_1234";
-    let last_digit_index = fileName.length-remove_from_end;
+    let last_digit_index = fileName.length - remove_from_end;
     let first_digit_index = fileName.length - remove_from_end - 1;
-    console.log('this is the index of the cropped image: '+fileName.substring(first_digit_index,last_digit_index));
+    console.log('this is the index of the cropped image: ' + fileName.substring(first_digit_index, last_digit_index));
 
-        if (code) {
-            console.log("Found QR code", code);
+    if (code) {
+        console.log("Found QR code", code);
 
         // var usersRef = ref.child("current_level");
         // var usersRef = ref.child(current_user);
-            var original_pic_name = fileName.substring(7, fileName.length - 4)
-            console.log('This is the original pic name: ' + original_pic_name);
+        var original_pic_name = fileName.substring(7, fileName.length - 4)
+        console.log('This is the original pic name: ' + original_pic_name);
 
-            //finding the index:
-            let remove_from_end = "captured_1234";
-            let last_digit_index = fileName.length-remove_from_end;
-            let first_digit_index = fileName.length - remove_from_end - 1;
-            console.log('this is the index of the cropped image: '+fileName.substring(first_digit_index,last_digit_index));
+        //finding the index:
+        let remove_from_end = "captured_1234";
+        let last_digit_index = fileName.length - remove_from_end;
+        let first_digit_index = fileName.length - remove_from_end - 1;
+        console.log('this is the index of the cropped image: ' + fileName.substring(first_digit_index, last_digit_index));
 
-            var usersRef = ref.child(original_pic_name);
-            usersRef.child(fileName.substring(0, fileName.length - 4)).set( {
-                    fileName: fileName,
-                    TypeMessage: "QR code is",
-                    QR_Code: code.data,
-                    Index: "1"//todo later change
-            });
+        var usersRef = ref.child(original_pic_name);
+        usersRef.child(fileName.substring(0, fileName.length - 4)).set({
+            fileName: fileName,
+            TypeMessage: "QR code is",
+            QR_Code: code.data,
+            Index: "1" //todo later change
+        });
 
 
 
