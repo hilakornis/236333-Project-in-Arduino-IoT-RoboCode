@@ -169,7 +169,8 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     promises = [];
     const temp_crop_pic_location = [];
     const final_pic_location = [];
-    var line = [0, 1, 2, 3, 4, 5, 6, 7];
+    // var line = [0, 1, 2, 3, 4, 5, 6, 7];
+    var line = [5, 6];
     var colume = [0, 1, 2, 3, 4, 5];
     line.forEach(QR_line => {
         colume.forEach(QR_coulume => {
@@ -255,8 +256,12 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     await mkdirp(tempLocalDir);
     await file.download({ destination: tempLocalFile });
     console.log('The file has been downloaded to', tempLocalFile);
-    const width = 100; //in pixels
-    const height = 100; //in pixels
+    // const width = 100; //in pixels
+    // const height = 100; //in pixels
+
+    const width = 375; //in pixels
+    const height = 390; //in pixels
+
     const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
     const jpegData = fs.readFileSync(tempLocalFile);
     const rawImageData = jpeg.decode(jpegData);
