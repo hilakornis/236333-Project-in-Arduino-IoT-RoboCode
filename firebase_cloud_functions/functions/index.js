@@ -109,7 +109,6 @@ exports.makeUppercase = functions.database.ref('/pre_pic/{pushId}/original')
     });
 
 
-
 exports.generateCropedImage = functions.storage.object().onFinalize(async(object) => {
     // File and directory paths.
     const filePath = object.name;
@@ -120,7 +119,11 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     const tempLocalFile = path.join(os.tmpdir(), filePath);
     const tempLocalDir = path.dirname(tempLocalFile);
 
-    var QR_grid = ["100X100+0+0", "100X100+120+0", "100X100+0+120", "100X100+110+110"];
+    var basic_qr_size = "375X390";
+    var go_down = 945;
+    var go_left = 88;
+
+    //var QR_grid = ["385X392+88+950", "100X100+120+0", "100X100+0+120", "100X100+110+110"];
 
 
     // Exit if this is triggered on a file that is not an image.
@@ -155,22 +158,28 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     var i = 0;
     promises = [];
     const temp_crop_pic_location = [];
-    const final_pic_location = []
-    QR_grid.forEach(QR_position => {
-        cropedFilePath = path.normalize(path.join(fileDir, `${croped_PREFIX}${i}_${fileName}`));
-        current_location = path.join(os.tmpdir(), cropedFilePath);
+    const final_pic_location = [];
+    var line = [0, 1, 2, 3, 4, 5, 6, 7];
+    var colume = [0, 1, 2, 3, 4, 5];
+    line.forEach(QR_line => {
+        colume.forEach(QR_coulume => {
+            cropedFilePath = path.normalize(path.join(fileDir, `${croped_PREFIX}${i}_${fileName}`));
+            current_location = path.join(os.tmpdir(), cropedFilePath);
 
-        final_pic_location.push(cropedFilePath)
-        temp_crop_pic_location.push(current_location);
+            final_pic_location.push(cropedFilePath)
+            temp_crop_pic_location.push(current_location);
 
-        // Generate a croped using ImageMagick.
-        const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', QR_position, current_location], {
-            capture: ['stdout', 'stderr']
+            // Generate a croped using ImageMagick.
+            const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', basic_qr_size + "+" +
+                (go_left + 475 * QR_coulume) + "+" + (go_down + 475 * QR_line), current_location
+            ], {
+                capture: ['stdout', 'stderr']
+            });
+            //await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
+            promises.push(p);
+            console.log('croped image created at', current_location);
+            i++;
         });
-        //await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
-        promises.push(p);
-        console.log('croped image created at', current_location);
-        i++;
     });
 
     // Wait for all pictures to be croped 
