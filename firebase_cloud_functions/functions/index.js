@@ -227,6 +227,7 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     console.log('This is the filePath: ' + filePath);
     console.log('This is the fileDir: ' + fileDir);
     console.log('This is the fileName: ' + fileName);
+    console.log('This is the fileName without : ' + fileName.substring(0, fileName.length - 4));
     const tempLocalFile = path.join(os.tmpdir(), filePath);
     const tempLocalDir = path.dirname(tempLocalFile);
     // // Cloud Storage files.
@@ -250,11 +251,10 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
         console.log("Found QR code", code);
 
         var usersRef = ref.child("current_level");
-        usersRef.set({
-            fileName: {
+        usersRef.child(fileName.substring(0, fileName.length - 4)).set( {
+                fileName: fileName,
                 TypeMessage: "QR code is",
-                QR_Code: code
-            }
+                QR_Code: code.data
         });
 
 
