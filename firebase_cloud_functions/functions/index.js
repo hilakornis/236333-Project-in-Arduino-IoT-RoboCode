@@ -17,6 +17,11 @@ const gcs = require('@google-cloud/storage');
 const jpeg = require("jpeg-js");
 const jsqr_1 = require("jsqr");
 
+var db = admin.database();
+// var ref = db.ref("server/saving-data/fireblog");
+var ref = db.ref("users");
+
+
 // [END import]
 
 // Thumbnail prefix added to file names.
@@ -24,6 +29,11 @@ const croped_PREFIX = 'croped_';
 
 // Retrieve Firebase Messaging object.
 const messaging = admin.messaging();
+
+// // Create a root reference
+// var storageRef = firebase.storage().ref();
+
+
 
 exports.notifyCaptureImageReq = functions.firestore
     .document('requestMessages/{message}')
@@ -224,8 +234,19 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
         return;
     }
     console.log('This is the filePath: ' + filePath);
+    //Users/hila.kornis2@gmail.com
+    console.log('This is the Users: ' + filePath);
     console.log('This is the fileDir: ' + fileDir);
+
+    //this is the current user:
+    // var str = fileDir.substring(6, fileDir.length);
+    // var current_user = str.replace(/\.|\$|\[|\]/g, "_");
+    // console.log('This is the current user: ' + current_user);
+
+
+
     console.log('This is the fileName: ' + fileName);
+    console.log('This is the fileName without : ' + fileName.substring(0, fileName.length - 4));
     const tempLocalFile = path.join(os.tmpdir(), filePath);
     const tempLocalDir = path.dirname(tempLocalFile);
     // // Cloud Storage files.
@@ -245,8 +266,67 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
         clampedArray[i] = rawImageData.data[i];
     }
     const code = jsqr_1.default(clampedArray, width, height);
-    if (code) {
-        console.log("Found QR code", code);
+
+
+    //finding the index:
+    let remove_from_end = "captured_1234";
+    let last_digit_index = fileName.length-remove_from_end;
+    let first_digit_index = fileName.length - remove_from_end - 1;
+    console.log('this is the index of the cropped image: '+fileName.substring(first_digit_index,last_digit_index));
+
+        if (code) {
+            console.log("Found QR code", code);
+
+        // var usersRef = ref.child("current_level");
+        // var usersRef = ref.child(current_user);
+            var original_pic_name = fileName.substring(7, fileName.length - 4)
+            console.log('This is the original pic name: ' + original_pic_name);
+
+            //finding the index:
+            let remove_from_end = "captured_1234";
+            let last_digit_index = fileName.length-remove_from_end;
+            let first_digit_index = fileName.length - remove_from_end - 1;
+            console.log('this is the index of the cropped image: '+fileName.substring(first_digit_index,last_digit_index));
+
+            var usersRef = ref.child(original_pic_name);
+            usersRef.child(fileName.substring(0, fileName.length - 4)).set( {
+                    fileName: fileName,
+                    TypeMessage: "QR code is",
+                    QR_Code: code.data,
+                    Index: "1"//todo later change
+            });
+
+
+
+        // const fileName2 = 'test002.txt';
+        //
+        // const metadata2 = {
+        //     contentType: contentType,
+        //     metadata: {
+        //         firebaseStorageDownloadTokens: uuid
+        //     },
+        //     // To enable Client-side caching you can set the Cache-Control headers here. Uncomment below.
+        //     'Cache-Control': 'public,max-age=3600'
+        // };
+        //
+        // const tempFilePath = path.join(os.tmpdir(), fileName2);
+        // console.log({ tempFilePath });
+        // // const content = 'id,firstname,lastname\n1,John,Doe\n2,Jane,Doe';
+        // const content = 'code is: ' + code;
+        // fs.writeFileSync(tempFilePath, content);
+        // // const bucket = admin.storage().bucket(Object.bucket);
+        // // const bucket2 = await admin.storage().bucket();
+        // //
+        // // const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
+        // await bucket.upload(tempFilePath, {            destination: `exports/${fileName2}`,   uploadType: "text", metadata: metadata2      });
+        // // Raw string is the default if no format is provided
+        // // var message = 'This is my message.';
+        // // let message = 'This is my message.';
+        // // ref.putString(message).then(function(snapshot) {
+        // //     console.log('Uploaded a raw string!');
+        // // });
+
+
     }
     if (!code) {
         console.log("Not found any");
