@@ -169,7 +169,6 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     promises = [];
     const temp_crop_pic_location = [];
     const final_pic_location = [];
-    // var line = [0, 1, 2, 3, 4, 5, 6, 7];
     var line = [5, 6];
     var colume = [0, 1, 2, 3, 4, 5];
     line.forEach(QR_line => {
@@ -192,6 +191,21 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
             i++;
         });
     });
+
+    await Promise.all(promises)
+
+    promises = [];
+    i = 0;
+
+    // resize all pictures
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
+            capture: ['stdout', 'stderr']
+        });
+        promises.push(p);
+        console.log('resized picture at ', current_location);
+        i++;
+    })
 
     // Wait for all pictures to be croped 
     await Promise.all(promises)
