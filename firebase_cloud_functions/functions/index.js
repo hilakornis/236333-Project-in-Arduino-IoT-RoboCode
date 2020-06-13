@@ -230,9 +230,9 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     console.log('This is the fileDir: ' + fileDir);
 
     //this is the current user:
-    var str = fileDir.substring(6, fileDir.length);
-    var current_user = str.replace(/\.|\$|\[|\]/g, "_");
-    console.log('This is the current user: ' + current_user);
+    // var str = fileDir.substring(6, fileDir.length);
+    // var current_user = str.replace(/\.|\$|\[|\]/g, "_");
+    // console.log('This is the current user: ' + current_user);
 
 
 
@@ -259,15 +259,20 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     const code = jsqr_1.default(clampedArray, width, height);
 
         if (code) {
-        console.log("Found QR code", code);
+            console.log("Found QR code", code);
 
         // var usersRef = ref.child("current_level");
-        var usersRef = ref.child(current_user);
-        usersRef.child(fileName.substring(0, fileName.length - 4)).set( {
-                fileName: fileName,
-                TypeMessage: "QR code is",
-                QR_Code: code.data
-        });
+        // var usersRef = ref.child(current_user);
+            var original_pic_name = fileName.substring(7, fileName.length - 4)
+            console.log('This is the original pic name: ' + original_pic_name);
+
+            var usersRef = ref.child(original_pic_name);
+            usersRef.child(fileName.substring(0, fileName.length - 4)).set( {
+                    fileName: fileName,
+                    TypeMessage: "QR code is",
+                    QR_Code: code.data,
+                    Index: "1"//todo later change
+            });
 
 
 
