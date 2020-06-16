@@ -17,9 +17,13 @@ const gcs = require('@google-cloud/storage');
 const jpeg = require("jpeg-js");
 const jsqr_1 = require("jsqr");
 
+
+const jsQR = require("jsqr");
+
 var db = admin.database();
 // var ref = db.ref("server/saving-data/fireblog");
 var ref = db.ref("users");
+
 
 
 // [END import]
@@ -123,7 +127,7 @@ exports.makeUppercase = functions.database.ref('/pre_pic/{pushId}/original')
 
 
 exports.newGenerateCropedImage = functions.https.onRequest(async(req, res) => {
-    const filePath = req.text.toString()
+    const filePath = req.query.text
     console.log('file path is: ' + filePath)
     const bucket = admin.storage().bucket();
     const file = bucket.file(filePath);
@@ -286,7 +290,7 @@ exports.newGenerateCropedImage = functions.https.onRequest(async(req, res) => {
 
 
 
-/*
+
 exports.generateCropedImage = functions.storage.object().onFinalize(async(object) => {
     // File and directory paths.
     const filePath = object.name;
@@ -381,16 +385,45 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     promises = [];
     i = 0;
 
-    // upload pics from temp location to directory
+    const width = 100; //in pixels
+    const height = 100; //in pixels
+
+
+    const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
+    MAX_ARRAY_LENGTH = 2000000;
+
     temp_crop_pic_location.forEach(current_temp_location => {
-        const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
-        promises.push(p)
-        console.log('croped uploaded to Storage at', final_pic_location[i]);
+
+        let jpegData = fs.readFileSync(current_temp_location);
+        let rawImageData = jpeg.decode(jpegData);
+        let clampedArray = new Uint8ClampedArray(rawImageData.data.length);
+        let j;
+        for (j = 0; j < rawImageData.data.length; j++) {
+            clampedArray[j] = rawImageData.data[j];
+        }
+
+        const code = jsQR(clampedArray, width, height);
+
+        if (code) {
+            console.log("Found QR code in block " + i + " ", code);
+        } else {
+            console.log("Couldn't find QR code in block " + i);
+        }
         i++;
     })
 
-    // Wait for all croped pics to be uploaded
-    await Promise.all(promises)
+    i = 0;
+
+    // // upload pics from temp location to directory
+    // temp_crop_pic_location.forEach(current_temp_location => {
+    //     const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
+    //     promises.push(p)
+    //     console.log('croped uploaded to Storage at', final_pic_location[i]);
+    //     i++;
+    // })
+
+    // // Wait for all croped pics to be uploaded
+    // await Promise.all(promises)
 
     // Once the image has been uploaded delete the local files to free up disk space.
     // temp_crop_pic_location.forEach(current_temp_location => {
@@ -401,7 +434,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     return console.log('Function done');
 
 });
-
+/*
 exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     // File and directory paths.
     const filePath = object.name;
