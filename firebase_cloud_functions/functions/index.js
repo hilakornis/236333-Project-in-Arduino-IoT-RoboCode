@@ -119,6 +119,174 @@ exports.makeUppercase = functions.database.ref('/pre_pic/{pushId}/original')
     });
 
 
+//exports.sendEmailNotification = functions.testLab.testMatrix().onComplete((testMatrix) =>
+
+
+exports.newGenerateCropedImage = functions.https.onRequest(async(req, res) => {
+    const filePath = req.text.toString()
+    console.log('file path is: ' + filePath)
+    const bucket = admin.storage().bucket();
+    const file = bucket.file(filePath);
+    const fileDir = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+
+    const tempLocalFile = path.join(os.tmpdir(), filePath);
+    const tempLocalDir = path.dirname(tempLocalFile);
+
+    var basic_qr_size = "375X390";
+    var go_down = 945;
+    var go_left = 88;
+
+    //var QR_grid = ["385X392+88+950", "100X100+120+0", "100X100+0+120", "100X100+110+110"];
+
+
+    // Exit if this is triggered on a file that is not an image.
+    if (!file.contentType.startsWith('image/')) {
+        return console.log('This is not an image.');
+    }
+
+    // Exit if the image is already a croped.
+    if (fileName.startsWith('croped_')) {
+        return console.log('Already a croped pic.');
+    }
+
+    const metadata = {
+        contentType: contentType,
+        metadata: {
+            firebaseStorageDownloadTokens: uuid
+        },
+        // To enable Client-side caching you can set the Cache-Control headers here. Uncomment below.
+        'Cache-Control': 'public,max-age=3600'
+    };
+
+    // Create the temp directory where the storage file will be downloaded.
+    await mkdirp(tempLocalDir)
+        // Download file from bucket.
+    await file.download({ destination: tempLocalFile });
+    console.log('The file has been downloaded to', tempLocalFile);
+
+    var i = 0;
+    promises = [];
+    const temp_crop_pic_location = [];
+    const final_pic_location = [];
+    var line = [5, 6];
+    var colume = [0, 1, 2, 3, 4, 5];
+    line.forEach(QR_line => {
+        colume.forEach(QR_coulume => {
+            cropedFilePath = path.normalize(path.join(fileDir, `${croped_PREFIX}${i}_${fileName}`));
+            current_location = path.join(os.tmpdir(), cropedFilePath);
+
+            final_pic_location.push(cropedFilePath)
+            temp_crop_pic_location.push(current_location);
+
+            // Generate a croped using ImageMagick.
+            const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', basic_qr_size + "+" +
+                (go_left + 480 * QR_coulume) + "+" + (go_down + 470 * QR_line), current_location
+            ], {
+                capture: ['stdout', 'stderr']
+            });
+            //await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
+            promises.push(p);
+            console.log('croped image created at', current_location);
+            i++;
+        });
+    });
+
+    await Promise.all(promises)
+
+    promises = [];
+    i = 0;
+
+    // resize all pictures
+
+
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
+            capture: ['stdout', 'stderr']
+        });
+        promises.push(p);
+        console.log('resized picture at ', current_location);
+        i++;
+    })
+
+    // Wait for all pictures to be croped 
+    await Promise.all(promises)
+
+    promises = [];
+    i = 0;
+
+    const width = 100; //in pixels
+    const height = 100; //in pixels
+
+    const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
+    let jpegData, rawImageData, code
+
+    temp_crop_pic_location.forEach(current_temp_location => {
+        jpegData = fs.readFileSync(current_temp_location);
+        rawImageData = jpeg.decode(jpegData);
+        let clampedArray = new Uint8ClampedArray(rawImageData.data.length);
+        let j;
+        for (j = 0; j < rawImageData.data.length; j++) {
+            clampedArray[j] = rawImageData.data[j];
+        }
+        code = jsqr_1.default(clampedArray, width, height);
+
+        if (code) {
+            console.log("Found QR code", code);
+
+            var original_pic_name = fileName.substring(0, fileName.length - 4)
+            console.log('This is the original pic name: ' + original_pic_name);
+
+            var usersRef = ref.child(original_pic_name);
+            usersRef.child(fileName.substring(0, fileName.length - 4)).set({
+                fileName: fileName,
+                TypeMessage: "QR code is",
+                QR_Code: code.data,
+                Index: i //todo later change
+            });
+        } else {
+            console.log("Not found any");
+        }
+        i++;
+    })
+
+
+    // upload pics from temp location to directory
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
+        promises.push(p)
+        console.log('croped uploaded to Storage at', final_pic_location[i]);
+        i++;
+    })
+
+    // Wait for all croped pics to be uploaded
+    await Promise.all(promises)
+
+    // Once the image has been uploaded delete the local files to free up disk space.
+    // temp_crop_pic_location.forEach(current_temp_location => {
+    //     fs.unlinkSync(current_temp_location);
+    // })
+    // fs.unlinkSync(tempLocalFile);
+
+    return console.log('Function done');
+
+
+    // Starting reading QR codes
+
+});
+
+// exports.newQrReader = functions.onComplete((newGenerateCropedImage) => {
+//     console.log('STARTED QR READER!!!');
+//     const final_pic_location = newGenerateCropedImage.final_pic_location;
+
+//     final_pic_location.forEach(location => {
+//         console.log("location " + i + "in " + location);
+//     })
+// });
+
+
+
+/*
 exports.generateCropedImage = functions.storage.object().onFinalize(async(object) => {
     // File and directory paths.
     const filePath = object.name;
@@ -352,7 +520,7 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
     }
     // create .txt file called 'final_fileName', which will contain the qr code , or 0 if no code
     fs.unlinkSync(tempLocalFile);
-});
+}); */
 
 // Create function which couts the 'finish_...'.txt files, and if count == 48' creates string,
 // sends to LAVA, and delete all .txt files
