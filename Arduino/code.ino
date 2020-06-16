@@ -1,33 +1,31 @@
-#include <SoftwareSerial.h>
- 
-// Initializing communication ports
+//#include <SoftwareSerial.h>
 
 // motors
-const int rightBackward = 2;
-const int rightForward = 3;
-const int leftBackward = 4;
-const int leftForward = 5;
+#define rightBackward 22
+#define rightForward 24
+#define leftBackward 26
+#define leftForward 28
 
-// COlor sensor
-const int clrS0 = 6;
-const int clrS1 = 7;
-const int clrS2 = 8;
-const int clrS3 = 9;
-const int clrOut = 12;
+// Color sensor
+#define clrS0 30
+#define clrS1 32
+#define clrS2 34
+#define clrS3 36
+#define clrOut 38
+
+// Lift up-down
+#define lifterUp 42
+#define lifterDown 44
+
+// log
+#define ledPin 13
+#define printRGB true
+#define printMSG false
 
 // Stores frequency read by the photodiodes
 int redFrequency = 0;
 int greenFrequency = 0;
 int blueFrequency = 0;
-
-
-// bluetooth
-const int inpt = 10;
-const int outpt = 11;
-SoftwareSerial hc06(outpt, inpt); // TX/RX pins
-
-#define ledPin 13
-#define printRGB false
 
  // free style
  int freestyle = 0;
@@ -41,58 +39,76 @@ void setup() {
   pinMode(clrS3, OUTPUT);
   pinMode(clrOut, INPUT);
   
-  // Setting the sensorOut as an input
-  pinMode(outpt, INPUT);
-  pinMode(inpt, OUTPUT);
-
-  //Putting S0/S1 on HIGH/HIGH levels means the output frequency scalling is at 100%
-  //LOW/LOW is off HIGH/LOW is 20% and LOW/HIGH is  2%
+  // --- COLOR DETECTION -----------------------------
+  // Put S0/S1 on HIGH/HIGH levels means the output
+  //  frequency scalling is at 100% LOW/LOW is off 
+  //  HIGH/LOW is 20% and LOW/HIGH is  2%
   digitalWrite(clrS0,HIGH);
   digitalWrite(clrS1,LOW);
   
-   // Begins serial communication 
-  Serial.begin(9600);
-  
   // --- MOTORS ---------------------------------------
   pinMode(leftBackward, OUTPUT);
- pinMode(leftForward, OUTPUT);
+  pinMode(leftForward, OUTPUT);
   pinMode(rightBackward, OUTPUT);
-   pinMode(rightForward, OUTPUT);
+  pinMode(rightForward, OUTPUT);
 
   // --- BLUETOOTH ------------------------------------
+  Serial2.begin(9600);
+  
+  // --- LOGING ---------------------------------------
+  Serial.begin(9600);  
   pinMode(ledPin, OUTPUT);
-  hc06.begin(9600);
 }
 
 void loop() {
-  if (hc06.available()){
-    int val = hc06.read();
-    Serial.print((char)val);
-    if      (val == '1') {
+  if (Serial2.available() > 0){
+    int val = Serial2.read();
+    if (printMSG) Serial.print("got ");
+    if (printMSG) Serial.print((char)val);
+    if (printMSG) Serial.print("!!!\n");
+    
+    if (val == '1') {
        // start free style walking
+      if (printMSG) Serial.print("1!!!\n");
        freestyle = 1;
        goForward();  
     }
     else if (val == '5') {
+      if (printMSG) Serial.print("5!!!\n");
       goForward();
       freestyle = 0;
     }
     else if (val == '6') { 
+      if (printMSG) Serial.print("6!!!\n");
       goBackward();
       freestyle = 0;
     }
     else if (val == '7') {
+      if (printMSG) Serial.print("7!!!\n");
       TurnLeft();
       freestyle = 0;
     }
     else if (val == '8') { 
+      if (printMSG) Serial.print("8!!!\n");
       TurnRight();
       freestyle = 0;
     }
+    else if (val == 'U') { 
+      if (printMSG) Serial.print("U!!!\n");
+      forkliftUp();
+      freestyle = 0;
+    }
+    else if (val == 'D') { 
+      if (printMSG) Serial.print("D!!!\n");
+      forkliftDown();
+      freestyle = 0;
+    }
     else if (val == '9') { 
+      if (printMSG) Serial.print("9!!!\n");
       dontMove();
       freestyle = 0;
     } else {
+      if (printMSG) Serial.print("else!!!\n");
       digitalWrite(ledPin , HIGH);
       delay(100);
       digitalWrite(ledPin , LOW);
@@ -172,6 +188,18 @@ void readColor(){
   
 }
 
+void forkliftUp()
+{
+  digitalWrite(lifterUp , HIGH);
+  digitalWrite(lifterDown , LOW);
+}
+
+void forkliftDown()
+{
+  digitalWrite(lifterUp , LOW);
+  digitalWrite(lifterDown , HIGH);
+}
+
 void goForward()
 {
   digitalWrite(leftForward , HIGH);
@@ -210,4 +238,6 @@ void dontMove()
   digitalWrite(leftBackward , LOW);
   digitalWrite(rightForward , LOW);
   digitalWrite(rightBackward , LOW);
+  digitalWrite(lifterUp , LOW);
+  digitalWrite(lifterDown , LOW);
 }

@@ -48,6 +48,8 @@ public class HomeFragment extends Fragment {
     final String LEFT_NS       = "8";
     final String FREE       = "1";
     final String STOP       = "9";
+    final String UP_NS      = "U";
+    final String DOWN_NS    = "D";
 
     Button connectBtn;
     Button backwardsBtn;
@@ -59,6 +61,9 @@ public class HomeFragment extends Fragment {
     Button leftNsBtn;
     Button rightNsBtn;
     Button freeBtn;
+
+    Button forkliftUpNsBtn;
+    Button forkliftDownNsBtn;
 
     TextView status;
 
@@ -109,6 +114,9 @@ public class HomeFragment extends Fragment {
         status          = v.findViewById(R.id.homeFragment_bluetoothStatus);
         freeBtn         = v.findViewById(R.id.homeFragment_freeStyle);
 
+        forkliftUpNsBtn     = v.findViewById(R.id.homeFragment_bluetoothLiftUp_NS);
+        forkliftDownNsBtn   = v.findViewById(R.id.homeFragment_bluetoothLiftDown_NS);
+
         bta = BluetoothAdapter.getDefaultAdapter();
 
         //if bluetooth is not enabled then create Intent for user to turn it on
@@ -157,6 +165,22 @@ public class HomeFragment extends Fragment {
             }
         });
 
+
+        forkliftUpNsBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                handle_keyDownUp(event.getAction(), UP_NS);
+                return false;
+            }
+        });
+
+        forkliftDownNsBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                handle_keyDownUp(event.getAction(), DOWN_NS);
+                return false;
+            }
+        });
 
         // Bluetooth code <-------------------------------------------------------------------------
 

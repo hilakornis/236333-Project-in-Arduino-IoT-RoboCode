@@ -213,11 +213,9 @@ public class CaptureModeActivity extends AppCompatActivity implements
             if (pictureData != null && pictureUrl != null) {
 
                 FirebaseUser user = RoboCodeSettings.getInstance().user;
-                final String path = "Users" +
-                        "/" + user.getEmail() +
+                final String path = "Users" + "/" + user.getEmail() +
                         "/8" + // here we will put the task ID
-                        "/" + System.currentTimeMillis() +
-                        "/captured_" + pairingCode + ".jpg";
+                        "/" + System.currentTimeMillis() + "/captured_" + pairingCode + ".jpg";
 
                 runOnUiThread(
                         new Runnable() {
@@ -247,29 +245,30 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                                         Uri downloadUrl = taskSnapshot.getUploadSessionUri();
                                                         showToast("Image was uploaded");
 
-                                                        // Create the arguments to the callable function.
+                                                     /*    // Create the arguments to the callable function.
                                                         Map<String, Object> data = new HashMap<>();
                                                         data.put("text", path);
                                                         data.put("push", true);
 
-                                                        try {
-                                                            FirebaseFunctions.getInstance().
-                                                                    getHttpsCallable("newGenerateCropedImage")
-                                                                    .call(data)
-                                                                    .continueWith(new Continuation<HttpsCallableResult, String>() {
-                                                                        @Override
-                                                                        public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                                                                            // This continuation runs on either success or failure, but if the task
-                                                                            // has failed then getResult() will throw an Exception which will be
-                                                                            // propagated down.
-                                                                            String result = (String) task.getResult().getData();
-                                                                            showToast("http function was called");
-                                                                            return result;
-                                                                        }
-                                                                    });
-                                                        }  catch (Exception e) {
-                                                            showToast("Failure! http call error!");
-                                                        }
+                                                       showToast("calling http function!");
+
+                                                        FirebaseFunctions.getInstance()
+                                                            .getHttpsCallable("newGenerateCropedImage")
+                                                            .call(data)
+                                                            .continueWith(new Continuation<HttpsCallableResult, String>() {
+                                                                @Override
+                                                                public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                                                                    String result;
+                                                                    try {
+                                                                        result = (String) task.getResult().getData();
+                                                                        showToast("http function was called");
+                                                                    }  catch (Exception e) {
+                                                                        showToast("Failure! http call error! message: " + e.getMessage());
+                                                                        result = "";
+                                                                    }
+                                                                    return result;
+                                                                }
+                                                            });*/
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
