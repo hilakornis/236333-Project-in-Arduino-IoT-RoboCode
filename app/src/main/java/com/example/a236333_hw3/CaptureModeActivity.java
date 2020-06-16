@@ -33,9 +33,13 @@ import com.example.a236333_hw3.Camera.APictureCapturingService;
 import com.example.a236333_hw3.Camera.PictureCapturingListener;
 import com.example.a236333_hw3.Camera.PictureCapturingServiceImpl;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -46,7 +50,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -205,6 +211,14 @@ public class CaptureModeActivity extends AppCompatActivity implements
     public void onCaptureDone(final String pictureUrl, final byte[] pictureData) {
         try {
             if (pictureData != null && pictureUrl != null) {
+
+                FirebaseUser user = RoboCodeSettings.getInstance().user;
+                final String path = "Users" +
+                        "/" + user.getEmail() +
+                        "/8" + // here we will put the task ID
+                        "/" + System.currentTimeMillis() +
+                        "/captured_" + pairingCode + ".jpg";
+
                 runOnUiThread(
                         new Runnable() {
                             @Override
@@ -219,14 +233,8 @@ public class CaptureModeActivity extends AppCompatActivity implements
 
                                     //this is image_uri
                                     // Alon :: Here I send the picture to shahaf's function
-                                    FirebaseUser user = RoboCodeSettings.getInstance().user;
                                     StorageReference riversRef =
-                                        FirebaseStorage.getInstance().getReference().
-                                            child("Users" +
-                                                    "/" + user.getEmail() +
-                                                    "/8" + // here we will put the task ID
-                                                    "/" + System.currentTimeMillis() +
-                                                    "/captured_" + pairingCode + ".jpg");
+                                        FirebaseStorage.getInstance().getReference().child(path);
 
                                     try {
                                         InputStream stream = new FileInputStream(new File(pictureUrl));
@@ -238,6 +246,30 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                                         // Get a URL to the uploaded content
                                                         Uri downloadUrl = taskSnapshot.getUploadSessionUri();
                                                         showToast("Image was uploaded");
+
+                                                        // Create the arguments to the callable function.
+                                                        Map<String, Object> data = new HashMap<>();
+                                                        data.put("text", path);
+                                                        data.put("push", true);
+
+                                                        try {
+                                                            FirebaseFunctions.getInstance().
+                                                                    getHttpsCallable("newGenerateCropedImage")
+                                                                    .call(data)
+                                                                    .continueWith(new Continuation<HttpsCallableResult, String>() {
+                                                                        @Override
+                                                                        public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                                                                            // This continuation runs on either success or failure, but if the task
+                                                                            // has failed then getResult() will throw an Exception which will be
+                                                                            // propagated down.
+                                                                            String result = (String) task.getResult().getData();
+                                                                            showToast("http function was called");
+                                                                            return result;
+                                                                        }
+                                                                    });
+                                                        }  catch (Exception e) {
+                                                            showToast("Failure! http call error!");
+                                                        }
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
