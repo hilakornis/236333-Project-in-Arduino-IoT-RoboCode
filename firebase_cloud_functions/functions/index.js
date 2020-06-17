@@ -366,18 +366,18 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
     await Promise.all(promises)
 
-    promises = [];
-    i = 0;
+    // promises = [];
+    // i = 0;
 
-    // resize all pictures
-    temp_crop_pic_location.forEach(current_temp_location => {
-        const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
-            capture: ['stdout', 'stderr']
-        });
-        promises.push(p);
-        console.log('resized picture at ', current_location);
-        i++;
-    })
+    // // resize all pictures
+    // temp_crop_pic_location.forEach(current_temp_location => {
+    //     const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
+    //         capture: ['stdout', 'stderr']
+    //     });
+    //     promises.push(p);
+    //     console.log('resized picture at ', current_location);
+    //     i++;
+    // })
 
     // Wait for all pictures to be croped 
     await Promise.all(promises)
@@ -385,8 +385,8 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     promises = [];
     i = 0;
 
-    const width = 100; //in pixels
-    const height = 100; //in pixels
+    const width = 375; //in pixels
+    const height = 390; //in pixels
 
 
     const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
