@@ -233,7 +233,9 @@ exports.newGenerateCropedImage = functions.https.onRequest(async(req, res) => {
         for (j = 0; j < rawImageData.data.length; j++) {
             clampedArray[j] = rawImageData.data[j];
         }
-        code = jsqr_1.default(clampedArray, width, height);
+
+        console.log("Tring to read QR code in box " + i);
+        code = jsqr_1(clampedArray, width, height);
 
         if (code) {
             console.log("Found QR code", code);
@@ -370,14 +372,14 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     // i = 0;
 
     // // resize all pictures
-    // temp_crop_pic_location.forEach(current_temp_location => {
-    //     const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
-    //         capture: ['stdout', 'stderr']
-    //     });
-    //     promises.push(p);
-    //     console.log('resized picture at ', current_location);
-    //     i++;
-    // })
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
+            capture: ['stdout', 'stderr']
+        });
+        promises.push(p);
+        console.log('resized picture at ', current_location);
+        i++;
+    })
 
     // Wait for all pictures to be croped 
     await Promise.all(promises)
@@ -385,27 +387,32 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     promises = [];
     i = 0;
 
-    const width = 375; //in pixels
-    const height = 390; //in pixels
+    const width = 100; //in pixels
+    const height = 100; //in pixels
 
 
     const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
+
     MAX_ARRAY_LENGTH = 2000000;
 
     temp_crop_pic_location.forEach(current_temp_location => {
 
-        let jpegData = fs.readFileSync(current_temp_location);
-        let rawImageData = jpeg.decode(jpegData);
-        let clampedArray = new Uint8ClampedArray(rawImageData.data.length);
-        let j;
-        for (j = 0; j < rawImageData.data.length; j++) {
+        let base64string = fs.readFileSync(current_temp_location)
+        const imageData = Buffer.from(base64string, 'base64');
+
+        var rawImageData = jpeg.decode(imageData);
+
+        var clampedArray = new Uint8ClampedArray(rawImageData.data.length);
+        for (var j = 0; j < rawImageData.data.length; j++) {
             clampedArray[j] = rawImageData.data[j];
         }
 
-        const code = jsQR(clampedArray, width, height);
+
+        console.log("Tring to read QR code in block " + i);
+        const code = jsQR(clampedArray, rawImageData.width, rawImageData.height);
 
         if (code) {
-            console.log("Found QR code in block " + i + " ", code);
+            console.log("Found QR code in block " + i + " ", code.data);
         } else {
             console.log("Couldn't find QR code in block " + i);
         }
