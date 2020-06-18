@@ -257,7 +257,7 @@ exports.QrReader = functions.storage.object().onFinalize(async(object) => {
         clampedArray[i] = rawImageData.data[i];
     }
     const code = jsqr_1.default(clampedArray, width, height);
-
+//
 
     //finding the index:
     let remove_from_end = "captured_1234";
