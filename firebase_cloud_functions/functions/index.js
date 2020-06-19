@@ -58,14 +58,12 @@ exports.notifyCaptureImageReq = functions.firestore
             // given to shahaf's function.
             var myMessage = {
                 data: {
-                    title: senderName + ' sent you a message.',
-                    message: message['senderId'],
-                    pairingCode: message['pairingCode'],
-                    taskId: message['taskId']
-
+                    title: message['senderId'],
+                    message: message['taskId']
                 },
                 topic: topic
             };
+
 
             // Alon ::
             // Here we send the message to devices subscribed to the provided topic.
@@ -84,6 +82,18 @@ exports.notifyCaptureImageReq = functions.firestore
 
 // Listens for new messages added to /messages/:pushId/original and creates an
 // uppercase version of the message to /messages/:pushId/uppercase
+exports.makeUppercase = functions.database.ref('/pre_pic/{pushId}/original')
+    .onCreate((snapshot, context) => {
+        // Grab the current value of what was written to the Realtime Database.
+        const original = snapshot.val();
+        console.log('Uppercasing', context.params.pushId, original);
+        const uppercase = original.toUpperCase();
+        // You must return a Promise when performing asynchronous tasks inside a Functions such as
+        // writing to the Firebase Realtime Database.
+        // Setting an "uppercase" sibling in the Realtime Database returns a Promise.
+        return snapshot.ref.parent.child('uppercase').set(uppercase);
+    });
+
 exports.makeUppercase = functions.database.ref('/pre_pic/{pushId}/original')
     .onCreate((snapshot, context) => {
         // Grab the current value of what was written to the Realtime Database.
@@ -148,6 +158,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     const final_pic_location = [];
     var line = [5, 6];
     var colume = [0, 1, 2, 3, 4, 5];
+    var code_values_array = [];
     line.forEach(QR_line => {
         colume.forEach(QR_coulume => {
             cropedFilePath = path.normalize(path.join(fileDir, `${croped_PREFIX}${i}_${fileName}`));
@@ -171,8 +182,8 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
     await Promise.all(promises)
 
-    // promises = [];
-    // i = 0;
+    promises = [];
+    i = 0;
 
     // // resize all pictures
     temp_crop_pic_location.forEach(current_temp_location => {
@@ -192,7 +203,6 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
     const width = 100; //in pixels
     const height = 100; //in pixels
-
 
     const Uint8ClampedArray = require('typedarray').Uint8ClampedArray;
 
@@ -216,8 +226,10 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
         if (code) {
             console.log("Found QR code in block " + i + " ", code.data);
+            code_values_array.push(code.data);
         } else {
             console.log("Couldn't find QR code in block " + i);
+            code_values_array.push("None");
         }
         i++;
     })
@@ -236,11 +248,49 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     // await Promise.all(promises)
 
     // Once the image has been uploaded delete the local files to free up disk space.
-    // temp_crop_pic_location.forEach(current_temp_location => {
-    //     fs.unlinkSync(current_temp_location);
-    // })
-    // fs.unlinkSync(tempLocalFile);
+    temp_crop_pic_location.forEach(current_temp_location => {
+        fs.unlinkSync(current_temp_location);
+    })
+    fs.unlinkSync(tempLocalFile);
 
-    return console.log('Function done');
+    var original_pic_name = fileName.substring(0, fileName.length - 4)
+    var senderName = original_pic_name.substring(0, original_pic_name.length - 18)
+    var topic_name = original_pic_name.substring(original_pic_name.length - 17, original_pic_name.length)
 
+    console.log('Original pic name is : ' + original_pic_name);
+    console.log('User name is : ' + senderName);
+    console.log('Topic name is : ' + topic_name);
+
+    var return_QR_values_string = '';
+
+    code_values_array.forEach(current_code => {
+        return_QR_values_string += current_code;
+        return_QR_values_string += ',';
+    });
+
+    return_QR_values_string = return_QR_values_string.substring(0, return_QR_values_string.length - 1);
+
+    console.log('The return value is: ' + return_QR_values_string);
+
+    var myMessage = {
+        data: {
+            title: "capture request result",
+            message: original_pic_name,
+            result: return_QR_values_string
+        },
+        topic: topic_name
+    };
+
+    console.log('Function done');
+
+    return admin.messaging().send(myMessage)
+        .then((response) => {
+            // Response is a message ID string.
+            // Here we can add a log to see how the sending went
+            console.log('Successfully sent result message:', response);
+            userDoc = admin.firestore().doc('Users/' + senderName).get();
+            return admin.firestore().doc("users/" + senderName).update({
+                registrationTokens: userDoc.get('registrationTokens')
+            })
+        });
 });
