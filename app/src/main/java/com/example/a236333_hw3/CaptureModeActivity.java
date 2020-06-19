@@ -218,7 +218,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
                         "Users"
                         + "/" + user.getEmail()
                         + "/" + taskId + "_" + System.currentTimeMillis()
-                        + "/" + user.getEmail() + "_" + "8" + "_captured_" + pairingCode + ".jpg";
+                        + "/" + user.getEmail() + "_" + taskId + "_captured_" + pairingCode + ".jpg";
 
                 runOnUiThread(
                         new Runnable() {
