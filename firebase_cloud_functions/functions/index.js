@@ -60,7 +60,8 @@ exports.notifyCaptureImageReq = functions.firestore
                 data: {
                     title: senderName + ' sent you a message.',
                     message: message['senderId'],
-                    pairingCode: message['pairingCode']
+                    pairingCode: message['pairingCode'],
+                    taskId: message['taskId']
 
                 },
                 topic: topic
