@@ -213,9 +213,12 @@ public class CaptureModeActivity extends AppCompatActivity implements
             if (pictureData != null && pictureUrl != null) {
 
                 FirebaseUser user = RoboCodeSettings.getInstance().user;
-                final String path = "Users" + "/" + user.getEmail() +
-                        "/8" + // here we will put the task ID
-                        "/" + System.currentTimeMillis() + "/captured_" + pairingCode + ".jpg";
+                final String taskId = "8";
+                final String path =
+                        "Users"
+                        + "/" + user.getEmail()
+                        + "/" + taskId + "_" + System.currentTimeMillis()
+                        + "/" + user.getEmail() + "_" + "8" + "_captured_" + pairingCode + ".jpg";
 
                 runOnUiThread(
                         new Runnable() {
