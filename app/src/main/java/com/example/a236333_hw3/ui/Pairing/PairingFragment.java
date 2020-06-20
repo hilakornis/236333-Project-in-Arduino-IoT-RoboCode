@@ -127,12 +127,14 @@ public class PairingFragment extends Fragment {
                 Calendar cal = Calendar.getInstance();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
                 String time = sdf.format(cal.getTime());
+                String taskId = String.format("%03d", 8);
 
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 Map<String, Object> docData = new HashMap<>();
                 docData.put("senderId",     RoboCodeSettings.getInstance().user.getEmail());
                 docData.put("recipientId",  RoboCodeSettings.getInstance().user.getEmail());
                 docData.put("senderName",   RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("taskId",       taskId);
                 docData.put("text",         "A picture of the board is required");
                 docData.put("date",         sdf.format(cal.getTime()));
                 String ps = ARand.getText().toString() +

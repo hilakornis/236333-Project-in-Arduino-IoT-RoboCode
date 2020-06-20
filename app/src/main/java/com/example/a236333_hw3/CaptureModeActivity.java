@@ -66,13 +66,11 @@ public class CaptureModeActivity extends AppCompatActivity implements
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
 
     private String pairingCode;
+    private String taskId = "008";
 
     // UI Elements ================================================================================
     private Button backButton;
     private TextView ARand, BRand, CRand, DRand;
-    // For Debug
-    //private ImageView uploadBackPhoto;
-    //private ImageView uploadFrontPhoto;
     // ============================================================================================
 
     // WakeLock Service ===========================================================================
@@ -86,15 +84,6 @@ public class CaptureModeActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture_mode);
 
-
-        /*try {
-            CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-            String cameraId = camManager.getCameraIdList()[0]; // Usually front camera is at 0 position.
-            camManager.setTorchMode(cameraId, true);
-        } catch (Exception ex) {
-            showToast("Error with start flash :( ... message: " + ex.getMessage());
-        }*/
-
         // Make sure I have the right permissions
         checkPermissions();
 
@@ -104,10 +93,6 @@ public class CaptureModeActivity extends AppCompatActivity implements
         CRand               = (TextView) findViewById(R.id.paringCodeRandC);
         DRand               = (TextView) findViewById(R.id.paringCodeRandD);
         backButton          = (Button)   findViewById(R.id.backToRegularModeBtn);
-
-        // Debug Features
-        //uploadBackPhoto     = (ImageView) findViewById(R.id.backIV);
-        //uploadFrontPhoto    = (ImageView) findViewById(R.id.frontIV);
 
         // Randomize a Pairing code
         this.runOnUiThread(new Runnable() {
@@ -131,7 +116,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
         LocalBroadcastManager.getInstance(this).
                 registerReceiver(messageHandler,
                         new IntentFilter("com.example.a236333_hw3_CaptureMessage"));
-        FirebaseMessaging.getInstance().subscribeToTopic("CaptureRequests_"+pairingCode);
+        FirebaseMessaging.getInstance().subscribeToTopic("CaptureRequests_" + pairingCode);
 
         // Clicking the back button will exit the activity
         // note that more actions are done in the OnDestroy
@@ -213,7 +198,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
             if (pictureData != null && pictureUrl != null) {
 
                 FirebaseUser user = RoboCodeSettings.getInstance().user;
-                final String taskId = "8";
+
                 final String path =
                         "Users"
                         + "/" + user.getEmail()
@@ -247,31 +232,6 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                                         // Get a URL to the uploaded content
                                                         Uri downloadUrl = taskSnapshot.getUploadSessionUri();
                                                         showToast("Image was uploaded");
-
-                                                     /*    // Create the arguments to the callable function.
-                                                        Map<String, Object> data = new HashMap<>();
-                                                        data.put("text", path);
-                                                        data.put("push", true);
-
-                                                       showToast("calling http function!");
-
-                                                        FirebaseFunctions.getInstance()
-                                                            .getHttpsCallable("newGenerateCropedImage")
-                                                            .call(data)
-                                                            .continueWith(new Continuation<HttpsCallableResult, String>() {
-                                                                @Override
-                                                                public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                                                                    String result;
-                                                                    try {
-                                                                        result = (String) task.getResult().getData();
-                                                                        showToast("http function was called");
-                                                                    }  catch (Exception e) {
-                                                                        showToast("Failure! http call error! message: " + e.getMessage());
-                                                                        result = "";
-                                                                    }
-                                                                    return result;
-                                                                }
-                                                            });*/
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
@@ -296,23 +256,27 @@ public class CaptureModeActivity extends AppCompatActivity implements
         }
     }
 
-
     // Capture Service ============================================================================
     private BroadcastReceiver messageHandler = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            CaptureModeActivity.this.showToast("Starting capture!");
+            String userId = intent.getExtras().get("title").toString();
+            taskId = intent.getExtras().get("message").toString();
+            CaptureModeActivity.this.showToast("Starting capture! task id is: " + taskId + ", userId is " + userId);
 
-            try {
-                APictureCapturingService pictureService =
-                        PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
+            if (RoboCodeSettings.getInstance().user.getEmail().equals(userId)) {
+                try {
+                    APictureCapturingService pictureService =
+                            PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
 
-                pictureService.startCapturing(CaptureModeActivity.this);
+                    pictureService.startCapturing(CaptureModeActivity.this);
+                } catch (Exception ex) {
+                    showToast("Error :( ... message: " + ex.getMessage());
+                }
+            } else {
+                showToast("not the same user - " + userId + " - ignore!");
             }
-            catch (Exception ex) {
 
-                showToast("Error :( ... message: " + ex.getMessage());
-            }
         }
     };
 
