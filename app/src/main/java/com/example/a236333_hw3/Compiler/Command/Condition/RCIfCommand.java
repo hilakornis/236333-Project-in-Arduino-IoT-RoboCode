@@ -1,5 +1,7 @@
 package com.example.a236333_hw3.Compiler.Command.Condition;
 
+import androidx.annotation.NonNull;
+
 import com.example.a236333_hw3.Compiler.Command.RCCommand;
 
 public class RCIfCommand extends RCCommand {
@@ -25,5 +27,13 @@ public class RCIfCommand extends RCCommand {
 
     public void setNextFalse(int nextFalse) {
         this.nextFalse = nextFalse;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return super.toString() +
+                "true index = " + getNextTrue() + "\n" +
+                "false index = " + getNextFalse() + "\n" ;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.a236333_hw3.Compiler.Command.Execute;
 
+import androidx.annotation.NonNull;
+
 public class RCExecuteRepsCommand extends RCExecuteCommand {
 
     private int numberOfRepsToExcute;
@@ -16,4 +18,10 @@ public class RCExecuteRepsCommand extends RCExecuteCommand {
         this.numberOfRepsToExcute = numberOfRepsToExcute;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return super.toString() +
+                "NumberOfReps = " + (getNumberOfRepsToExcute() == NOT_DEF ? "not defined" : getNumberOfRepsToExcute()) + "\n";
+    }
 }

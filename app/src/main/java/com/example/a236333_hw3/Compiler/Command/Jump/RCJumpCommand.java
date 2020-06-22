@@ -1,5 +1,7 @@
 package com.example.a236333_hw3.Compiler.Command.Jump;
 
+import androidx.annotation.NonNull;
+
 import com.example.a236333_hw3.Compiler.Command.RCCommand;
 
 public class RCJumpCommand extends RCCommand {
@@ -35,5 +37,14 @@ public class RCJumpCommand extends RCCommand {
 
     public void setNextIndex(int nextIndex) {
         this.nextIndex = nextIndex;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "======== JUMP COMMAND " + "\n" +
+                super.toString() +
+                "nextIndex = " + (nextIndex == NOT_DEF ? "not defined" : nextIndex) + "\n" +
+                "jumpId" + jumpId + "\n";
     }
 }

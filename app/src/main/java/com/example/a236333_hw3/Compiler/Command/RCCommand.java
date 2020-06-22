@@ -1,5 +1,7 @@
 package com.example.a236333_hw3.Compiler.Command;
 
+import androidx.annotation.NonNull;
+
 public class RCCommand {
 
     public final int NOT_DEF = -1;
@@ -56,5 +58,15 @@ public class RCCommand {
 
     public void setLineIndex(int lineIndex) {
         this.lineIndex = lineIndex;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "commandIndex = " + getCommandIndex() + "\n" +
+                "spinalIndex = " + getSpinalIndex()  + "\n" +
+                "lineIndex = " + getLineIndex()  + "\n" +
+                "length = " + getLength()  + "\n" +
+                "reachable = " + (isReachable() ? "yes" : "no") + "\n";
     }
 }
