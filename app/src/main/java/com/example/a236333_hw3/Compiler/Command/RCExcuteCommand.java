@@ -1,8 +1,10 @@
-package com.example.a236333_hw3.Compiler;
+package com.example.a236333_hw3.Compiler.Command;
+
+import com.example.a236333_hw3.Compiler.QREnums;
 
 public class RCExcuteCommand extends RCCommand {
 
-    private QREnums     cmd;
+    private QREnums cmd;
     private int         numberOfRepsToExcute;
     private int         nextIndex;
 

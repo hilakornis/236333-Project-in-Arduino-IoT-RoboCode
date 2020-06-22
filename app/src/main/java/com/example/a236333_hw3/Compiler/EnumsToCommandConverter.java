@@ -1,43 +1,48 @@
 package com.example.a236333_hw3.Compiler;
 
+import com.example.a236333_hw3.Compiler.Command.RCCommand;
+import com.example.a236333_hw3.Compiler.Command.RCExcuteCommand;
+import com.example.a236333_hw3.Compiler.Command.RCIfCommand;
+import com.example.a236333_hw3.Compiler.Command.RCJumpCommand;
+
 import java.util.ArrayList;
+
+
 
 public class EnumsToCommandConverter {
 
-    private boolean JumpTo[] = {false, false, false};
-    private boolean JumpFrom[] = {false, false, false};
+    private final int ROWS = 8, COLS = 6, NO_JUMP = -1;
+
+    private int     JumpToIndex[]   = {NO_JUMP, NO_JUMP, NO_JUMP};             // the index of the command to jump to
+    private int     JumpFromIndex[] = {NO_JUMP, NO_JUMP, NO_JUMP};           // the index of the command to jump to
     ArrayList<RCCommand> commands;
-    private int jump_1_index, jump_2_index, jump_3_index;
 
     public RCProgram getCommandArray(ArrayList<QREnums> enums) {
         // helps creating the current RCProgram
         commands = new ArrayList<>();
-        jump_1_index = -1;
-        jump_2_index = -1;
-        jump_3_index = -1;
 
         // helps tracing jump to & from
-        JumpTo[0] = false;
-        JumpTo[1] = false;
-        JumpTo[2] = false;
-        JumpFrom[0] = false;
-        JumpFrom[1] = false;
-        JumpFrom[2] = false;
+        JumpToIndex[0]      = NO_JUMP;
+        JumpToIndex[1]      = NO_JUMP;
+        JumpToIndex[2]      = NO_JUMP;
+        JumpFromIndex[0]    = NO_JUMP;
+        JumpFromIndex[1]    = NO_JUMP;
+        JumpFromIndex[2]    = NO_JUMP;
 
         ArrayList<RCCommand> prevLine   = new ArrayList<RCCommand>();
         ArrayList<RCCommand> currLine   = new ArrayList<RCCommand>();
         int currentLineIndex = 0;
 
-        while (currentLineIndex < 8) {
-            QREnums enumsRow[] = {   enums.get(currentLineIndex*6),   enums.get(currentLineIndex*6+1),
-                                     enums.get(currentLineIndex*6+2), enums.get(currentLineIndex*6+3),
-                                     enums.get(currentLineIndex*6+4), enums.get(currentLineIndex*6+5) };
+        while (currentLineIndex < ROWS) {
+            QREnums enumsRow[] = {   enums.get(currentLineIndex*COLS),   enums.get(currentLineIndex*COLS+1),
+                                     enums.get(currentLineIndex*COLS+2), enums.get(currentLineIndex*COLS+3),
+                                     enums.get(currentLineIndex*COLS+4), enums.get(currentLineIndex*COLS+5) };
 
             // encode curr line
-            for (int startIndex = 0; startIndex < 6; startIndex++) {
+            for (int startIndex = 0; startIndex < COLS; startIndex++) {
                 if (enumsRow[startIndex] == QREnums.NaN)
                     continue;
-                else if (!isSpinalCard(enumsRow[startIndex])) {
+                else if (!contains(spinalCards, enumsRow[startIndex])) {
                     // ERROR
                     // TODO : throw new exception - command canot start with non-spinal card
                 } else {
@@ -108,52 +113,102 @@ public class EnumsToCommandConverter {
 
         // TODO  - make sure that last line does not contain an if command
 
-        // TODO - add check to jump_from & jump_to vectors equality
+        // TODO - add check to jump_from & jump_to vectors equality and update indexes in jump_from
 
         RCProgram prog = new RCProgram();
         prog.setCommands(commands);
-        prog.setJump_1_index(jump_1_index);
-        prog.setJump_1_index(jump_2_index);
-        prog.setJump_1_index(jump_3_index);
         return prog;
     }
 
     private RCCommand readCommand(int startIndex, QREnums[] enumsRow) {
-        // TODO - update the jump_to q jump_from arrays if needed
+        int commandIndex = commands.size();
+        int currIndex = startIndex;
+        int length = 0;
+        RCCommand cmd;
+        boolean startsWithJumpTo = false;
 
-        // TODO - if command starts with jump_to -> set reachable to true (will cause a known issue bug)
+        while (contains(JumpToCards, enumsRow[currIndex]) && currIndex < COLS) {
+            startsWithJumpTo = true;
+            int i = enumsRow[currIndex] == QREnums.JMP_TO_1 ? 0 :
+                    enumsRow[currIndex] == QREnums.JMP_TO_2 ? 1 :
+                    /*enumsRow[currIndex] = QREnums.JMP_TO_3*/2;
+            JumpToIndex[i] = commandIndex;
+            currIndex++;
+            length++;
+        }
 
-        // TODO - update spinal index
-        // Set the command spinal index
-        //cmd.setSpinalIndex(startIndex);
+        if (currIndex == COLS || !contains(spinalCards, enumsRow[currIndex])) {
+            // TODO - throw exception - jumping to destination without spinal card
+        }
 
-        // TODO - add the command to the commands queue & update its index
-        // Add to commands queue, and save index
-        //commands.add(cmd);
-        //cmd.setIndex(commands.size()-1);
+        // notice that in this point, length will contain the amount of JMP_TO cards in the
+        // beginning of the current command.
+        if (enumsRow[currIndex] == QREnums.CONDITION) {
+            cmd = readCondCommand(enumsRow, currIndex, length);
+        } else if (contains(JumpFromCards, enumsRow[currIndex])) {
+            int i = enumsRow[currIndex] == QREnums.JMP_FROM_1 ? 0 :
+                    enumsRow[currIndex] == QREnums.JMP_FROM_2 ? 1 :
+                    /*enumsRow[currIndex] = QREnums.JMP_FORM_3*/2;
+            JumpFromIndex[i] = currIndex;
+            cmd = readJumpCommand(enumsRow, currIndex, length);
+        } else {
+            cmd = readExcuteCommand(enumsRow, currIndex, length);
+        }
 
+        // Add to commands queue, and save command index & spinal index
+        commands.add(cmd);
+        cmd.setIndex(commands.size()-1);
+        cmd.setSpinalIndex(startIndex);
+
+        // if command starts with jump_to -> set reachable to true (will cause a known issue bug)
+        if (startsWithJumpTo) cmd.setReachable(true);
+
+        return cmd;
+    }
+
+    private RCIfCommand readCondCommand(QREnums[] enumsRow, int currIndex, int currLength) {
         return null;
     }
 
-    private QREnums spinalCards[] = {
-                                        QREnums.CMD_TURN_LEFT,
-                                        QREnums.CMD_TURN_RIGHT,
-                                        QREnums.CMD_TURN_AROUND,
-                                        QREnums.CMD_GO_FORWARD,
-                                        QREnums.CMD_GO_BACKWARD,
-                                        QREnums.CMD_FORKLIFT_UP,
-                                        QREnums.CMD_FORKLIFT_DOWN,
-                                        QREnums.JMP_FROM_1,
-                                        QREnums.JMP_TO_1,
-                                        QREnums.JMP_FROM_2,
-                                        QREnums.JMP_TO_2,
-                                        QREnums.JMP_FROM_3, 
-                                        QREnums.JMP_TO_3,
-                                        QREnums.CONDITION
-                                    };
+    private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+        return null;
+    }
 
-    private boolean isSpinalCard(QREnums value) {
-        for (int i=0; i<spinalCards.length; i++) if (spinalCards[i] == value) return true;
+    private RCExcuteCommand readExcuteCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+        return null;
+    }
+
+    private QREnums JumpToCards[] = {
+            QREnums.JMP_TO_1,
+            QREnums.JMP_TO_2,
+            QREnums.JMP_TO_3
+    };
+    private QREnums JumpFromCards[] = {
+            QREnums.JMP_FROM_1,
+            QREnums.JMP_FROM_2,
+            QREnums.JMP_FROM_3
+    };
+
+    private QREnums spinalCards[] = {
+            QREnums.CMD_TURN_LEFT,
+            QREnums.CMD_TURN_RIGHT,
+            QREnums.CMD_TURN_AROUND,
+            QREnums.CMD_GO_FORWARD,
+            QREnums.CMD_GO_BACKWARD,
+            QREnums.CMD_FORKLIFT_UP,
+            QREnums.CMD_FORKLIFT_DOWN,
+            QREnums.CMD_STOP,
+            QREnums.JMP_FROM_1,
+            QREnums.JMP_TO_1,
+            QREnums.JMP_FROM_2,
+            QREnums.JMP_TO_2,
+            QREnums.JMP_FROM_3,
+            QREnums.JMP_TO_3,
+            QREnums.CONDITION
+    };
+
+    private boolean contains( QREnums arr[], QREnums value) {
+        for (int i=0; i<arr.length; i++) if (arr[i] == value) return true;
         return false;
     }
 }

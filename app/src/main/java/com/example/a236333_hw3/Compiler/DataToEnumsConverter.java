@@ -111,6 +111,9 @@ public class DataToEnumsConverter {
                 case "F_D":
                     arr_qr.add(QREnums.CMD_FORKLIFT_DOWN);
                     break;
+                case "STP":
+                    arr_qr.add(QREnums.CMD_STOP);
+                    break;
                 //-----------
                 case "CL_R":
                     arr_qr.add(QREnums.VAR_COLOR_RED);
@@ -136,6 +139,9 @@ public class DataToEnumsConverter {
                     break;
                 case "BOX":
                     arr_qr.add(QREnums.BOX);
+                    break;
+                case "FN":
+                    arr_qr.add(QREnums.FENCE);
                     break;
                 default: //this is for "NaN" string
                     arr_qr.add(QREnums.NaN);
