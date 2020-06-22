@@ -222,7 +222,7 @@ public class EnumsToCommandConverter {
             int i = enumsRow[currIndex] == QREnums.JMP_FROM_1 ? 0 :
                     enumsRow[currIndex] == QREnums.JMP_FROM_2 ? 1 :
                     /*enumsRow[currIndex] = QREnums.JMP_FORM_3*/2;
-            JumpFromIndex[i] = currIndex;
+            JumpFromIndex[i] = commandIndex;
             cmd = readJumpCommand(enumsRow, currIndex, length);
         } else {
             cmd = readExcuteCommand(enumsRow, currIndex, length);
