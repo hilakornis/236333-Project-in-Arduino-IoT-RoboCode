@@ -2,13 +2,15 @@ package com.example.a236333_hw3.Compiler.Command;
 
 public class RCJumpCommand extends RCCommand {
 
+    public final int NOT_DEF = -1;
+
     private int         numberOfRepsToExecute;
     private int         jumpId;
     private int         nextIndex;
 
     public RCJumpCommand() {
-        setNextIndex(-1);
-        setNumberOfRepsToExecute(-1);
+        setNextIndex(NOT_DEF);
+        setNumberOfRepsToExecute(NOT_DEF);
     }
 
     public int getNumberOfRepsToExecute() {

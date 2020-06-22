@@ -242,6 +242,38 @@ public class EnumsToCommandConverter {
     }
 
     private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+        currIndex++;
+        currLength++;
+
+        RCJumpCommand cmd = new RCJumpCommand();
+
+        // first option - only jump, no Reps defined
+        if (currIndex+1 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+1])) {
+            cmd.setLength(currLength);
+            // notice - the reps are defined in the default ctor as "NOT_DEF" (=-1)
+            return cmd;
+        }
+        // second option - jump with Reps defined
+        else if (currIndex+1 < COLS && contains(oneToNineCards, enumsRow[currIndex+1])) {
+            cmd.setLength(currLength + 1);
+            cmd.setNumberOfRepsToExecute(getNum(enumsRow[currIndex + 1]));
+
+            // chacking the case of number with two digits
+            if (currIndex + 2 < COLS && contains(zeroToNineCards, enumsRow[currIndex + 2]) &&
+                    (currIndex + 3 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex + 3]))) {
+                cmd.setLength(currLength + 2);
+                cmd.setNumberOfRepsToExecute(10 * cmd.getNumberOfRepsToExecute() + getNum(enumsRow[currIndex + 2]));
+                return cmd;
+            } else if (currIndex + 2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex + 2])) {
+                return cmd;
+            } else {
+                // TODO : throw Exception -  illegal jump (with reps) command
+            }
+        }
+        else {
+            // TODO : throw Exception - illegal jump command
+        }
+
         return null;
     }
 
