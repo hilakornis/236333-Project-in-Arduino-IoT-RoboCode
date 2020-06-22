@@ -45,6 +45,7 @@ public class RCJumpCommand extends RCCommand {
         return "======== JUMP COMMAND " + "\n" +
                 super.toString() +
                 "nextIndex = " + (nextIndex == NOT_DEF ? "not defined" : nextIndex) + "\n" +
+                "numberOfReps = " + getNumberOfRepsToExecute() + "\n" +
                 "jumpId" + jumpId + "\n";
     }
 }
