@@ -2,12 +2,17 @@ package com.example.a236333_hw3.Compiler.Command;
 
 public class RCCommand {
 
+    public final int NOT_DEF = -1;
+
     private int index;
     private int spinalIndex;
     private int length;
     private boolean reachable;
 
     public RCCommand() {
+        setIndex(NOT_DEF);
+        setSpinalIndex(NOT_DEF);
+        setLength(0);
         setReachable(false);
     }
 

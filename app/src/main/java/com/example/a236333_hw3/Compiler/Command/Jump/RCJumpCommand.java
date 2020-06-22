@@ -1,8 +1,8 @@
-package com.example.a236333_hw3.Compiler.Command;
+package com.example.a236333_hw3.Compiler.Command.Jump;
+
+import com.example.a236333_hw3.Compiler.Command.RCCommand;
 
 public class RCJumpCommand extends RCCommand {
-
-    public final int NOT_DEF = -1;
 
     private int         numberOfRepsToExecute;
     private int         jumpId;

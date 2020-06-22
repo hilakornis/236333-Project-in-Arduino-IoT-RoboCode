@@ -1,14 +1,14 @@
 package com.example.a236333_hw3.Compiler;
 
 public enum QREnums {
-    CMD_TURN_LEFT, // T_L
-    CMD_TURN_RIGHT, // T_R
-    CMD_TURN_AROUND, // T_U
-    CMD_GO_FORWARD, // G_FW
-    CMD_GO_BACKWARD, // G_BK
-    CMD_FORKLIFT_UP, // F_U
-    CMD_FORKLIFT_DOWN, // F_D
-    CMD_STOP, // STP
+    CMD_TURN_LEFT,      // T_L
+    CMD_TURN_RIGHT,     // T_R
+    CMD_TURN_AROUND,    // T_U
+    CMD_GO_FORWARD,     // G_FW
+    CMD_GO_BACKWARD,    // G_BK
+    CMD_FORKLIFT_UP,    // F_U
+    CMD_FORKLIFT_DOWN,  // F_D
+    CMD_STOP,           // STP
 
     JMP_FROM_1, //  JMP_F1
     JMP_TO_1, //  JMP_T1

@@ -1,4 +1,4 @@
-package com.example.a236333_hw3.Compiler.Command;
+package com.example.a236333_hw3.Compiler.Command.Condition;
 
 import com.example.a236333_hw3.Compiler.QREnums;
 

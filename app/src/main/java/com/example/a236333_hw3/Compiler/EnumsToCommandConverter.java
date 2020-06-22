@@ -1,13 +1,22 @@
 package com.example.a236333_hw3.Compiler;
 
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteForkDownCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteForkUpCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsGoBackwardCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsGoForwardCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsTurnLeftCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsTurnRightCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsTurnUTurnCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteStopCommand;
 import com.example.a236333_hw3.Compiler.Command.RCCommand;
-import com.example.a236333_hw3.Compiler.Command.RCExcuteCommand;
-import com.example.a236333_hw3.Compiler.Command.RCIfBoxColorCommand;
-import com.example.a236333_hw3.Compiler.Command.RCIfBoxNumberCommand;
-import com.example.a236333_hw3.Compiler.Command.RCIfCommand;
-import com.example.a236333_hw3.Compiler.Command.RCIfFenceCommand;
-import com.example.a236333_hw3.Compiler.Command.RCIfTileCommand;
-import com.example.a236333_hw3.Compiler.Command.RCJumpCommand;
+import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteCommand;
+import com.example.a236333_hw3.Compiler.Command.Condition.RCIfBoxColorCommand;
+import com.example.a236333_hw3.Compiler.Command.Condition.RCIfBoxNumberCommand;
+import com.example.a236333_hw3.Compiler.Command.Condition.RCIfCommand;
+import com.example.a236333_hw3.Compiler.Command.Condition.RCIfFenceCommand;
+import com.example.a236333_hw3.Compiler.Command.Condition.RCIfTileCommand;
+import com.example.a236333_hw3.Compiler.Command.Jump.RCJumpCommand;
 
 import java.util.ArrayList;
 
@@ -65,10 +74,10 @@ public class EnumsToCommandConverter {
             } else {
                 // update indexes in prev line
                 for (RCCommand prevCmd : prevLine) {
-                    if (prevCmd instanceof RCExcuteCommand) {
+                    if (prevCmd instanceof RCExecuteCommand) {
                         for (RCCommand cmd : currLine) {
                             if (cmd.getSpinalIndex() == prevCmd.getSpinalIndex()) {
-                                ((RCExcuteCommand) prevCmd).setNextIndex(cmd.getIndex());
+                                ((RCExecuteCommand) prevCmd).setNextIndex(cmd.getIndex());
                                 cmd.setReachable(true);
                                 break;
                             }
@@ -277,17 +286,65 @@ public class EnumsToCommandConverter {
         return null;
     }
 
-    private RCExcuteCommand readExcuteCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+    private RCExecuteCommand readExcuteCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+        switch (enumsRow[currIndex]) {
+            // handel all the commands that can not have a parameter after the last spinal card
+            case CMD_FORKLIFT_UP:
+            case CMD_FORKLIFT_DOWN:
+            case CMD_STOP: {
+                // handle CMD_STOP
+                if (currIndex+1 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+1])) {
+                    RCExecuteCommand cmd = enumsRow[currIndex] == QREnums.CMD_FORKLIFT_UP   ?   new RCExecuteForkUpCommand() :
+                                           enumsRow[currIndex] == QREnums.CMD_FORKLIFT_DOWN ?   new RCExecuteForkDownCommand() :
+                                           /*enumsRow[currIndex] == QREnums.CMD_STOP*/          new RCExecuteStopCommand();
+                    cmd.setLength(currLength + 1);
+                    return cmd;
+                } else {
+                    // TODO : throw Exception - illegal stop / ForkUp / ForkDown  execute seq
+                }
+                break;
+            }
+            case CMD_TURN_LEFT:
+            case CMD_TURN_RIGHT:
+            case CMD_TURN_AROUND:
+            case CMD_GO_FORWARD:
+            case CMD_GO_BACKWARD: {
+                RCExecuteRepsCommand cmd =  enumsRow[currIndex] == QREnums.CMD_TURN_LEFT         ?   new RCExecuteRepsTurnLeftCommand()  :
+                                            enumsRow[currIndex] == QREnums.CMD_TURN_RIGHT        ?   new RCExecuteRepsTurnRightCommand() :
+                                            enumsRow[currIndex] == QREnums.CMD_TURN_AROUND       ?   new RCExecuteRepsTurnUTurnCommand() :
+                                            enumsRow[currIndex] == QREnums.CMD_GO_FORWARD        ?   new RCExecuteRepsGoForwardCommand() :
+                                            /*enumsRow[currIndex] == QREnums.CMD_GO_BACKWARD*/       new RCExecuteRepsGoBackwardCommand();
+
+                // first option - only execute, no Reps defined
+                if (currIndex+1 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+1])) {
+                    cmd.setLength(currLength + 1);
+                    return cmd;
+                }
+                // second option - execute with Reps defined
+                else if (currIndex+1 < COLS && contains(oneToNineCards, enumsRow[currIndex+1]) &&
+                        (currIndex + 2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex + 2])) ) {
+                    cmd.setLength(currLength + 2);
+                    cmd.setNumberOfRepsToExcute(getNum(enumsRow[currIndex + 1]));
+                    return cmd;
+                }
+                else {
+                    // TODO : throw Exception - illegal jump command
+                }
+                break;
+            }
+            default:
+                // TODO : throw Exception - illegal execute seq
+        }
+
         return null;
     }
-
 
     private boolean contains( QREnums arr[], QREnums value) {
         for (int i=0; i<arr.length; i++) if (arr[i] == value) return true;
         return false;
     }
 
-
+    //region Enum groups definition
 
     private int getNum(QREnums qrEnums) {
         return qrEnums == QREnums.VAR_0 ? 0 :
@@ -385,4 +442,5 @@ public class EnumsToCommandConverter {
             QREnums.NaN
     };
 
+    //endregion
 }
