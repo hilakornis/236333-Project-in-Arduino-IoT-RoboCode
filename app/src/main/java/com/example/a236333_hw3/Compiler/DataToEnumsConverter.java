@@ -39,6 +39,9 @@ public class DataToEnumsConverter {
             val_str = qr_enum_vals.get(i);
 
             switch (val_str) {
+                case "0":
+                    arr_qr.add(QREnums.VAR_0);
+                    break;
                 case "1":
                     arr_qr.add(QREnums.VAR_1);
                     break;

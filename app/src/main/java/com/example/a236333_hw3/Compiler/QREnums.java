@@ -23,6 +23,7 @@ public enum QREnums {
     BOX,
     FENCE,      // FN
 
+    VAR_0,
     VAR_1,
     VAR_2,
     VAR_3,

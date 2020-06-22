@@ -2,19 +2,21 @@ package com.example.a236333_hw3.Compiler;
 
 import com.example.a236333_hw3.Compiler.Command.RCCommand;
 import com.example.a236333_hw3.Compiler.Command.RCExcuteCommand;
+import com.example.a236333_hw3.Compiler.Command.RCIfBoxColorCommand;
+import com.example.a236333_hw3.Compiler.Command.RCIfBoxNumberCommand;
 import com.example.a236333_hw3.Compiler.Command.RCIfCommand;
+import com.example.a236333_hw3.Compiler.Command.RCIfFenceCommand;
+import com.example.a236333_hw3.Compiler.Command.RCIfTileCommand;
 import com.example.a236333_hw3.Compiler.Command.RCJumpCommand;
 
 import java.util.ArrayList;
-
-
 
 public class EnumsToCommandConverter {
 
     private final int ROWS = 8, COLS = 6, NO_JUMP = -1;
 
-    private int     JumpToIndex[]   = {NO_JUMP, NO_JUMP, NO_JUMP};             // the index of the command to jump to
-    private int     JumpFromIndex[] = {NO_JUMP, NO_JUMP, NO_JUMP};           // the index of the command to jump to
+    private int     JumpToIndex[]   = {NO_JUMP, NO_JUMP, NO_JUMP}; // cmd index to jump to
+    private int     JumpFromIndex[] = {NO_JUMP, NO_JUMP, NO_JUMP}; // cmd index to jump from
     ArrayList<RCCommand> commands;
 
     public RCProgram getCommandArray(ArrayList<QREnums> enums) {
@@ -47,7 +49,7 @@ public class EnumsToCommandConverter {
                     // TODO : throw new exception - command canot start with non-spinal card
                 } else {
                     RCCommand cmd = readCommand(startIndex, enumsRow);
-                    startIndex += cmd.getLength()-1;
+                    startIndex += cmd.getLength();  // TODO : think if should be getLength()-1
 
                     // add to curr line collection
                     currLine.add(cmd);
@@ -137,7 +139,7 @@ public class EnumsToCommandConverter {
             length++;
         }
 
-        if (currIndex == COLS || !contains(spinalCards, enumsRow[currIndex])) {
+        if (currIndex >= COLS || !contains(spinalCards, enumsRow[currIndex])) {
             // TODO - throw exception - jumping to destination without spinal card
         }
 
@@ -167,7 +169,76 @@ public class EnumsToCommandConverter {
     }
 
     private RCIfCommand readCondCommand(QREnums[] enumsRow, int currIndex, int currLength) {
-        return null;
+        currIndex++;
+        currLength++;
+
+        if (currIndex >= COLS) {
+            // TODO : throw exception - condition not defined
+        }
+
+        switch (enumsRow[currIndex]) {
+            case FENCE: {
+                // handle fence condition
+                if (currIndex+1 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+1])) {
+                    RCIfFenceCommand cmd = new RCIfFenceCommand();
+                    cmd.setLength(currLength + 1);
+                    return cmd;
+                } else {
+                    // TODO : throw Exception - illegal fence condition seq
+                }
+                break;
+            }
+            case TILE: {
+                // handle tile color condition
+                if ((currIndex+1 < COLS && contains(colorCards, enumsRow[currIndex+1])) &&
+                    (currIndex+2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+2]))) {
+                    RCIfTileCommand cmd = new RCIfTileCommand();
+                    cmd.setLength(currLength + 2);
+                    cmd.setColor(enumsRow[currIndex+1]);
+                    return cmd;
+                } else {
+                    // TODO : throw Exception - illegal tile condition seq
+                }
+                break;
+            }
+            case BOX: {
+                // handle box color condition -> COND card + BOX card + COLOR card
+                if ((currIndex+1 < COLS && contains(colorCards, enumsRow[currIndex+1])) &&
+                    (currIndex+2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+2]))) {
+                    RCIfBoxColorCommand cmd = new RCIfBoxColorCommand();
+                    cmd.setLength(currLength + 2);
+                    cmd.setColor(enumsRow[currIndex+1]);
+                    return cmd;
+                }
+                // handle box number condition -> COND card + BOX card + DIGIT card ( + optional, one more DIGIT card)
+                else if (currIndex+1 < COLS && contains(oneToNineCards, enumsRow[currIndex+1])) {
+                    RCIfBoxNumberCommand cmd = new RCIfBoxNumberCommand();
+                    cmd.setLength(currLength + 2);
+                    cmd.setBoxId(getNum(enumsRow[currIndex+1]));
+
+                    // chacking the case of number with two digits
+                    if (currIndex+2 < COLS && contains(zeroToNineCards, enumsRow[currIndex+2]) &&
+                        (currIndex+3 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+3])) ) {
+                        cmd.setLength(currLength + 3);
+                        cmd.setBoxId(10*cmd.getBoxId()+getNum(enumsRow[currIndex+2]));
+                        return cmd;
+                    }
+                    else if (currIndex+2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+2])) {
+                        return cmd;
+                    }
+                    else {
+                            // TODO : throw Exception - illegal numeric box condition
+                    }
+                } else {
+                    // TODO : throw Exception - illegal box condition
+                }
+                break;
+            }
+            default:
+                // TODO : throw Exception - illegal condition
+                break;
+        }
+        return null; // we are not suppose to reach this point!
     }
 
     private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) {
@@ -178,11 +249,58 @@ public class EnumsToCommandConverter {
         return null;
     }
 
+
+    private boolean contains( QREnums arr[], QREnums value) {
+        for (int i=0; i<arr.length; i++) if (arr[i] == value) return true;
+        return false;
+    }
+
+
+
+    private int getNum(QREnums qrEnums) {
+        return qrEnums == QREnums.VAR_0 ? 0 :
+                qrEnums == QREnums.VAR_1 ? 1 :
+                        qrEnums == QREnums.VAR_2 ? 2 :
+                                qrEnums == QREnums.VAR_3 ? 3 :
+                                        qrEnums == QREnums.VAR_4 ? 4 :
+                                                qrEnums == QREnums.VAR_5 ? 5 :
+                                                        qrEnums == QREnums.VAR_6 ? 6 :
+                                                                qrEnums == QREnums.VAR_7 ? 7 :
+                                                                        qrEnums == QREnums.VAR_8 ? 8 :
+                                                                                qrEnums == QREnums.VAR_9 ? 9 : 0;
+    }
+
+    private QREnums zeroToNineCards[] = {
+            QREnums.VAR_0,
+            QREnums.VAR_1,
+            QREnums.VAR_2,
+            QREnums.VAR_3,
+            QREnums.VAR_4,
+            QREnums.VAR_5,
+            QREnums.VAR_6,
+            QREnums.VAR_7,
+            QREnums.VAR_8,
+            QREnums.VAR_9
+    };
+
+    private QREnums oneToNineCards[] = {
+            QREnums.VAR_1,
+            QREnums.VAR_2,
+            QREnums.VAR_3,
+            QREnums.VAR_4,
+            QREnums.VAR_5,
+            QREnums.VAR_6,
+            QREnums.VAR_7,
+            QREnums.VAR_8,
+            QREnums.VAR_9
+    };
+
     private QREnums JumpToCards[] = {
             QREnums.JMP_TO_1,
             QREnums.JMP_TO_2,
             QREnums.JMP_TO_3
     };
+
     private QREnums JumpFromCards[] = {
             QREnums.JMP_FROM_1,
             QREnums.JMP_FROM_2,
@@ -207,8 +325,32 @@ public class EnumsToCommandConverter {
             QREnums.CONDITION
     };
 
-    private boolean contains( QREnums arr[], QREnums value) {
-        for (int i=0; i<arr.length; i++) if (arr[i] == value) return true;
-        return false;
-    }
+    private QREnums colorCards[] = {
+            QREnums.VAR_COLOR_RED,  // CL_R
+            QREnums.VAR_COLOR_BLUE, // CL_BL
+            QREnums.VAR_COLOR_GREEN,  // CL_G
+            QREnums.VAR_COLOR_YELLOW,  // CL_Y
+            QREnums.VAR_COLOR_WHITE,  // CL_W
+            QREnums.VAR_COLOR_BLACK, // CL_BK
+    };
+
+    private QREnums spinalOrNaNCards[] = {
+            QREnums.CMD_TURN_LEFT,
+            QREnums.CMD_TURN_RIGHT,
+            QREnums.CMD_TURN_AROUND,
+            QREnums.CMD_GO_FORWARD,
+            QREnums.CMD_GO_BACKWARD,
+            QREnums.CMD_FORKLIFT_UP,
+            QREnums.CMD_FORKLIFT_DOWN,
+            QREnums.CMD_STOP,
+            QREnums.JMP_FROM_1,
+            QREnums.JMP_TO_1,
+            QREnums.JMP_FROM_2,
+            QREnums.JMP_TO_2,
+            QREnums.JMP_FROM_3,
+            QREnums.JMP_TO_3,
+            QREnums.CONDITION,
+            QREnums.NaN
+    };
+
 }
