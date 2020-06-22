@@ -22,6 +22,17 @@ import java.util.ArrayList;
 
 public class EnumsToCommandConverter {
 
+   /* QREnums[] enumsRow =
+        {   QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN,
+            QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN, QREnums.NaN    }; */
+
+
     // the board proportions & other constants
     private final int ROWS = 8, COLS = 6, NO_JUMP = -1, TOTAL_JUMPS = 3;
 
