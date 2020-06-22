@@ -73,7 +73,7 @@ public class EnumsToCommandConverter {
                     throw new RCCompilerException("Command cannot start with non-spinal card!", startIndex, currentLineIndex);
                 } else {
                     RCCommand cmd = readCommand(startIndex, enumsRow);
-                    startIndex += cmd.getLength();  // TODO : think if should be getLength()-1
+                    startIndex += cmd.getLength()-1;  // this should be getLength()-1, because the loop will increase the start index by one in the next iteration
 
                     // add to curr line collection
                     currLine.add(cmd);
@@ -327,9 +327,7 @@ public class EnumsToCommandConverter {
     }
 
     private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) throws RCCompilerException {
-        currIndex++;
-        currLength++;
-
+        currLength++; // update the length. note we are keeping the curr index on the jump card!!!
         RCJumpCommand cmd = new RCJumpCommand();
 
         // first option - only jump, no Reps defined
