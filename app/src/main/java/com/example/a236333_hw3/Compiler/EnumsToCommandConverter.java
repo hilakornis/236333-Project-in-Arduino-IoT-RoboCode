@@ -92,6 +92,8 @@ public class EnumsToCommandConverter {
                                 "There are too many commands in the first line... where should we start from?",
                                 0, 0);
                     }
+                } else {
+                    currLine.get(0).setReachable(true);
                 }
             } else {
                 // update indexes in prev line
