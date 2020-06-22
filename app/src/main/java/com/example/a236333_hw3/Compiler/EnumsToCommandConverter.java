@@ -22,13 +22,17 @@ import java.util.ArrayList;
 
 public class EnumsToCommandConverter {
 
-    private final int ROWS = 8, COLS = 6, NO_JUMP = -1;
+    // the board proportions & other constants
+    private final int ROWS = 8, COLS = 6, NO_JUMP = -1, TOTAL_JUMPS = 3;
 
+    // this are variables that are used during the calculation
     private int     JumpToIndex[]   = {NO_JUMP, NO_JUMP, NO_JUMP}; // cmd index to jump to
     private int     JumpFromIndex[] = {NO_JUMP, NO_JUMP, NO_JUMP}; // cmd index to jump from
-    ArrayList<RCCommand> commands;
+    int currentLineIndex = 0;
+    private ArrayList<RCCommand> commands;
 
-    public RCProgram getCommandArray(ArrayList<QREnums> enums) {
+    // Main converter function
+    public RCProgram getCommandArray(ArrayList<QREnums> enums) throws RCCompilerException {
         // helps creating the current RCProgram
         commands = new ArrayList<>();
 
@@ -42,7 +46,7 @@ public class EnumsToCommandConverter {
 
         ArrayList<RCCommand> prevLine   = new ArrayList<RCCommand>();
         ArrayList<RCCommand> currLine   = new ArrayList<RCCommand>();
-        int currentLineIndex = 0;
+        currentLineIndex = 0;
 
         while (currentLineIndex < ROWS) {
             QREnums enumsRow[] = {   enums.get(currentLineIndex*COLS),   enums.get(currentLineIndex*COLS+1),
@@ -54,8 +58,8 @@ public class EnumsToCommandConverter {
                 if (enumsRow[startIndex] == QREnums.NaN)
                     continue;
                 else if (!contains(spinalCards, enumsRow[startIndex])) {
-                    // ERROR
-                    // TODO : throw new exception - command canot start with non-spinal card
+                    // ERROR - command cannot start with non-spinal card
+                    throw new RCCompilerException("Command cannot start with non-spinal card!", startIndex, currentLineIndex);
                 } else {
                     RCCommand cmd = readCommand(startIndex, enumsRow);
                     startIndex += cmd.getLength();  // TODO : think if should be getLength()-1
@@ -68,8 +72,15 @@ public class EnumsToCommandConverter {
             // check only for first line
             if (currentLineIndex == 0) {
                 if (currLine.size() != 1) {
-                    // ERROR
-                    // TODO : throw new exception - to many commands in first line
+                    if (currLine.size() == 0) {
+                        throw new RCCompilerException(
+                                "The first command should be placed in the first line!",
+                                0, 0);
+                    } else {
+                        throw new RCCompilerException(
+                                "There are too many commands in the first line... where should we start from?",
+                                0, 0);
+                    }
                 }
             } else {
                 // update indexes in prev line
@@ -77,7 +88,7 @@ public class EnumsToCommandConverter {
                     if (prevCmd instanceof RCExecuteCommand) {
                         for (RCCommand cmd : currLine) {
                             if (cmd.getSpinalIndex() == prevCmd.getSpinalIndex()) {
-                                ((RCExecuteCommand) prevCmd).setNextIndex(cmd.getIndex());
+                                ((RCExecuteCommand) prevCmd).setNextIndex(cmd.getCommandIndex());
                                 cmd.setReachable(true);
                                 break;
                             }
@@ -85,7 +96,7 @@ public class EnumsToCommandConverter {
                     } else if (prevCmd instanceof RCJumpCommand) {
                         for (RCCommand cmd : currLine) {
                             if (cmd.getSpinalIndex() == prevCmd.getSpinalIndex()) {
-                                ((RCJumpCommand) prevCmd).setNextIndex(cmd.getIndex());
+                                ((RCJumpCommand) prevCmd).setNextIndex(cmd.getCommandIndex());
                                 cmd.setReachable(true);
                                 break;
                             }
@@ -93,16 +104,21 @@ public class EnumsToCommandConverter {
                     } else if (prevCmd instanceof RCIfCommand) {
                         for (RCCommand cmd : currLine) {
                             if (cmd.getSpinalIndex() == prevCmd.getSpinalIndex() + 1) {
-                                ((RCIfCommand) prevCmd).setNextTrue(cmd.getIndex());
+                                ((RCIfCommand) prevCmd).setNextTrue(cmd.getCommandIndex());
                                 cmd.setReachable(true);
                             } else if (cmd.getSpinalIndex() + cmd.getLength() == prevCmd.getSpinalIndex()) {
-                                ((RCIfCommand) prevCmd).setNextFalse(cmd.getIndex());
+                                ((RCIfCommand) prevCmd).setNextFalse(cmd.getCommandIndex());
                                 cmd.setReachable(true);
                             }
                         }
                         if (((RCIfCommand) prevCmd).getNextFalse() == -1 ||
                             ((RCIfCommand) prevCmd).getNextTrue()  == -1)  {
-                            // TODO : throw new exception - unhandled branches
+
+                            // ERROR - command cannot start with non-spinal card
+                            throw new RCCompilerException(
+                                    "Both cases of a condition should be handled!",
+                                    prevCmd.getSpinalIndex(),
+                                    prevCmd.getLineIndex());
                         }
                     }
                 }
@@ -110,7 +126,10 @@ public class EnumsToCommandConverter {
                 // check reachable
                 for (RCCommand cmd : currLine) {
                     if (!cmd.isReachable()) {
-                        // TODO : throw new exception - unreachable command
+                        throw new RCCompilerException(
+                                "Both cases of a condition should be handled! can you do that in the last line?",
+                                cmd.getSpinalIndex(),
+                                cmd.getLineIndex());
                     }
                 }
             }
@@ -122,16 +141,45 @@ public class EnumsToCommandConverter {
             currentLineIndex++;
         }
 
-        // TODO  - make sure that last line does not contain an if command
+        // make sure that last line does not contain an if command
+        for (RCCommand prevCmd : prevLine) {
+            if (prevCmd instanceof RCIfCommand) {
+                throw new RCCompilerException(
+                        "Condition ",
+                        prevCmd.getSpinalIndex(), prevCmd.getLineIndex());
+            }
+        }
 
-        // TODO - add check to jump_from & jump_to vectors equality and update indexes in jump_from
+        for (int i=0; i<TOTAL_JUMPS; i++) {
+            // check to jump_from & jump_to vectors equality
+            if ((JumpFromIndex[i] == NO_JUMP) && (JumpToIndex[i] != NO_JUMP)) {
+                // Jump to is defined but no Jump from
+                throw new RCCompilerException(
+                        "Jump destination is defined, but no source defined!",
+                        commands.get(JumpToIndex[i]).getSpinalIndex(),
+                        commands.get(JumpToIndex[i]).getLineIndex());
+
+            } else if ((JumpToIndex[i] == NO_JUMP) && (JumpFromIndex[i] != NO_JUMP)) {
+                // Jump from is defined but no Jump to
+                throw new RCCompilerException(
+                        "Jump source is defined, but no destination!",
+                        commands.get(JumpFromIndex[i]).getSpinalIndex(),
+                        commands.get(JumpFromIndex[i]).getLineIndex());
+            }
+            // update indexes in jump_from
+            else if (JumpFromIndex[i] != NO_JUMP) {
+                ((RCJumpCommand) commands.get(JumpFromIndex[i])).setJumpId(JumpToIndex[i]);
+            }
+        }
+
+        // TODO - after reachable marked, make sure that the program is all connected
 
         RCProgram prog = new RCProgram();
         prog.setCommands(commands);
         return prog;
     }
 
-    private RCCommand readCommand(int startIndex, QREnums[] enumsRow) {
+    private RCCommand readCommand(int startIndex, QREnums[] enumsRow) throws RCCompilerException {
         int commandIndex = commands.size();
         int currIndex = startIndex;
         int length = 0;
@@ -149,7 +197,8 @@ public class EnumsToCommandConverter {
         }
 
         if (currIndex >= COLS || !contains(spinalCards, enumsRow[currIndex])) {
-            // TODO - throw exception - jumping to destination without spinal card
+            throw new RCCompilerException("An attempt to jump to a destination without a spinal card!",
+                    currIndex, currentLineIndex);
         }
 
         // notice that in this point, length will contain the amount of JMP_TO cards in the
@@ -168,8 +217,9 @@ public class EnumsToCommandConverter {
 
         // Add to commands queue, and save command index & spinal index
         commands.add(cmd);
-        cmd.setIndex(commands.size()-1);
+        cmd.setCommandIndex(commands.size()-1);
         cmd.setSpinalIndex(startIndex);
+        cmd.setLineIndex(currentLineIndex);
 
         // if command starts with jump_to -> set reachable to true (will cause a known issue bug)
         if (startsWithJumpTo) cmd.setReachable(true);
@@ -177,12 +227,15 @@ public class EnumsToCommandConverter {
         return cmd;
     }
 
-    private RCIfCommand readCondCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+    //region Signal command analysis
+
+    private RCIfCommand readCondCommand(QREnums[] enumsRow, int currIndex, int currLength) throws RCCompilerException {
         currIndex++;
         currLength++;
 
         if (currIndex >= COLS) {
-            // TODO : throw exception - condition not defined
+            throw new RCCompilerException("There seems to be no condition to check. dont forget to define a condition!",
+                    currIndex-1, currentLineIndex);
         }
 
         switch (enumsRow[currIndex]) {
@@ -193,9 +246,11 @@ public class EnumsToCommandConverter {
                     cmd.setLength(currLength + 1);
                     return cmd;
                 } else {
-                    // TODO : throw Exception - illegal fence condition seq
+                    throw new RCCompilerException(
+                            "A condition that checks if RoboCode reached the edge of the playground should not have any extra parameters",
+                            currIndex-1, currentLineIndex);
                 }
-                break;
+                //break; // code unreachable!
             }
             case TILE: {
                 // handle tile color condition
@@ -206,9 +261,11 @@ public class EnumsToCommandConverter {
                     cmd.setColor(enumsRow[currIndex+1]);
                     return cmd;
                 } else {
-                    // TODO : throw Exception - illegal tile condition seq
+                    throw new RCCompilerException(
+                        "A tile condition can only check if the tile is of a certain color.",
+                        currIndex-1, currentLineIndex);
                 }
-                break;
+                //break; // code unreachable!
             }
             case BOX: {
                 // handle box color condition -> COND card + BOX card + COLOR card
@@ -236,21 +293,27 @@ public class EnumsToCommandConverter {
                         return cmd;
                     }
                     else {
-                            // TODO : throw Exception - illegal numeric box condition
+                        throw new RCCompilerException(
+                                "There seems to be an error with the way that the condition on the box number is defined!",
+                                currIndex-1, currentLineIndex);
                     }
                 } else {
-                    // TODO : throw Exception - illegal box condition
+                    throw new RCCompilerException(
+                            "There seems to be an error with the way that the condition on the box is defined!",
+                            currIndex-1, currentLineIndex);
                 }
-                break;
+                //break; // code unreachable!
             }
             default:
-                // TODO : throw Exception - illegal condition
-                break;
+                throw new RCCompilerException(
+                        "There seems to be an error with the way that the condition is defined!",
+                        currIndex-1, currentLineIndex);
+                //break; // code unreachable!
         }
-        return null; // we are not suppose to reach this point!
+        //return null; // code unreachable!
     }
 
-    private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+    private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) throws RCCompilerException {
         currIndex++;
         currLength++;
 
@@ -276,17 +339,23 @@ public class EnumsToCommandConverter {
             } else if (currIndex + 2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex + 2])) {
                 return cmd;
             } else {
-                // TODO : throw Exception -  illegal jump (with reps) command
+                // illegal jump (with reps) command
+                throw new RCCompilerException(
+                        "There seems to be something wrong with the way that the jump command with repetition limits is defined...",
+                        currIndex-1, currentLineIndex);
             }
         }
         else {
-            // TODO : throw Exception - illegal jump command
+            // throw Exception - illegal jump command
+            throw new RCCompilerException(
+                    "There seems to be something wrong with the way that the jump command is defined...",
+                    currIndex-1, currentLineIndex);
         }
 
-        return null;
+        // return null; // unreachable
     }
 
-    private RCExecuteCommand readExcuteCommand(QREnums[] enumsRow, int currIndex, int currLength) {
+    private RCExecuteCommand readExcuteCommand(QREnums[] enumsRow, int currIndex, int currLength) throws RCCompilerException {
         switch (enumsRow[currIndex]) {
             // handel all the commands that can not have a parameter after the last spinal card
             case CMD_FORKLIFT_UP:
@@ -300,9 +369,15 @@ public class EnumsToCommandConverter {
                     cmd.setLength(currLength + 1);
                     return cmd;
                 } else {
-                    // TODO : throw Exception - illegal stop / ForkUp / ForkDown  execute seq
+                    // illegal stop / ForkUp / ForkDown  execute seq
+                    throw new RCCompilerException(
+                            ((enumsRow[currIndex] == QREnums.CMD_FORKLIFT_UP   ?   "Fork up " :
+                              enumsRow[currIndex] == QREnums.CMD_FORKLIFT_DOWN ?   "Fork down " :
+                              /*enumsRow[currIndex] == QREnums.CMD_STOP*/          "Stop ") +
+                             " command cannot be repetitive or get any extra parameters."),
+                            currIndex, currentLineIndex);
                 }
-                break;
+                //break; // unreachable command
             }
             case CMD_TURN_LEFT:
             case CMD_TURN_RIGHT:
@@ -328,23 +403,31 @@ public class EnumsToCommandConverter {
                     return cmd;
                 }
                 else {
-                    // TODO : throw Exception - illegal jump command
+                    // illegal execute (with reps) command
+                    throw new RCCompilerException(
+                            "There seems to be something wrong with the way that the command is defined. are trying to define a repetition? are there any non essential parameters?",
+                            currIndex, currentLineIndex);
                 }
-                break;
+                //break; // unreachable code
             }
             default:
-                // TODO : throw Exception - illegal execute seq
+                // illegal command
+                throw new RCCompilerException(
+                        "There something wrong with the card arrangment. take a look again!",
+                        currIndex, currentLineIndex);
         }
 
-        return null;
+        //return null; // unreachable code
     }
+
+    //endregion
+
+    //region Enum groups definition
 
     private boolean contains( QREnums arr[], QREnums value) {
         for (int i=0; i<arr.length; i++) if (arr[i] == value) return true;
         return false;
     }
-
-    //region Enum groups definition
 
     private int getNum(QREnums qrEnums) {
         return qrEnums == QREnums.VAR_0 ? 0 :

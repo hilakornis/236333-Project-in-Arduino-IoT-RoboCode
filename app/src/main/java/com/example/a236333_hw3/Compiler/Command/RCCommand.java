@@ -4,14 +4,16 @@ public class RCCommand {
 
     public final int NOT_DEF = -1;
 
-    private int index;
+    private int commandIndex;
     private int spinalIndex;
+    private int lineIndex;
     private int length;
     private boolean reachable;
 
     public RCCommand() {
-        setIndex(NOT_DEF);
+        setCommandIndex(NOT_DEF);
         setSpinalIndex(NOT_DEF);
+        setLineIndex(NOT_DEF);
         setLength(0);
         setReachable(false);
     }
@@ -40,11 +42,19 @@ public class RCCommand {
         this.spinalIndex = spinalIndex;
     }
 
-    public int getIndex() {
-        return index;
+    public int getCommandIndex() {
+        return commandIndex;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setCommandIndex(int commandIndex) {
+        this.commandIndex = commandIndex;
+    }
+
+    public int getLineIndex() {
+        return lineIndex;
+    }
+
+    public void setLineIndex(int lineIndex) {
+        this.lineIndex = lineIndex;
     }
 }
