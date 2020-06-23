@@ -2,30 +2,44 @@ package com.example.a236333_hw3;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.a236333_hw3.Camera.APictureCapturingService;
+import com.example.a236333_hw3.Camera.PictureCapturingServiceImpl;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.Tools.roboCodeTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class roboCodeTaskActivity extends AppCompatActivity {
 
@@ -41,29 +55,17 @@ public class roboCodeTaskActivity extends AppCompatActivity {
     // Action
     Button      backButton;
     Button      loadImageButton;
-    ImageView   myImageView;
-    Button      approveButton;
 
-    private StorageReference mStorageRef;
 
     // ============================================================================================
-
-    private static final int PERMISSION_CODE = 1000;
-    private static final int IMAGE_CAPTURE_CODE = 1001;
-//    Uri image_uri;//where the image is located.
-    public Uri image_uri;//where the image is located.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_robo_code_task);
 
-        mStorageRef = FirebaseStorage.getInstance().getReference();
-
         // save the elements we are using
         loadImageButton = findViewById(R.id.uploadButton);
-        myImageView = findViewById(R.id.centerView);
-        approveButton = findViewById(R.id.approveButton);
         titleText = findViewById(R.id.titleText);
         titlePoints = findViewById(R.id.pointsText);
         DescriptionData = findViewById(R.id.taskInfo);
@@ -84,120 +86,70 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         loadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
-                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED ) {
-                        String[] permission = {Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                        requestPermissions(permission, PERMISSION_CODE);
-                    } else {
-                        // permission already given
-                        openCamera();
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+                String time = sdf.format(cal.getTime());
+                final String taskId = String.format("%03d", RoboCodeSettings.getInstance().current.ID);
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Map<String, Object> docData = new HashMap<>();
+                docData.put("senderId",     RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("recipientId",  RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("senderName",   RoboCodeSettings.getInstance().user.getEmail());
+                docData.put("taskId",       taskId);
+                docData.put("text",         "A picture of the board is required");
+                docData.put("date",         sdf.format(cal.getTime()));
+                final String ps = RoboCodeSettings.getInstance().a +
+                            RoboCodeSettings.getInstance().b +
+                            RoboCodeSettings.getInstance().c +
+                            RoboCodeSettings.getInstance().d;
+                docData.put("pairingCode", ps);
+
+                String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
+                    time +"_" + RoboCodeSettings.getInstance().user.getUid();
+
+                db.collection("requestMessages").document(docName).set(docData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            RoboCodeSettings.getInstance().currentAnswerTopic = taskId + "_captured_" + ps;
+                            // TODO : add call to execute task
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            showToast("requesting for an image: failure with connecting server!");
+                        }
+                    });
+            }
+        });
+    }
+
+    private void showToast(final String text) {
+        runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    // OS is old
-                    openCamera();
-                }
-            }
-        });
-
-        approveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(roboCodeTaskActivity.this, "Image is been uploaded ...", Toast.LENGTH_SHORT).show();
-//                Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
-                //this is image_uri
-                FirebaseUser user = RoboCodeSettings.getInstance().user;
-//                Toast.makeText(roboCodeTaskActivity.this, "User is "+user.getEmail()+" image_uri.toString(): "+ image_uri.toString(), Toast.LENGTH_SHORT).show();//todo remove
-                StorageReference riversRef = mStorageRef.child("Users/"+user.getEmail()+"/"+RoboCodeSettings.getInstance().current.ID+"/task_possible_solution.jpg");
-//                StorageReference riversRef = mStorageRef.child(user.getEmail().toString()+image_uri.toString());
-
-                riversRef.putFile(image_uri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                // Get a URL to the uploaded content
-                                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
-                                Toast.makeText(roboCodeTaskActivity.this, "Image was uploaded", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                // Handle unsuccessful uploads
-                                // ...
-                                Toast.makeText(roboCodeTaskActivity.this, "Failure! image was not uploaded", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        });
-
+                });
     }
 
     public void setTask(final roboCodeTask task) {
-
-        image_uri = Uri.EMPTY;
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                // reset the approve solution option
-                approveButton           .setVisibility(View.GONE);
-                myImageView             .setImageURI(Uri.EMPTY);
-                loadImageButton         .setText("Upload Solution");
-
                 // Set the task title
-                titleText               .setText("Task #" + task.ID + ": " + task.Title);
+                titleText.setText("Task #" + task.ID + ": " + task.Title);
                 setTitle("Task #" + task.ID + ": " + task.Title);
-                titlePoints             .setText("| " + task.Points +" Points");
+                titlePoints.setText("| " + task.Points + " Points");
 
                 // Set the task details
-                DescriptionData         .setText(task.Description);
-                DescriptionHints        .setText(task.Hints);
-                DescriptionArrangement  .setText(task.Arrangement);
+                DescriptionData.setText(task.Description);
+                DescriptionHints.setText(task.Hints);
+                DescriptionArrangement.setText(task.Arrangement);
             }
         });
-    }
-
-    private void openCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "New Picture");
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
-        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        // Camera intent
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
-        startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
-
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case PERMISSION_CODE: {
-                if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openCamera();
-                } else {
-                    Toast.makeText(this, "Permission denied...", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            myImageView.setImageURI(image_uri);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    loadImageButton.setText("Change Solution");
-                    approveButton.setVisibility(View.VISIBLE);
-                }
-            });
-        }
     }
 }
