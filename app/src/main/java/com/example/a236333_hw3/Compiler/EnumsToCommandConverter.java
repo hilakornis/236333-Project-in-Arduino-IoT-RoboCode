@@ -140,7 +140,7 @@ public class EnumsToCommandConverter {
                 for (RCCommand cmd : currLine) {
                     if (!cmd.isReachable()) {
                         throw new RCCompilerException(
-                                "Both cases of a condition should be handled! can you do that in the last line?", //todo: HK: do we want to write the message only for condition?
+                                "This command does not seem to be reachable! are you missing anything?",
                                 cmd.getSpinalIndex(),
                                 cmd.getLineIndex());
                     }
@@ -158,7 +158,7 @@ public class EnumsToCommandConverter {
         for (RCCommand prevCmd : prevLine) {
             if (prevCmd instanceof RCIfCommand) {
                 throw new RCCompilerException(
-                        "Condition ",
+                        "Both cases of a condition should be handled! can you do that in the last line?",
                         prevCmd.getSpinalIndex(), prevCmd.getLineIndex());
             }
         }
@@ -353,14 +353,14 @@ public class EnumsToCommandConverter {
                 // illegal jump (with reps) command
                 throw new RCCompilerException(
                         "There seems to be something wrong with the way that the jump command with repetition limits is defined...",
-                        currIndex-1, currentLineIndex);//todo: incorrect indexColumn is sent here for command:  QREnums.JMP_FROM_1,  QREnums.VAR_6,    QREnums.VAR_6,     QREnums.TILE,
+                        currIndex, currentLineIndex);
             }
         }
         else {
             // throw Exception - illegal jump command
             throw new RCCompilerException(
                     "There seems to be something wrong with the way that the jump command is defined...",
-                    currIndex-1, currentLineIndex);
+                    currIndex, currentLineIndex);
         }
 
         // return null; // unreachable
