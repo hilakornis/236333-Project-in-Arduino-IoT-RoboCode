@@ -1,4 +1,4 @@
-=// [START import]
+// [START import]
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -273,33 +273,38 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
     MAX_ARRAY_LENGTH = 2000000;
 
+    unknown_blocks = []
+
     temp_crop_pic_location.forEach(current_temp_location => {
 
-            let base64string = fs.readFileSync(current_temp_location)
-            const imageData = Buffer.from(base64string, 'base64');
+        let base64string = fs.readFileSync(current_temp_location)
+        const imageData = Buffer.from(base64string, 'base64');
 
-            var rawImageData = jpeg.decode(imageData);
+        var rawImageData = jpeg.decode(imageData);
 
-            var clampedArray = new Uint8ClampedArray(rawImageData.data.length);
-            for (var j = 0; j < rawImageData.data.length; j++) {
-                clampedArray[j] = rawImageData.data[j];
-            }
+        var clampedArray = new Uint8ClampedArray(rawImageData.data.length);
+        for (var j = 0; j < rawImageData.data.length; j++) {
+            clampedArray[j] = rawImageData.data[j];
+        }
 
 
-            console.log("Tring to read QR code in block " + i);
-            const code = jsQR(clampedArray, rawImageData.width, rawImageData.height);
+        console.log("Tring to read QR code in block " + i);
+        const code = jsQR(clampedArray, rawImageData.width, rawImageData.height);
 
-            if (code) {
-                console.log("Found QR code in block " + i + " ", code.data);
-                code_values_array.push(code.data);
-            } else {
-                console.log("Couldn't find QR code in block " + i);
-                code_values_array.push("NaN");
-            }
-            i++;
-        })
-        // await Promise.all(promises);
-        // i = 0;
+        if (code) {
+            console.log("Found QR code in block " + i + " ", code.data);
+            code_values_array.push(code.data);
+        } else {
+            console.log("Couldn't find QR code in block " + i);
+            code_values_array.push("NaN");
+            unknown_blocks.push(i);
+        }
+        i++;
+    })
+
+
+    // await Promise.all(promises);
+    // i = 0;
 
     // upload pics from temp location to directory
     // temp_crop_pic_location.forEach(current_temp_location => {
@@ -345,9 +350,16 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
         return_QR_values_string += ',';
     });
 
+    var unknown_blocks_string = '';
+    unknown_blocks.forEach(block => {
+        unknown_blocks_string += block;
+        unknown_blocks_string += ',';
+    })
+
     return_QR_values_string = return_QR_values_string.substring(0, return_QR_values_string.length - 1);
 
     console.log('The return value is: ' + return_QR_values_string);
+    console.log('Could not read the following blocks: ' + unknown_blocks_string);
 
     var myMessage = {
         data: {
