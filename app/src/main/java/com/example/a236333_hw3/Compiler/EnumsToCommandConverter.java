@@ -140,7 +140,7 @@ public class EnumsToCommandConverter {
                 for (RCCommand cmd : currLine) {
                     if (!cmd.isReachable()) {
                         throw new RCCompilerException(
-                                "Both cases of a condition should be handled! can you do that in the last line?",
+                                "Both cases of a condition should be handled! can you do that in the last line?", //todo: HK: do we want to write the message only for condition?
                                 cmd.getSpinalIndex(),
                                 cmd.getLineIndex());
                     }
