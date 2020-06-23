@@ -2,7 +2,10 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Condition;
 
 import androidx.annotation.NonNull;
 
+import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Program.Color;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCIfTileCommand extends RCIfCommand {
     private Color color;      // can only be VAR_COLOR_...
@@ -13,12 +16,6 @@ public class RCIfTileCommand extends RCIfCommand {
 
     public void setColor(Color color) {
         this.color = color;
-    }
-
-    @Override
-    public int getNextIndex() {
-        // TODO : Complete
-        return -1;
     }
 
     @NonNull
@@ -33,5 +30,16 @@ public class RCIfTileCommand extends RCIfCommand {
                 color == Color.COLOR_YELLOW    ? "yellow" :
                 color == Color.COLOR_WHITE     ? "white" :
                 /*color = Color.COLOR_BLACK?*/   "black" ) + "\n";
+    }
+
+    @Override
+    public void execute(RCProgramLog logger, RCProgramStatus status, ArduinoConnector connector) {
+        // TODO : implement
+    }
+
+    @Override
+    public int getNextNoJumpIndex() {
+        // TODO : Complete
+        return -1;
     }
 }

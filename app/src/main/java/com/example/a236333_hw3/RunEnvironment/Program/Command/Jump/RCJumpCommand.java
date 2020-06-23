@@ -2,16 +2,19 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Jump;
 
 import androidx.annotation.NonNull;
 
+import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCJumpCommand extends RCCommand {
 
     private int         numberOfRepsToExecute;
     private int         jumpId;
-    private int         nextIndex;
+    private int nextNoJumpIndex;
 
     public RCJumpCommand() {
-        setNextIndex(NOT_DEF);
+        setNextNoJumpIndex(NOT_DEF);
         setNumberOfRepsToExecute(NOT_DEF);
     }
 
@@ -31,12 +34,12 @@ public class RCJumpCommand extends RCCommand {
         this.jumpId = jumpId;
     }
 
-    public int getNextIndex() {
-        return nextIndex;
+    public int getNextNoJumpIndex() {
+        return nextNoJumpIndex;
     }
 
-    public void setNextIndex(int nextIndex) {
-        this.nextIndex = nextIndex;
+    public void setNextNoJumpIndex(int nextNoJumpIndex) {
+        this.nextNoJumpIndex = nextNoJumpIndex;
     }
 
     @NonNull
@@ -44,8 +47,19 @@ public class RCJumpCommand extends RCCommand {
     public String toString() {
         return "======== JUMP COMMAND " + "\n" +
                 super.toString() +
-                "nextIndex = " + (nextIndex == NOT_DEF ? "not defined" : nextIndex) + "\n" +
+                "nextIndex = " + (nextNoJumpIndex == NOT_DEF ? "not defined" : nextNoJumpIndex) + "\n" +
                 "numberOfReps = " + getNumberOfRepsToExecute() + "\n" +
                 "jumpId" + jumpId + "\n";
+    }
+
+    @Override
+    public void execute(RCProgramLog logger, RCProgramStatus status, ArduinoConnector connector) {
+        // TODO : implement
+    }
+
+
+    public int getNextIndex() {
+        // TODO : implement
+        return -1;
     }
 }

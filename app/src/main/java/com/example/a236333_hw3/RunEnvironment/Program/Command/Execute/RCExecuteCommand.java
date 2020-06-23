@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
 
-public class RCExecuteCommand extends RCCommand {
+public abstract class RCExecuteCommand extends RCCommand {
 
     private int         nextIndex;
 
@@ -12,7 +12,7 @@ public class RCExecuteCommand extends RCCommand {
         setNextIndex(NOT_DEF);
     }
 
-    public int getNextIndex() {
+    public int getNextNoJumpIndex() {
         return nextIndex;
     }
 

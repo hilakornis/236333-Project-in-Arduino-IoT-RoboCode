@@ -2,6 +2,10 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command;
 
 import androidx.annotation.NonNull;
 
+import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
+
 public abstract class RCCommand {
 
     public static final int NOT_DEF = -1;
@@ -20,7 +24,7 @@ public abstract class RCCommand {
         setReachable(false);
     }
 
-    public abstract int getNextIndex();
+    public abstract int getNextNoJumpIndex();
 
     public boolean isReachable() {
         return reachable;
@@ -71,4 +75,6 @@ public abstract class RCCommand {
                 "length = " + getLength()  + "\n" +
                 "reachable = " + (isReachable() ? "yes" : "no") + "\n";
     }
+
+    public abstract void execute(RCProgramLog logger, RCProgramStatus status, ArduinoConnector connector);
 }

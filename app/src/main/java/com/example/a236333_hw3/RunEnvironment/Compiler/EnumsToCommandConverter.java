@@ -111,7 +111,7 @@ public class EnumsToCommandConverter {
                     } else if (prevCmd instanceof RCJumpCommand) {
                         for (RCCommand cmd : currLine) {
                             if (cmd.getSpinalIndex() == prevCmd.getSpinalIndex()) {
-                                ((RCJumpCommand) prevCmd).setNextIndex(cmd.getCommandIndex());
+                                ((RCJumpCommand) prevCmd).setNextNoJumpIndex(cmd.getCommandIndex());
                                 cmd.setReachable(true);
                                 break;
                             }

@@ -2,6 +2,10 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Condition;
 
 import androidx.annotation.NonNull;
 
+import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
+
 public class RCIfBoxNumberCommand extends RCIfCommand {
     int boxId;
 
@@ -13,12 +17,6 @@ public class RCIfBoxNumberCommand extends RCIfCommand {
         this.boxId = boxId;
     }
 
-    @Override
-    public int getNextIndex() {
-        // TODO : Complete
-        return -1;
-    }
-
     @NonNull
     @Override
     public String toString() {
@@ -26,4 +24,16 @@ public class RCIfBoxNumberCommand extends RCIfCommand {
                 super.toString() +
                 "box id = " + getBoxId() + "\n";
     }
+
+    @Override
+    public void execute(RCProgramLog logger, RCProgramStatus status, ArduinoConnector connector) {
+        // TODO : implement
+    }
+
+    @Override
+    public int getNextNoJumpIndex() {
+        // TODO : Complete
+        return -1;
+    }
+
 }

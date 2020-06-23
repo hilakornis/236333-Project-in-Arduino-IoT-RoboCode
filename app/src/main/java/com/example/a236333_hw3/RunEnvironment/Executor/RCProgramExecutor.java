@@ -8,29 +8,36 @@ import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
 
 public class RCProgramExecutor {
 
+    public static final int NO_STEPS_LIMIT = -1;
+
     private RCProgramLog    logger;
     private RCProgramStatus status;
 
     public RCProgramExecutor() {
     }
 
-    public void runProgram(RCProgram program, ArduinoConnector connector) {
+    public int runProgram(RCProgram program, ArduinoConnector connector, int stepsLimit) {
         // Reset variables
         logger = new RCProgramLog();
         status = new RCProgramStatus();
 
-        RCCommand cmd = program.getCommands().get(0);
-        int nextCmdIndex = -1;
+        int nextCmdIndex = 0;
+        int steps = 0;
 
         do {
-            // execute command
-            //cmd.execute(logger, status, connector);
-
             // get next command
-            nextCmdIndex = cmd.getNextIndex();
-        } while (nextCmdIndex != RCCommand.NOT_DEF);
+            RCCommand cmd = program.getCommands().get(nextCmdIndex);
 
+            // execute command
+            cmd.execute(logger, status, connector);
 
+            // get next command index
+            nextCmdIndex = cmd.getNextNoJumpIndex();
+            steps++;
+        } while (nextCmdIndex != RCCommand.NOT_DEF &&
+                 ((stepsLimit == NO_STEPS_LIMIT) || (steps <= stepsLimit)));
+
+        // TODO : here we will return an object that will retrieve a tuple object { logger , status , steps }
+        return steps;
     }
-
 }
