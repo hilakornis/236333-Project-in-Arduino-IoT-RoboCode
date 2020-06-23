@@ -353,7 +353,7 @@ public class EnumsToCommandConverter {
                 // illegal jump (with reps) command
                 throw new RCCompilerException(
                         "There seems to be something wrong with the way that the jump command with repetition limits is defined...",
-                        currIndex-1, currentLineIndex);
+                        currIndex-1, currentLineIndex);//todo: incorrect indexColumn is sent here for command:  QREnums.JMP_FROM_1,  QREnums.VAR_6,    QREnums.VAR_6,     QREnums.TILE,
             }
         }
         else {
