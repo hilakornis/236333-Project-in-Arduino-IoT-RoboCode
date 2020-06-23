@@ -21,13 +21,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.a236333_hw3.Bluetooth.ConnectedThread;
+import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.R;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.Tools.SuccessFailureHandler;
 
-import java.io.IOException;
-import java.util.UUID;
 
 
 public class HomeFragment extends Fragment {
@@ -67,16 +65,8 @@ public class HomeFragment extends Fragment {
 
     TextView status;
 
-    public final static String MODULE_MAC = "98:D3:41:F9:55:D8";
-    public final static int REQUEST_ENABLE_BT = 1;
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    ArduinoConnector conn;
 
-    BluetoothAdapter bta;                 //bluetooth stuff
-    BluetoothSocket mmSocket;             //bluetooth stuff
-    BluetoothDevice mmDevice;             //bluetooth stuff
-
-    ConnectedThread btt = null;           //Our custom thread
-    public Handler mHandler;              //this receives messages from thread
     // Bluetooth code <-----------------------------------------------------------------------------
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -117,21 +107,14 @@ public class HomeFragment extends Fragment {
         forkliftUpNsBtn     = v.findViewById(R.id.homeFragment_bluetoothLiftUp_NS);
         forkliftDownNsBtn   = v.findViewById(R.id.homeFragment_bluetoothLiftDown_NS);
 
-        bta = BluetoothAdapter.getDefaultAdapter();
+        conn = new ArduinoConnector();
+        conn.connectBlutooth(this);
 
-        //if bluetooth is not enabled then create Intent for user to turn it on
-        if(!bta.isEnabled()) {
-            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBTIntent, REQUEST_ENABLE_BT);
-        }else {
-            initiateBluetoothProcess();
-        }
-
-        backwardsBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { trySendData(BACKWARDS); } });
-        forwardsBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { trySendData(FORWARDS); } });
-        leftBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { trySendData(LEFT); } });
-        rightBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { trySendData(RIGHT); } });
-        freeBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { trySendData(FREE); } });
+        backwardsBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(BACKWARDS); } });
+        forwardsBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(FORWARDS); } });
+        leftBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(LEFT); } });
+        rightBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(RIGHT); } });
+        freeBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(FREE); } });
 
         backwardsNsBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -165,7 +148,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         forkliftUpNsBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -190,10 +172,10 @@ public class HomeFragment extends Fragment {
     private void handle_keyDownUp(int eventaction, String whatToDo) {
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
-                trySendData(whatToDo);
+                conn.trySendData(whatToDo);
                 break;
             case MotionEvent.ACTION_UP:
-                trySendData(STOP);
+                conn.trySendData(STOP);
                 break;
         }
     }
@@ -201,21 +183,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_ENABLE_BT){
+        if(requestCode == ArduinoConnector.REQUEST_ENABLE_BT) {
             showToast("resultCode is " + resultCode);
-            initiateBluetoothProcess();
-        }
-    }
-
-
-
-    private void trySendData(final String data) {
-        Log.i("[BLUETOOTH]", "Attempting to send data: " + data);
-        //if we have connection to the bluetoothmodule
-        if (mmSocket.isConnected() && btt != null) {
-            btt.write(data.getBytes());
-        } else {
-            showToast("Something went wrong attempting to send data: " + data);
+            conn.connectBlutooth(this);
         }
     }
 
@@ -250,53 +220,8 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public void initiateBluetoothProcess(){
-        if(bta.isEnabled()){
-            //attempt to connect to bluetooth module
-            BluetoothSocket tmp = null;
-            mmDevice = bta.getRemoteDevice(MODULE_MAC);
-
-            //create socket
-            try {
-                tmp = mmDevice.createRfcommSocketToServiceRecord(MY_UUID);
-                mmSocket = tmp;
-                mmSocket.connect();
-                Log.i("[BLUETOOTH]","Connected to: "+mmDevice.getName());
-                showToast("[BLUETOOTH] Connected to: "+ mmDevice.getName());
-            }catch(IOException e){
-                try{mmSocket.close();}catch(IOException c){return;}
-                showToast("[ERR BLUETOOTH] message: "+ e.getMessage());
-            }
-
-            Log.i("[BLUETOOTH]", "Creating handler");
-            mHandler = new Handler(Looper.getMainLooper()){
-                @Override
-                public void handleMessage(Message msg) {
-                    //super.handleMessage(msg);
-                    if(msg.what == ConnectedThread.RESPONSE_MESSAGE) {
-                        String txt = (String)msg.obj;
-                        if(status.getText().toString().length() >= 30){
-                            status.setText("");
-                            status.append(txt);
-                        }else{
-                            status.append("\n" + txt);
-                        }
-                    }
-                }
-            };
-
-            Log.i("[BLUETOOTH]", "Creating and running Thread");
-            btt = new ConnectedThread(mmSocket,mHandler);
-            btt.start();
-        }
-    }
-
     public void onDestroy() {
         super.onDestroy();
-        try {
-            mmSocket.close();
-            showToast("[BLUETOOTH] closed connection to: "+ mmDevice.getName());
-        }catch(IOException e) {
-        }
+        conn.disconnect();
     }
 }

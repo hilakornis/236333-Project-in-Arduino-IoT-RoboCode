@@ -1,8 +1,8 @@
-package com.example.a236333_hw3.Compiler.Command.Condition;
+package com.example.a236333_hw3.RCProgram.Command.Condition;
 
 import androidx.annotation.NonNull;
 
-import com.example.a236333_hw3.Compiler.Command.RCCommand;
+import com.example.a236333_hw3.RCProgram.Command.RCCommand;
 
 public class RCIfCommand extends RCCommand {
     private int nextTrue;

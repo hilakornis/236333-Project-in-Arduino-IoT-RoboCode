@@ -1,8 +1,8 @@
-package com.example.a236333_hw3.Compiler.Command.Jump;
+package com.example.a236333_hw3.RCProgram.Command.Jump;
 
 import androidx.annotation.NonNull;
 
-import com.example.a236333_hw3.Compiler.Command.RCCommand;
+import com.example.a236333_hw3.RCProgram.Command.RCCommand;
 
 public class RCJumpCommand extends RCCommand {
 

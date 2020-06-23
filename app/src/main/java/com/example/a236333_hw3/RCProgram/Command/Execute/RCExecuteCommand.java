@@ -1,9 +1,8 @@
-package com.example.a236333_hw3.Compiler.Command.Execute;
+package com.example.a236333_hw3.RCProgram.Command.Execute;
 
 import androidx.annotation.NonNull;
 
-import com.example.a236333_hw3.Compiler.Command.RCCommand;
-import com.example.a236333_hw3.Compiler.QREnums;
+import com.example.a236333_hw3.RCProgram.Command.RCCommand;
 
 public class RCExecuteCommand extends RCCommand {
 

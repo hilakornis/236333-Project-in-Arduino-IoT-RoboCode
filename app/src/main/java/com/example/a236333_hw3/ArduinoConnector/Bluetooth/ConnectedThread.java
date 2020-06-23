@@ -1,4 +1,4 @@
-package com.example.a236333_hw3.Bluetooth;
+package com.example.a236333_hw3.ArduinoConnector.Bluetooth;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;

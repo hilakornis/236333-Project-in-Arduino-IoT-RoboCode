@@ -1,22 +1,24 @@
 package com.example.a236333_hw3.Compiler;
 
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteForkDownCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteForkUpCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsGoBackwardCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsGoForwardCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsTurnLeftCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsTurnRightCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteRepsTurnUTurnCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteStopCommand;
-import com.example.a236333_hw3.Compiler.Command.RCCommand;
-import com.example.a236333_hw3.Compiler.Command.Execute.RCExecuteCommand;
-import com.example.a236333_hw3.Compiler.Command.Condition.RCIfBoxColorCommand;
-import com.example.a236333_hw3.Compiler.Command.Condition.RCIfBoxNumberCommand;
-import com.example.a236333_hw3.Compiler.Command.Condition.RCIfCommand;
-import com.example.a236333_hw3.Compiler.Command.Condition.RCIfFenceCommand;
-import com.example.a236333_hw3.Compiler.Command.Condition.RCIfTileCommand;
-import com.example.a236333_hw3.Compiler.Command.Jump.RCJumpCommand;
+import com.example.a236333_hw3.RCProgram.Color;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteForkDownCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteForkUpCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteRepsCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteRepsGoBackwardCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteRepsGoForwardCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteRepsTurnLeftCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteRepsTurnRightCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteRepsTurnUTurnCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteStopCommand;
+import com.example.a236333_hw3.RCProgram.Command.RCCommand;
+import com.example.a236333_hw3.RCProgram.Command.Execute.RCExecuteCommand;
+import com.example.a236333_hw3.RCProgram.Command.Condition.RCIfBoxColorCommand;
+import com.example.a236333_hw3.RCProgram.Command.Condition.RCIfBoxNumberCommand;
+import com.example.a236333_hw3.RCProgram.Command.Condition.RCIfCommand;
+import com.example.a236333_hw3.RCProgram.Command.Condition.RCIfFenceCommand;
+import com.example.a236333_hw3.RCProgram.Command.Condition.RCIfTileCommand;
+import com.example.a236333_hw3.RCProgram.Command.Jump.RCJumpCommand;
+import com.example.a236333_hw3.RCProgram.RCProgram;
 
 import java.util.ArrayList;
 
@@ -43,7 +45,7 @@ public class EnumsToCommandConverter {
     private ArrayList<RCCommand> commands;
 
     // Main converter function
-    public RCProgram getCommandArray(ArrayList<QREnums> enums) throws RCCompilerException {
+    public RCProgram getProgram(ArrayList<QREnums> enums) throws RCCompilerException {
         // helps creating the current RCProgram
         commands = new ArrayList<>();
 
@@ -271,7 +273,7 @@ public class EnumsToCommandConverter {
                     (currIndex+2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+2]))) {
                     RCIfTileCommand cmd = new RCIfTileCommand();
                     cmd.setLength(currLength + 2);
-                    cmd.setColor(enumsRow[currIndex+1]);
+                    cmd.setColor(convertColor(enumsRow[currIndex+1]));
                     return cmd;
                 } else {
                     throw new RCCompilerException(
@@ -286,7 +288,7 @@ public class EnumsToCommandConverter {
                     (currIndex+2 >= COLS || contains(spinalOrNaNCards, enumsRow[currIndex+2]))) {
                     RCIfBoxColorCommand cmd = new RCIfBoxColorCommand();
                     cmd.setLength(currLength + 2);
-                    cmd.setColor(enumsRow[currIndex+1]);
+                    cmd.setColor(convertColor(enumsRow[currIndex+1]));
                     return cmd;
                 }
                 // handle box number condition -> COND card + BOX card + DIGIT card ( + optional, one more DIGIT card)
@@ -324,6 +326,15 @@ public class EnumsToCommandConverter {
                 //break; // code unreachable!
         }
         //return null; // code unreachable!
+    }
+
+    private Color convertColor(QREnums qrEnums) {
+        return (qrEnums == QREnums.VAR_COLOR_RED       ? Color.COLOR_RED    :
+                qrEnums == QREnums.VAR_COLOR_BLUE      ? Color.COLOR_BLUE   :
+                qrEnums == QREnums.VAR_COLOR_GREEN     ? Color.COLOR_GREEN  :
+                qrEnums == QREnums.VAR_COLOR_YELLOW    ? Color.COLOR_YELLOW :
+                qrEnums == QREnums.VAR_COLOR_WHITE     ? Color.COLOR_WHITE  :
+               /*qrEnums = QREnums.VAR_COLOR_BLACK?*/   Color.COLOR_BLACK );
     }
 
     private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) throws RCCompilerException {
