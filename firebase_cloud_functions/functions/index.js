@@ -1,4 +1,4 @@
-// [START import]
+=// [START import]
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -110,18 +110,45 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     // var go_down = 945;
     // var go_left = 88;
 
-    var basic_qr_size = "110X110";
+    // var basic_qr_size = "110X110";
+    // // var go_down = 242;
+    // // var go_left = 10;
+
+    // var QR_grid = ["24+217", "142+214", "258+214", "377+212", "493+211", "611+207",
+    //     "26+337", "146+335", "261+335", "377+331", "495+331", "614+327",
+    //     "28+453", "146+450", "265+450", "380+450", "496+446", "613+444",
+    //     "30+568", "150+568", "265+566", "380+565", "497+564", "614+564",
+    //     "33+685", "151+684", "264+683", "381+680", "497+681", "615+680",
+    //     "34+921", "150+919", "267+916", "382+917", "504+917", "622+919",
+    //     "34+1036", "153+1037", "270+1037", "388+1036", "506+1037", "623+1036"
+    // ];
+
+    var basic_qr_size = "480X480";
     // var go_down = 242;
     // var go_left = 10;
 
-    var QR_grid = ["24+217", "142+214", "258+214", "377+212", "493+211", "611+207",
-        "26+337", "146+335", "261+335", "377+331", "495+331", "614+327",
-        "28+453", "146+450", "265+450", "380+450", "496+446", "613+444",
-        "30+568", "150+568", "265+566", "380+565", "497+564", "614+564",
-        "33+685", "151+684", "264+683", "381+680", "497+681", "615+680",
-        "34+921", "150+919", "267+916", "382+917", "504+917", "622+919",
-        "34+1036", "153+1037", "270+1037", "388+1036", "506+1037", "623+1036"
-    ];
+
+    var QR_grid = ["850+78", "855+542", "855+1016", "841+1480", "832+1949", "818+2423",
+        "1319+74", "1315+552", "1319+1011", "1310+1485", "1301+1949", "1296+2432",
+        "1788+87", "1788+552", "1788+1025", "1779+1494", "1774+1958", "1765+2432",
+        "2257+97", "2262+570", "2252+1030", "2252+1485", "2243+1963", "2234+2436",
+        "2726+92", "2721+570", "2717+1030", "2712+1499", "2712+1963", "2708+2441",
+        "3195+97", "3195+575", "3190+1034", "3186+1503", "3181+1972", "3181+2441",
+        "3678+97", "3664+565", "3659+1039", "3655+1508", "3659+1977", "3655+2459",
+        "4146+101", "4146+575", "4137+1048", "4133+1517", "4113+1990", "4133+2469"
+    ]
+
+
+    // var QR_grid = ["78+850", "542+855", "1016+855", "1480+841", "1949+832", "2423+818",
+    //     "74+1319", "552+1315", "1011+1319", "1485+1310", "1949+1301", "2432+1296",
+    //     "87+1788", "552+1788", "1025+1788", "1494+1779", "1958+1774", "2432+1765",
+    //     "97+2257", "570+2262", "1030+2252", "1485+2252", "1963+2243", "2436+2234",
+    //     "92+2726", "570+2721", "1030+2717", "1499+2712", "1963+2712", "2441+2708",
+    //     "97+3195", "575+3195", "1034+3190", "1503+3186", "1972+3181", "2441+3181",
+    //     "97+3678", "565+3664", "1039+3659", "1508+3655", "1977+3659", "2459+3655",
+    //     "101+4146", "575+4146", "1048+4137", "1517+4133", "1990+4133", "2469+4133"
+    // ];
+    //var QR_grid = ["850+78"]
 
 
     // Exit if this is triggered on a file that is not an image.
@@ -130,7 +157,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     }
 
     // Exit if the image is already a croped.
-    if (fileName.startsWith('croped_') || !fileName.endsWith('1328.jpg')) {
+    if (fileName.startsWith('croped_')) {
         return console.log('Already a croped pic.');
     }
 
@@ -169,7 +196,7 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
         temp_crop_pic_location.push(current_location);
 
         // Generate a croped using ImageMagick.
-        const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', basic_qr_size + "+" + QR_location, current_location], {
+        const p = spawn('convert', [tempLocalFile, '-gravity', 'North-West', '-crop', basic_qr_size + "+" + QR_location, current_location, ], {
             capture: ['stdout', 'stderr']
         });
         //await spawn('convert', [tempLocalFile, '-strip', '-interlace', 'Plane', '-quality', '0', tempLocalFile]);
@@ -200,26 +227,44 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     //     });
     // });
 
+    await Promise.all(promises);
+
+    promises = [];
+    i = 0;
+
+
+    // change to gray
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = spawn('convert', [current_temp_location, '-type', 'Grayscale ', current_temp_location], {
+            capture: ['stdout', 'stderr']
+        });
+        promises.push(p);
+        console.log('Changed picture color at ', current_temp_location);
+        i++;
+    })
+
+    // Wait for all pictures to be changed to grey 
     await Promise.all(promises)
 
     promises = [];
     i = 0;
 
-    // // resize all pictures
-    // temp_crop_pic_location.forEach(current_temp_location => {
-    //     const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
-    //         capture: ['stdout', 'stderr']
-    //     });
-    //     promises.push(p);
-    //     console.log('resized picture at ', current_location);
-    //     i++;
-    // })
+
+    // resize all pictures
+    temp_crop_pic_location.forEach(current_temp_location => {
+        const p = spawn('convert', [current_temp_location, '-resize', '100x100', current_temp_location], {
+            capture: ['stdout', 'stderr']
+        });
+        promises.push(p);
+        console.log('resized picture at ', current_temp_location);
+        i++;
+    })
 
     // Wait for all pictures to be croped 
-    // await Promise.all(promises)
+    await Promise.all(promises);
 
-    // promises = [];
-    // i = 0;
+    promises = [];
+    i = 0;
 
     const width = 100; //in pixels
     const height = 100; //in pixels
@@ -230,41 +275,42 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
 
     temp_crop_pic_location.forEach(current_temp_location => {
 
-        let base64string = fs.readFileSync(current_temp_location)
-        const imageData = Buffer.from(base64string, 'base64');
+            let base64string = fs.readFileSync(current_temp_location)
+            const imageData = Buffer.from(base64string, 'base64');
 
-        var rawImageData = jpeg.decode(imageData);
+            var rawImageData = jpeg.decode(imageData);
 
-        var clampedArray = new Uint8ClampedArray(rawImageData.data.length);
-        for (var j = 0; j < rawImageData.data.length; j++) {
-            clampedArray[j] = rawImageData.data[j];
-        }
+            var clampedArray = new Uint8ClampedArray(rawImageData.data.length);
+            for (var j = 0; j < rawImageData.data.length; j++) {
+                clampedArray[j] = rawImageData.data[j];
+            }
 
 
-        console.log("Tring to read QR code in block " + i);
-        const code = jsQR(clampedArray, rawImageData.width, rawImageData.height);
+            console.log("Tring to read QR code in block " + i);
+            const code = jsQR(clampedArray, rawImageData.width, rawImageData.height);
 
-        if (code) {
-            console.log("Found QR code in block " + i + " ", code.data);
-            code_values_array.push(code.data);
-        } else {
-            console.log("Couldn't find QR code in block " + i);
-            code_values_array.push("NaN");
-        }
-        i++;
-    })
-
-    i = 0;
+            if (code) {
+                console.log("Found QR code in block " + i + " ", code.data);
+                code_values_array.push(code.data);
+            } else {
+                console.log("Couldn't find QR code in block " + i);
+                code_values_array.push("NaN");
+            }
+            i++;
+        })
+        // await Promise.all(promises);
+        // i = 0;
 
     // upload pics from temp location to directory
-    temp_crop_pic_location.forEach(current_temp_location => {
-        if (code_values_array[i] === "NaN") {
-            const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
-            promises.push(p)
-            console.log('croped uploaded to Storage at', final_pic_location[i]);
-        }
-        i++;
-    })
+    // temp_crop_pic_location.forEach(current_temp_location => {
+
+    //     const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
+    //     promises.push(p)
+    //     console.log('croped uploaded to Storage at', final_pic_location[i]);
+    //     i++;
+    // })
+    // await Promise.all(promises);
+    // i = 0;
 
     // temp_crop_pic_location.forEach(current_temp_location => {
     //     const p = bucket.upload(current_temp_location, { destination: final_pic_location[i], uploadType: "media", metadata: metadata });
@@ -275,7 +321,8 @@ exports.generateCropedImage = functions.storage.object().onFinalize(async(object
     // })
 
     // Wait for all croped pics to be uploaded
-    await Promise.all(promises)
+    // i = 0;
+    // await Promise.all(promises)
 
     // Once the image has been uploaded delete the local files to free up disk space.
     temp_crop_pic_location.forEach(current_temp_location => {
