@@ -3,19 +3,22 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Jump;
 import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
-import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
-import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCJumpCommand extends RCCommand {
 
     private int         numberOfRepsToExecute;
     private int         jumpId;
-    private int nextNoJumpIndex;
+    private int         nextNoJumpIndex;
+
+    private int         internalLoopCounter;
+    private int         actualNextIndex;
 
     public RCJumpCommand() {
         setNextNoJumpIndex(NOT_DEF);
         setNumberOfRepsToExecute(NOT_DEF);
+        internalLoopCounter = 0;
+        actualNextIndex = NOT_DEF;
     }
 
     public int getNumberOfRepsToExecute() {
@@ -53,13 +56,19 @@ public class RCJumpCommand extends RCCommand {
     }
 
     @Override
-    public void execute(RCProgramLog logger, RCProgramStatus status, ArduinoConnector connector) {
-        // TODO : implement
+    public void execute(ArduinoConnector connector) {
+        internalLoopCounter++;
+
+        if (internalLoopCounter > getNumberOfRepsToExecute() && getNumberOfRepsToExecute() != NOT_DEF) {
+            actualNextIndex = getNextNoJumpIndex();
+            internalLoopCounter = 0;
+        } else {
+            actualNextIndex = getJumpId();
+        }
     }
 
 
     public int getNextIndex() {
-        // TODO : implement
-        return -1;
+        return actualNextIndex;
     }
 }

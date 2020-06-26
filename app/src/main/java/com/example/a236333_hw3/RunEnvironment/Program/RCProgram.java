@@ -1,5 +1,7 @@
 package com.example.a236333_hw3.RunEnvironment.Program;
 
+import androidx.annotation.NonNull;
+
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
 
 import java.util.ArrayList;
@@ -40,6 +42,16 @@ public class RCProgram {
 
     public void setJump_3_index(int jump_3_index) {
         this.jump_3_index = jump_3_index;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "======== RC PROGRAM " + "\n" +
+                commands.toString() +
+                "getJump_1_index = " + getJump_1_index() + "\n" +
+                "getJump_2_index = " + getJump_2_index() + "\n" +
+                "getJump_3_index = " + getJump_3_index() + "\n" ;
     }
 
 }

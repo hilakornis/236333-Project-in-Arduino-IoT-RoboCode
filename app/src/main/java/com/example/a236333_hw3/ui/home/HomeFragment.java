@@ -1,13 +1,8 @@
 package com.example.a236333_hw3.ui.home;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,6 +18,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.R;
+import com.example.a236333_hw3.RunEnvironment.Compiler.EnumsToCommandConverter;
+import com.example.a236333_hw3.RunEnvironment.Compiler.QREnums;
+import com.example.a236333_hw3.RunEnvironment.Compiler.RCCompiler;
+import com.example.a236333_hw3.RunEnvironment.Compiler.RCCompilerException;
+import com.example.a236333_hw3.RunEnvironment.Executor.RCProgramExecutor;
+import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.Tools.SuccessFailureHandler;
 
@@ -34,36 +35,22 @@ public class HomeFragment extends Fragment {
     LinearLayout homeFragment_finishLoadLayout, homeFragment_doLoadLayout;
 
     // Bluetooth code ----------------------------------------------------------------------------->
-    final String ON = "1";
-    final String OFF = "1";
-    final String FORWARDS  = "1";
-    final String BACKWARDS  = "2";
-    final String RIGHT      = "3";
-    final String LEFT       = "4";
-    final String FORWARDS_NS  = "5";
-    final String BACKWARDS_NS  = "6";
-    final String RIGHT_NS      = "7";
-    final String LEFT_NS       = "8";
-    final String FREE       = "1";
-    final String STOP       = "9";
-    final String UP_NS      = "U";
-    final String DOWN_NS    = "D";
+    final String CMD_FORWARDS    = "1";
+    final String CMD_BACKWARDS   = "2";
+    final String CMD_LEFT        = "3";
+    final String CMD_RIGHT       = "4";
+    final String CMD_U_TURN      = "5";
+    final String CMD_FORK_UP     = "6";
+    final String CMD_FORK_DOWN   = "7";
 
-    Button connectBtn;
     Button backwardsBtn;
     Button forwardsBtn;
     Button leftBtn;
     Button rightBtn;
-    Button backwardsNsBtn;
-    Button forwardsNsBtn;
-    Button leftNsBtn;
-    Button rightNsBtn;
-    Button freeBtn;
-
-    Button forkliftUpNsBtn;
-    Button forkliftDownNsBtn;
-
-    TextView status;
+    Button uTurnBtn;
+    Button forkliftUpBtn;
+    Button forkliftDownBtn;
+    Button testBtn;
 
     ArduinoConnector conn;
 
@@ -92,92 +79,43 @@ public class HomeFragment extends Fragment {
         // Bluetooth code ------------------------------------------------------------------------->
         Log.i("[BLUETOOTH]", "Creating listeners");
 
-        connectBtn      = v.findViewById(R.id.homeFragment_bluetoothConnect);
-        backwardsBtn    = v.findViewById(R.id.homeFragment_bluetoothBackwards);
-        forwardsBtn     = v.findViewById(R.id.homeFragment_bluetoothForwards);
-        leftBtn         = v.findViewById(R.id.homeFragment_bluetoothLeft);
-        rightBtn        = v.findViewById(R.id.homeFragment_bluetoothRight);
-        backwardsNsBtn  = v.findViewById(R.id.homeFragment_bluetoothBackwards_NS);
-        forwardsNsBtn   = v.findViewById(R.id.homeFragment_bluetoothForwards_NS);
-        leftNsBtn       = v.findViewById(R.id.homeFragment_bluetoothLeft_NS);
-        rightNsBtn      = v.findViewById(R.id.homeFragment_bluetoothRight_NS);
-        status          = v.findViewById(R.id.homeFragment_bluetoothStatus);
-        freeBtn         = v.findViewById(R.id.homeFragment_freeStyle);
-
-        forkliftUpNsBtn     = v.findViewById(R.id.homeFragment_bluetoothLiftUp_NS);
-        forkliftDownNsBtn   = v.findViewById(R.id.homeFragment_bluetoothLiftDown_NS);
+        backwardsBtn    = v.findViewById(R.id.homeFragment_bluetoothBackwards_NS);
+        forwardsBtn     = v.findViewById(R.id.homeFragment_bluetoothForwards_NS);
+        leftBtn         = v.findViewById(R.id.homeFragment_bluetoothLeft_NS);
+        rightBtn        = v.findViewById(R.id.homeFragment_bluetoothRight_NS);
+        uTurnBtn        = v.findViewById(R.id.homeFragment_bluetoothUTurn_NS);
+        forkliftUpBtn   = v.findViewById(R.id.homeFragment_bluetoothLiftUp_NS);
+        forkliftDownBtn = v.findViewById(R.id.homeFragment_bluetoothLiftDown_NS);
+        testBtn         = v.findViewById(R.id.homeFragment_runTest);
 
         conn = new ArduinoConnector();
         conn.connectBlutooth(this);
 
-        backwardsBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(BACKWARDS); } });
-        forwardsBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(FORWARDS); } });
-        leftBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(LEFT); } });
-        rightBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(RIGHT); } });
-        freeBtn.setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(FREE); } });
+        backwardsBtn     .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_FORWARDS ); } });
+        forwardsBtn      .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_BACKWARDS); } });
+        leftBtn          .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_LEFT     ); } });
+        rightBtn         .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_RIGHT    ); } });
+        uTurnBtn         .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_U_TURN   ); } });
+        forkliftUpBtn    .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_FORK_UP  ); } });
+        forkliftDownBtn  .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_FORK_DOWN); } });
+        testBtn          .setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            RCProgram commands = RCCompiler.getInstance().Compile("T_L,NaN,NaN,NaN,NaN,NaN,T_R,NaN,NaN,NaN,NaN,NaN,T_U,NaN,NaN,NaN,NaN,NaN,G_FW,NaN,NaN,NaN,NaN,NaN,G_BK,NaN,NaN,NaN,NaN,NaN,F_U,NaN,NaN,NaN,NaN,NaN,F_D,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN");
+                            Log.i("[home fragment]", commands.toString());
+                            RCProgramExecutor.getInstance().runProgram(commands, conn, RCProgramExecutor.NO_STEPS_LIMIT);
+                        }  catch (RCCompilerException | InterruptedException e) {
+                        }
 
-        backwardsNsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                handle_keyDownUp(event.getAction(), BACKWARDS_NS);
-                return false;
-            }
-        });
 
-        forwardsNsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                handle_keyDownUp(event.getAction(), FORWARDS_NS);
-                return false;
-            }
-        });
-
-        leftNsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                handle_keyDownUp(event.getAction(), LEFT_NS);
-                return false;
-            }
-        });
-
-        rightNsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                handle_keyDownUp(event.getAction(), RIGHT_NS);
-                return false;
-            }
-        });
-
-        forkliftUpNsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                handle_keyDownUp(event.getAction(), UP_NS);
-                return false;
-            }
-        });
-
-        forkliftDownNsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                handle_keyDownUp(event.getAction(), DOWN_NS);
-                return false;
-            }
-        });
+                    }
+                });
 
         // Bluetooth code <-------------------------------------------------------------------------
 
         return v;
-    }
-
-    private void handle_keyDownUp(int eventaction, String whatToDo) {
-        switch (eventaction) {
-            case MotionEvent.ACTION_DOWN:
-                conn.trySendData(whatToDo);
-                break;
-            case MotionEvent.ACTION_UP:
-                conn.trySendData(STOP);
-                break;
-        }
     }
 
     @Override

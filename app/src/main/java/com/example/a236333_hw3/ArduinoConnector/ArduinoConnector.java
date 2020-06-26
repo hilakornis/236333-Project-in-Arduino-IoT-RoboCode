@@ -14,6 +14,8 @@ import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.UUID;
 
 /* TODO : IMPORTANT !!
@@ -43,8 +45,16 @@ public class ArduinoConnector {
     ConnectedThread btt = null;           //Our custom thread
     public Handler mHandler;              //this receives messages from thread
 
+    public ArrayDeque<String> getResults() {
+        return results;
+    }
+
+    ArrayDeque<String> results;
+
     public ArduinoConnector() {
+
         this.bta = BluetoothAdapter.getDefaultAdapter();
+        this.results = new ArrayDeque<String>();
     }
 
     public void connectBlutooth(Activity currentContext) {
@@ -91,11 +101,8 @@ public class ArduinoConnector {
             mHandler = new Handler(Looper.getMainLooper()){
                 @Override
                 public void handleMessage(Message msg) {
-                    //super.handleMessage(msg);
-                    if(msg.what == ConnectedThread.RESPONSE_MESSAGE) {
-                        String txt = (String)msg.obj;
-                        // TODO : handle received data
-                    }
+                    super.handleMessage(msg);
+                    if(msg.what == ConnectedThread.RESPONSE_MESSAGE)  results.push(((String)msg.obj).split("-", 2)[0]);
                 }
             };
 
