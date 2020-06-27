@@ -176,59 +176,6 @@
                                             android:id="@+id/homeFragment_bluetoothStatus"
                                             />
                                 </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:layout_marginTop="0dp"
-                                    android:layout_marginLeft="20dp"
-                                    android:layout_marginRight="20dp"
-                                    android:layout_marginBottom="10dp"
-                                    android:layout_gravity="center"
-                                    android:visibility="gone"
-                                    >
-                                        <Button
-                                            android:layout_width="50dp"
-                                            android:layout_height="50dp"
-                                            android:layout_margin="5dp"
-                                            android:text="🔗"
-                                            android:layout_gravity="center"
-                                            android:id="@+id/homeFragment_bluetoothConnect"
-                                            android:visibility="gone"
-                                            />
-                                        <Button
-                                            android:layout_width="50dp"
-                                            android:layout_height="50dp"
-                                            android:layout_margin="5dp"
-                                            android:text="⇦"
-                                            android:layout_gravity="center"
-                                            android:id="@+id/homeFragment_bluetoothLeft"
-                                            />
-                                        <Button
-                                            android:layout_width="50dp"
-                                            android:layout_height="50dp"
-                                            android:layout_margin="5dp"
-                                            android:text="⇧"
-                                            android:layout_gravity="center"
-                                            android:id="@+id/homeFragment_bluetoothForwards"
-                                            />
-                                        <Button
-                                            android:layout_width="50dp"
-                                            android:layout_height="50dp"
-                                            android:layout_margin="5dp"
-                                            android:text="⇩"
-                                            android:layout_gravity="center"
-                                            android:id="@+id/homeFragment_bluetoothBackwards"
-                                            />
-                                        <Button
-                                            android:layout_width="50dp"
-                                            android:layout_height="50dp"
-                                            android:layout_margin="5dp"
-                                            android:text="⇨"
-                                            android:layout_gravity="center"
-                                            android:id="@+id/homeFragment_bluetoothRight"
-                                            />
-                                </LinearLayout>
 
                                 <LinearLayout
                                     android:layout_width="wrap_content"
@@ -240,14 +187,6 @@
                                     android:layout_marginBottom="10dp"
                                     android:layout_gravity="center"
                                     >
-                                        <Button
-                                            android:layout_width="50dp"
-                                            android:layout_height="50dp"
-                                            android:layout_margin="5dp"
-                                            android:text="🆓"
-                                            android:layout_gravity="center"
-                                            android:id="@+id/homeFragment_freeStyle"
-                                            />
                                         <Button
                                             android:layout_width="50dp"
                                             android:layout_height="50dp"
@@ -291,6 +230,22 @@
                                     android:layout_marginBottom="10dp"
                                     android:layout_gravity="center"
                                     >
+                                    <Button
+                                            android:layout_width="50dp"
+                                            android:layout_height="50dp"
+                                            android:layout_margin="5dp"
+                                            android:text="T"
+                                            android:layout_gravity="center"
+                                            android:id="@+id/homeFragment_runTest"
+                                            />
+                                        <Button
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_margin="5dp"
+                                    android:text="U"
+                                    android:layout_gravity="center"
+                                    android:id="@+id/homeFragment_bluetoothUTurn_NS"
+                                    />
                                 <Button
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"

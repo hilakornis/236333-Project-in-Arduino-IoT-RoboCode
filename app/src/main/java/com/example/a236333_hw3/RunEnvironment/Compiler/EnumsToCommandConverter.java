@@ -329,12 +329,12 @@ public class EnumsToCommandConverter {
     }
 
     private Color convertColor(QREnums qrEnums) {
-        return (qrEnums == QREnums.VAR_COLOR_RED       ? Color.COLOR_RED    :
-                qrEnums == QREnums.VAR_COLOR_BLUE      ? Color.COLOR_BLUE   :
-                qrEnums == QREnums.VAR_COLOR_GREEN     ? Color.COLOR_GREEN  :
-                qrEnums == QREnums.VAR_COLOR_YELLOW    ? Color.COLOR_YELLOW :
-                qrEnums == QREnums.VAR_COLOR_WHITE     ? Color.COLOR_WHITE  :
-               /*qrEnums = QREnums.VAR_COLOR_BLACK?*/   Color.COLOR_BLACK );
+        return (qrEnums == QREnums.VAR_COLOR_RED       ? Color.RED :
+                qrEnums == QREnums.VAR_COLOR_BLUE      ? Color.BLUE :
+                qrEnums == QREnums.VAR_COLOR_GREEN     ? Color.GREEN :
+                qrEnums == QREnums.VAR_COLOR_YELLOW    ? Color.YELLOW :
+                qrEnums == QREnums.VAR_COLOR_WHITE     ? Color.WHITE :
+               /*qrEnums = QREnums.VAR_COLOR_BLACK?*/   Color.BLACK);
     }
 
     private RCJumpCommand readJumpCommand(QREnums[] enumsRow, int currIndex, int currLength) throws RCCompilerException {

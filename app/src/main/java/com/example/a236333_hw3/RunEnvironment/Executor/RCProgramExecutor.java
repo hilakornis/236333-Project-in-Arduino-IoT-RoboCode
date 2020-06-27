@@ -10,26 +10,32 @@ public class RCProgramExecutor {
 
     public static final int NO_STEPS_LIMIT = -1;
 
-    private RCProgramLog    logger;
-    private RCProgramStatus status;
+    private static RCProgramExecutor _inst;
 
-    public RCProgramExecutor() {
+    public static RCProgramExecutor getInstance() {
+        if (_inst == null) _inst = new RCProgramExecutor();
+        return _inst;
     }
 
-    public int runProgram(RCProgram program, ArduinoConnector connector, int stepsLimit) {
+    private RCProgramExecutor() {
+    }
+
+    public int runProgram(RCProgram program, ArduinoConnector connector, int stepsLimit) throws InterruptedException {
         // Reset variables
-        logger = new RCProgramLog();
-        status = new RCProgramStatus();
+        RCProgramStatus.getInstance().init();
+        RCProgramLog.getInstance().init();
 
         int nextCmdIndex = 0;
         int steps = 0;
+
+        // TODO : ask Arduino for initial status
 
         do {
             // get next command
             RCCommand cmd = program.getCommands().get(nextCmdIndex);
 
             // execute command
-            cmd.execute(logger, status, connector);
+            cmd.execute(connector);
 
             // get next command index
             nextCmdIndex = cmd.getNextNoJumpIndex();

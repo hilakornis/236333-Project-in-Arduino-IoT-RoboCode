@@ -3,9 +3,7 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Condition;
 import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
-import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Program.Color;
-import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCIfTileCommand extends RCIfCommand {
     private Color color;      // can only be VAR_COLOR_...
@@ -24,16 +22,16 @@ public class RCIfTileCommand extends RCIfCommand {
         return "======== TILE CONDITION " + "\n" +
                 super.toString() +
                 "color = " +
-                (color == Color.COLOR_RED      ? "red" :
-                color == Color.COLOR_BLUE      ? "blue" :
-                color == Color.COLOR_GREEN     ? "green" :
-                color == Color.COLOR_YELLOW    ? "yellow" :
-                color == Color.COLOR_WHITE     ? "white" :
+                (color == Color.RED ? "red" :
+                color == Color.BLUE ? "blue" :
+                color == Color.GREEN ? "green" :
+                color == Color.YELLOW ? "yellow" :
+                color == Color.WHITE ? "white" :
                 /*color = Color.COLOR_BLACK?*/   "black" ) + "\n";
     }
 
     @Override
-    public void execute(RCProgramLog logger, RCProgramStatus status, ArduinoConnector connector) {
+    public void execute(ArduinoConnector connector) {
         // TODO : implement
     }
 
