@@ -238,19 +238,21 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                                         // Get a URL to the uploaded content
                                                         Uri downloadUrl = taskSnapshot.getUploadSessionUri();
                                                         showToast("Image was uploaded");
+                                                        startOnCaptureFlow();
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception exception) {
                                                         showToast("Failure! image was not uploaded");
+                                                        allow_new = true;
                                                     }
                                                 });
 
                                     } catch (FileNotFoundException e) {
                                         showToast("Failure! image was not uploaded! file stream error!");
+                                        allow_new = true;
                                     }
-                                    startOnCaptureFlow();
                                 }// else if (pictureUrl.contains("1_pic.jpg")) {
                                 //                                    //uploadFrontPhoto.setImageBitmap(scaled);
                                 //                                //}
