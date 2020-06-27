@@ -57,6 +57,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
     Button      loadImageButton;
 
 
+
     // ============================================================================================
 
     @Override
@@ -99,21 +100,25 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                 docData.put("taskId",       taskId);
                 docData.put("text",         "A picture of the board is required");
                 docData.put("date",         sdf.format(cal.getTime()));
-                final String ps = RoboCodeSettings.getInstance().a +
-                            RoboCodeSettings.getInstance().b +
-                            RoboCodeSettings.getInstance().c +
-                            RoboCodeSettings.getInstance().d;
-                docData.put("pairingCode", ps);
+                final String pairingCode =  RoboCodeSettings.getInstance().a +
+                                            RoboCodeSettings.getInstance().b +
+                                            RoboCodeSettings.getInstance().c +
+                                            RoboCodeSettings.getInstance().d;
+                docData.put("pairingCode", pairingCode);
 
                 String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
-                    time +"_" + RoboCodeSettings.getInstance().user.getUid();
+                                time +"_" + RoboCodeSettings.getInstance().user.getUid();
 
                 db.collection("requestMessages").document(docName).set(docData)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            RoboCodeSettings.getInstance().currentAnswerTopic = taskId + "_captured_" + ps;
-                            // TODO : add call to execute task
+                            RoboCodeSettings.getInstance().currentAnswerTopic = taskId + "_captured_" + pairingCode;
+
+                            // Calling and closing execute task
+                            startActivity(new Intent(roboCodeTaskActivity.this, ExecuteTask.class));
+                            roboCodeTaskActivity.this.finish();
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -135,6 +140,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     public void setTask(final roboCodeTask task) {
         runOnUiThread(new Runnable() {

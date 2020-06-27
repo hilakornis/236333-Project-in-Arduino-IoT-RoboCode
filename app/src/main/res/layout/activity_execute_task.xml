@@ -10,32 +10,141 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical">
-
-            <TextView
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:visibility="visible"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="Sending To Server..."
-                android:textSize="30dp"
-                android:layout_gravity="center"
-                />
-            <ProgressBar
-                android:layout_margin="15dp"
-                android:id="@+id/loadTasksProgressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:src="@drawable/logono_bg"
                 android:layout_gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/Step1Panel">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Server Proccessing..."
+                    android:textSize="30dp"
+                    android:layout_gravity="center"
+                    />
+                <ProgressBar
+                    android:layout_margin="15dp"
+                    android:id="@+id/loadTasksProgressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/logono_bg"
+                    android:layout_gravity="center"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/Step2Panel">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Results Are:"
+                    android:textSize="30dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="First:"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:id="@+id/res_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="----"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Second:"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:id="@+id/res_2"
+                    android:text="----"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
                 />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Third:"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:id="@+id/res_3"
+                    android:text="----"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Fourth:"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:id="@+id/res_4"
+                    android:text="----"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Fifth:"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:id="@+id/res_5"
+                    android:text="----"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:textSize="20dp"
+                    android:layout_gravity="center"
+                    />
+            </LinearLayout>
+    </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

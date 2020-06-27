@@ -59,6 +59,7 @@ import java.util.TreeMap;
 public class CaptureModeActivity extends AppCompatActivity implements
         PictureCapturingListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
+
     private static final String[] requiredPermissions = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
@@ -67,6 +68,10 @@ public class CaptureModeActivity extends AppCompatActivity implements
 
     private String pairingCode;
     private String taskId = "008";
+
+    private boolean allow_new = true;
+    private int     capture_loop_counter = 0;
+    private String  timeStamp = "";
 
     // UI Elements ================================================================================
     private Button backButton;
@@ -202,8 +207,9 @@ public class CaptureModeActivity extends AppCompatActivity implements
                 final String path =
                         "Users"
                         + "/" + user.getEmail()
-                        + "/" + taskId + "_" + System.currentTimeMillis()
-                        + "/" + user.getEmail() + "_" + taskId + "_captured_" + pairingCode + ".jpg";
+                        + "/" + taskId + "_" + timeStamp
+                        + "/" + capture_loop_counter + "_" + user.getEmail() + "_" + taskId + "_captured_" + pairingCode + ".jpg";
+                capture_loop_counter++;
 
                 runOnUiThread(
                         new Runnable() {
@@ -244,9 +250,10 @@ public class CaptureModeActivity extends AppCompatActivity implements
                                     } catch (FileNotFoundException e) {
                                         showToast("Failure! image was not uploaded! file stream error!");
                                     }
+                                    startOnCaptureFlow();
                                 }// else if (pictureUrl.contains("1_pic.jpg")) {
-                                    //uploadFrontPhoto.setImageBitmap(scaled);
-                                //}
+                                //                                    //uploadFrontPhoto.setImageBitmap(scaled);
+                                //                                //}
                             }
                         });
                 //showToast("Picture saved to " + pictureUrl);
@@ -260,25 +267,38 @@ public class CaptureModeActivity extends AppCompatActivity implements
     private BroadcastReceiver messageHandler = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String userId = intent.getExtras().get("title").toString();
-            taskId = intent.getExtras().get("message").toString();
-            CaptureModeActivity.this.showToast("Starting capture! task id is: " + taskId + ", userId is " + userId);
+            if (allow_new) {
+                allow_new = false;
+                timeStamp = String.valueOf(System.currentTimeMillis());
+                capture_loop_counter = 0;
 
-            if (RoboCodeSettings.getInstance().user.getEmail().equals(userId)) {
-                try {
-                    APictureCapturingService pictureService =
-                            PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
+                String userId = intent.getExtras().get("title").toString();
+                taskId = intent.getExtras().get("message").toString();
+                CaptureModeActivity.this.showToast("Starting capture! task id is: " + taskId + ", userId is " + userId);
 
-                    pictureService.startCapturing(CaptureModeActivity.this);
-                } catch (Exception ex) {
-                    showToast("Error :( ... message: " + ex.getMessage());
+                if (RoboCodeSettings.getInstance().user.getEmail().equals(userId)) {
+                    startOnCaptureFlow();
+                } else {
+                    showToast("not the same user - " + userId + " - ignore!");
                 }
-            } else {
-                showToast("not the same user - " + userId + " - ignore!");
             }
-
         }
     };
+
+    private void startOnCaptureFlow() {
+        if (capture_loop_counter < RoboCodeSettings.NUM_OF_CAPTURES) {
+            try {
+                APictureCapturingService pictureService =
+                        PictureCapturingServiceImpl.getInstance(CaptureModeActivity.this);
+
+                pictureService.startCapturing(CaptureModeActivity.this);
+            } catch (Exception ex) {
+                showToast("Error :( ... message: " + ex.getMessage());
+            }
+        } else allow_new = true;
+    }
+
+
 
     @Override
     protected void onPause() {
@@ -305,7 +325,7 @@ public class CaptureModeActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        FirebaseMessaging.getInstance().unsubscribeFromTopic("CaptureRequests_"+pairingCode);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("CaptureRequests_" + pairingCode);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         try{
             wakeLock.release();
