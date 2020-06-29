@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 
+import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +28,7 @@ public class RoboCodeSettings {
     private static RoboCodeSettings _inst;
     private FirebaseFirestore db;
 
+
     // Fields
     public FirebaseUser user;
     public String userNickname;
@@ -39,6 +41,17 @@ public class RoboCodeSettings {
     // current task
     public roboCodeTask current;
     public String       currentAnswerTopic;
+
+    // connection to robot
+    private ArduinoConnector roboCodeBluetoothConnector;
+
+    public ArduinoConnector getRoboCodeBluetoothConnector() {
+        return roboCodeBluetoothConnector;
+    }
+
+    public void setRoboCodeBluetoothConnector(ArduinoConnector roboCodeBluetoothConnector) {
+        this.roboCodeBluetoothConnector = roboCodeBluetoothConnector;
+    }
 
     public static RoboCodeSettings getInstance() {
         if (_inst == null) _inst = new RoboCodeSettings();

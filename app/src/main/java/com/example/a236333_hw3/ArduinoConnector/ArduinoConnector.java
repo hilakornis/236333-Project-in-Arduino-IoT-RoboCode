@@ -113,13 +113,19 @@ public class ArduinoConnector {
     }
 
     public void trySendData(final String data) {
-        Log.i("[BLUETOOTH]", "Attempting to send data: " + data);
-        //if we have connection to the bluetoothmodule
-        if (mmSocket.isConnected() && btt != null) {
-            btt.write(data.getBytes());
-        } else {
-            // TODO : handel this showToast("Something went wrong attempting to send data: " + data);
-        }
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("[BLUETOOTH]", "Attempting to send data: " + data);
+                //if we have connection to the bluetoothmodule
+                if (mmSocket.isConnected() && btt != null) {
+                    btt.write(data.getBytes());
+                } else {
+                    // TODO : handel this showToast("Something went wrong attempting to send data: " + data);
+                }
+            }
+        });
+        th.run();
     }
 
     public boolean disconnect() {

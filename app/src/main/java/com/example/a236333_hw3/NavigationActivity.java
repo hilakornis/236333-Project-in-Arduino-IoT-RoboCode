@@ -61,4 +61,12 @@ public class NavigationActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector() != null) {
+            RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().disconnect();
+        }
+    }
 }

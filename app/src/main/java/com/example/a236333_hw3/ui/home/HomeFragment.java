@@ -52,7 +52,6 @@ public class HomeFragment extends Fragment {
     Button forkliftDownBtn;
     Button testBtn;
 
-    ArduinoConnector conn;
 
     // Bluetooth code <-----------------------------------------------------------------------------
 
@@ -88,16 +87,18 @@ public class HomeFragment extends Fragment {
         forkliftDownBtn = v.findViewById(R.id.homeFragment_bluetoothLiftDown_NS);
         testBtn         = v.findViewById(R.id.homeFragment_runTest);
 
-        conn = new ArduinoConnector();
-        conn.connectBlutooth(this);
+        if (RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector() == null) {
+            RoboCodeSettings.getInstance().setRoboCodeBluetoothConnector(new ArduinoConnector());
+            RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().connectBlutooth(this);
+        }
 
-        backwardsBtn     .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_FORWARDS ); } });
-        forwardsBtn      .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_BACKWARDS); } });
-        leftBtn          .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_LEFT     ); } });
-        rightBtn         .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_RIGHT    ); } });
-        uTurnBtn         .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_U_TURN   ); } });
-        forkliftUpBtn    .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_FORK_UP  ); } });
-        forkliftDownBtn  .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { conn.trySendData(CMD_FORK_DOWN); } });
+        backwardsBtn     .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_FORWARDS ); } });
+        forwardsBtn      .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_BACKWARDS); } });
+        leftBtn          .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_LEFT     ); } });
+        rightBtn         .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_RIGHT    ); } });
+        uTurnBtn         .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_U_TURN   ); } });
+        forkliftUpBtn    .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_FORK_UP  ); } });
+        forkliftDownBtn  .setOnClickListener(new View.OnClickListener() { @Override public void onClick(View v) { RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().trySendData(CMD_FORK_DOWN); } });
         testBtn          .setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -105,7 +106,7 @@ public class HomeFragment extends Fragment {
                         try {
                             RCProgram commands = RCCompiler.getInstance().Compile("T_L,NaN,NaN,NaN,NaN,NaN,T_R,NaN,NaN,NaN,NaN,NaN,T_U,NaN,NaN,NaN,NaN,NaN,G_FW,NaN,NaN,NaN,NaN,NaN,G_BK,NaN,NaN,NaN,NaN,NaN,F_U,NaN,NaN,NaN,NaN,NaN,F_D,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN");
                             Log.i("[home fragment]", commands.toString());
-                            RCProgramExecutor.getInstance().runProgram(commands, conn, RCProgramExecutor.NO_STEPS_LIMIT);
+                            RCProgramExecutor.getInstance().runProgram(commands, RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(), RCProgramExecutor.NO_STEPS_LIMIT);
                         }  catch (RCCompilerException | InterruptedException e) {
                         }
 
@@ -123,9 +124,11 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == ArduinoConnector.REQUEST_ENABLE_BT) {
             showToast("resultCode is " + resultCode);
-            conn.connectBlutooth(this);
+            RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().connectBlutooth(this);
         }
     }
+
+
 
     private void showToast(final String text) {
         getActivity().runOnUiThread(
@@ -160,6 +163,5 @@ public class HomeFragment extends Fragment {
 
     public void onDestroy() {
         super.onDestroy();
-        conn.disconnect();
     }
 }
