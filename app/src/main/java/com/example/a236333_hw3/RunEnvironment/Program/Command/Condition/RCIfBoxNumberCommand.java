@@ -3,9 +3,11 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Condition;
 import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCIfBoxNumberCommand extends RCIfCommand {
-    int boxId;
+    private int boxId;
+    private int actual_next_jump_index;
 
     public int getBoxId() {
         return boxId;
@@ -25,13 +27,13 @@ public class RCIfBoxNumberCommand extends RCIfCommand {
 
     @Override
     public void execute(ArduinoConnector connector) {
-        // TODO : implement
+        actual_next_jump_index = (RCProgramStatus.getInstance().getBoxId() != RCProgramStatus.NO_BOX &&
+                                  RCProgramStatus.getInstance().getBoxId() == getBoxId() ? getNextTrue() : getNextFalse());
     }
 
     @Override
-    public int getNextNoJumpIndex() {
-        // TODO : Complete
-        return -1;
+    public int getNextActualIndex() {
+        return actual_next_jump_index;
     }
 
 }

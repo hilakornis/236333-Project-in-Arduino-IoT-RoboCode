@@ -13,7 +13,7 @@ public class RCProgramStatus {
     private RCProgramStatus() {
     }
 
-    public static final int NO_BOX = -1;
+    public static final int NO_BOX = 0;
 
     private int     boxId;
     private boolean forkLiftUp;

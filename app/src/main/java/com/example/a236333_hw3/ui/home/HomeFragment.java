@@ -104,13 +104,48 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         try {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    testBtn.setEnabled(false);
+                                }
+                            });
+
                             RCProgram commands = RCCompiler.getInstance().Compile("T_L,NaN,NaN,NaN,NaN,NaN,T_R,NaN,NaN,NaN,NaN,NaN,T_U,NaN,NaN,NaN,NaN,NaN,G_FW,NaN,NaN,NaN,NaN,NaN,G_BK,NaN,NaN,NaN,NaN,NaN,F_U,NaN,NaN,NaN,NaN,NaN,F_D,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN");
                             Log.i("[home fragment]", commands.toString());
-                            RCProgramExecutor.getInstance().runProgram(commands, RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(), RCProgramExecutor.NO_STEPS_LIMIT);
-                        }  catch (RCCompilerException | InterruptedException e) {
+                            RCProgramExecutor.getInstance().runProgram(commands, RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(), RCProgramExecutor.NO_STEPS_LIMIT,
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // success
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    testBtn.setEnabled(true);
+                                                }
+                                            });
+                                        }
+                                    },
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // error
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    testBtn.setEnabled(true);
+                                                }
+                                            });
+                                        }
+                                    });
+                        }  catch (RCCompilerException ex) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    testBtn.setEnabled(true);
+                                }
+                            });
                         }
-
-
                     }
                 });
 
@@ -127,8 +162,6 @@ public class HomeFragment extends Fragment {
             RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().connectBlutooth(this);
         }
     }
-
-
 
     private void showToast(final String text) {
         getActivity().runOnUiThread(

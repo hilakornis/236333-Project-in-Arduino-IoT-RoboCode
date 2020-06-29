@@ -2,11 +2,17 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Condition;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.RunEnvironment.Program.Color;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 import androidx.annotation.NonNull;
 
 public class RCIfBoxColorCommand extends RCIfCommand {
     private Color color;      // can only be VAR_COLOR_...
+    private int actual_next_jump_index;
+
+    // TODO : update boxes colors constants
+    private final Color boxesColors[] = { Color.NON_COLOR /*no box with id 0*/, Color.BLACK, Color.BLUE , Color.YELLOW };
+
 
     public Color getColor() {
         return color;
@@ -14,6 +20,10 @@ public class RCIfBoxColorCommand extends RCIfCommand {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public RCIfBoxColorCommand() {
+        actual_next_jump_index = NOT_DEF;
     }
 
     @NonNull
@@ -27,17 +37,18 @@ public class RCIfBoxColorCommand extends RCIfCommand {
                  color == Color.GREEN ? "green" :
                  color == Color.YELLOW ? "yellow" :
                  color == Color.WHITE ? "white" :
-                 /*color = QREnums.VAR_COLOR_BLACK?*/   "black" ) + "\n";
+                 color == Color.BLACK ? "black" : "unknown") + "\n";
     }
 
     @Override
     public void execute(ArduinoConnector connector) {
-        // TODO : implement
+        actual_next_jump_index =
+                (RCProgramStatus.getInstance().getBoxId() != RCProgramStatus.NO_BOX &&
+                    boxesColors[RCProgramStatus.getInstance().getBoxId()] == getColor() ? getNextTrue() : getNextFalse());
     }
 
     @Override
-    public int getNextNoJumpIndex() {
-        // TODO : Complete
-        return -1;
+    public int getNextActualIndex() {
+        return actual_next_jump_index;
     }
 }

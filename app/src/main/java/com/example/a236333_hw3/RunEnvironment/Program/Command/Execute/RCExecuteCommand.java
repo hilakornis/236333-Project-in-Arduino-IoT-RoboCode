@@ -12,7 +12,7 @@ public abstract class RCExecuteCommand extends RCCommand {
         setNextIndex(NOT_DEF);
     }
 
-    public int getNextNoJumpIndex() {
+    public int getNextActualIndex() {
         return nextIndex;
     }
 

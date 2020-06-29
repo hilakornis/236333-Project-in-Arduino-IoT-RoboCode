@@ -1,7 +1,5 @@
 package com.example.a236333_hw3.RunEnvironment.Executor;
 
-import android.util.Log;
-
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
@@ -17,6 +15,7 @@ public class RCProgramExecutor {
     private RCProgram program;
     private ArduinoConnector connector;
     private int stepsLimit;
+    private Runnable successHanlder, errorHanlder;
 
     public static RCProgramExecutor getInstance() {
         if (_inst == null) _inst = new RCProgramExecutor();
@@ -27,32 +26,34 @@ public class RCProgramExecutor {
     }
 
 
-    public void/*int*/ runProgram(RCProgram _program, ArduinoConnector _connector, int _stepsLimit) throws InterruptedException {
+    public void runProgram(RCProgram _program, ArduinoConnector _connector, int _stepsLimit, Runnable _successHanlder, final Runnable _errorHanlder) {
         program=_program;
         connector=_connector;
         stepsLimit=_stepsLimit;
+        successHanlder=_successHanlder;
+        errorHanlder=_errorHanlder;
         final Thread th = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    runMe();
+                    doTheProgramRunning();
+                    if (successHanlder!=null) successHanlder.run();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    if (errorHanlder!=null) errorHanlder.run();
                 }
             }
         });
         th.start();
     }
 
-    private void runMe() throws InterruptedException {
+    private void doTheProgramRunning() throws InterruptedException {
         // Reset variables
         RCProgramStatus.getInstance().init();
         RCProgramLog.getInstance().init();
 
         int nextCmdIndex = 0;
         int steps = 0;
-
-        // TODO : ask Arduino for initial status
 
         do {
             // get next command
@@ -62,12 +63,12 @@ public class RCProgramExecutor {
             cmd.execute(connector);
 
             // get next command index
-            nextCmdIndex = cmd.getNextNoJumpIndex();
+            nextCmdIndex = cmd.getNextActualIndex();
             steps++;
         } while (nextCmdIndex != RCCommand.NOT_DEF &&
                 ((stepsLimit == NO_STEPS_LIMIT) || (steps <= stepsLimit)));
 
         // TODO : here we will return an object that will retrieve a tuple object { logger , status , steps }
-        //return steps;
+        // TODO : in case we passed STEPS_LIMIT we need to return an error using _errorHanlder!!!
     }
 }

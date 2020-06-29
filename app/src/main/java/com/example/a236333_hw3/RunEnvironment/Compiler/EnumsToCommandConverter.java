@@ -9,6 +9,7 @@ import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteR
 import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteRepsTurnLeftCommand;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteRepsTurnRightCommand;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteRepsTurnUTurnCommand;
+import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteStartProgram;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteStopCommand;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.Execute.RCExecuteCommand;
@@ -48,6 +49,10 @@ public class EnumsToCommandConverter {
     public RCProgram getProgram(ArrayList<QREnums> enums) throws RCCompilerException {
         // helps creating the current RCProgram
         commands = new ArrayList<>();
+
+        RCExecuteStartProgram startCmd = new RCExecuteStartProgram();
+        startCmd.setNextIndex(1);
+        commands.add(startCmd);
 
         // helps tracing jump to & from
         JumpToIndex[0]      = NO_JUMP;
@@ -183,7 +188,7 @@ public class EnumsToCommandConverter {
             }
             // update indexes in jump_from
             else if (JumpFromIndex[i] != NO_JUMP) {
-                ((RCJumpCommand) commands.get(JumpFromIndex[i])).setJumpId(JumpToIndex[i]);
+                ((RCJumpCommand) commands.get(JumpFromIndex[i])).setNextJumpIndex(JumpToIndex[i]);
             }
         }
 

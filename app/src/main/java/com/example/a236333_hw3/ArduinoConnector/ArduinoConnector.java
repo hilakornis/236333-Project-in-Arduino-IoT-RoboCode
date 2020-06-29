@@ -102,7 +102,10 @@ public class ArduinoConnector {
                 @Override
                 public void handleMessage(Message msg) {
                     super.handleMessage(msg);
-                    if(msg.what == ConnectedThread.RESPONSE_MESSAGE)  results.push(((String)msg.obj).split("-", 2)[0]);
+                    if(msg.what == ConnectedThread.RESPONSE_MESSAGE) {
+                        String str = ((String)msg.obj).split("-", 2)[0];
+                        if (!str.equals("")) results.push(str);
+                    }
                 }
             };
 

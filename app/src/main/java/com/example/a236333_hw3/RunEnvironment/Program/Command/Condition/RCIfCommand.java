@@ -29,7 +29,7 @@ public abstract class RCIfCommand extends RCCommand {
         this.nextFalse = nextFalse;
     }
 
-    public abstract int getNextNoJumpIndex();
+    public abstract int getNextActualIndex();
 
     @NonNull
     @Override

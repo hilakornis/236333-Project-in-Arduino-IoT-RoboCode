@@ -28,8 +28,13 @@ public abstract class RCExecuteRepsCommand extends RCExecuteCommand {
     }
 
     protected void executeWithReps(ArduinoConnector connector, String cmd) throws InterruptedException {
-        // TODO : Write Reps loop
-        connector.trySendData(cmd);
+        // execute with or without reps
+        if (getNumberOfRepsToExcute() == NOT_DEF) connector.trySendData(cmd);
+        else for (int i=0; i< getNumberOfRepsToExcute(); i++) connector.trySendData(cmd);
+
+        // ask for status
         updateStatus(connector);
+
+        // TODO : Log the shit out of this execution - both action & new status
     }
 }

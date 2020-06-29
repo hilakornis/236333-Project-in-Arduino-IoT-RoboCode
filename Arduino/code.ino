@@ -38,10 +38,10 @@
 #define printMSG true
 
 // DELAY TIMINGS
+#define HALF_STEP_DELAY     220
 #define ONE_STEP_DELAY      500
 #define ONE_TURN_DELAY      250
 #define FORK_UP_DOWN_DELAY  150
-
 
 #define FORK_UP 1
 #define FORK_DOWN 0
@@ -53,8 +53,11 @@ int blueFrequency = 0;
 int IsForkUp;
 int box = 0;
 
+// BLUETOOTH
+#define BLUETOOTH_TX 53
+#define BLUETOOTH_RX 50
 
-SoftwareSerial hc06(50,53);
+SoftwareSerial hc06(BLUETOOTH_RX,BLUETOOTH_TX);
 
 PN532_HSU pn532hsu(Serial3);
 PN532 nfc(pn532hsu);
@@ -83,7 +86,6 @@ void setup() {
   pinMode(rightForward, OUTPUT);
 
   // --- BLUETOOTH ------------------------------------
-  //Serial2.begin(9600);
   hc06.begin(9600);
 
   // --- LOGING ---------------------------------------
@@ -121,16 +123,13 @@ void setup() {
 }
 
 void loop() {
-
-  //if (Serial2.available() > 0){
   if (hc06.available() > 0){
     //int val = Serial2.read();
     int val = hc06.read();
 
     if (printMSG) {
-      Serial.print("got ");
-      Serial.print((char)val);
-      Serial.print("!!!\n");
+      Serial.print("recieved ");
+      Serial.println((char)val);
     }
 
     if (val == CMD_MOVE_FORWARD) {
@@ -179,23 +178,35 @@ void loop() {
     }
     else if (val == CMD_CHECK_EDGE) {
       if (printMSG) Serial.print("checking if the next tile is an edge\n");
-      // TODO : Fix this code
-    } else if (val == CMD_CHECK_STATUS) {
-      Serial.print("got request for status\n");
-    } else {
-      Serial.print("received unknown command\n");
+      goForward();
+      delay(HALF_STEP_DELAY);
+      dontMove();
+      readColor();
+      goBackward();
+      delay(HALF_STEP_DELAY);
+      dontMove();
+      char str[80];
+      sprintf(str, "%d|%d|%d-\0", redFrequency, greenFrequency, blueFrequency);
+      hc06.println(str);
     }
-
-    // return status
-    if (val >= CMD_MOVE_FORWARD && val <= CMD_CHECK_STATUS) {
+    else if (val == CMD_CHECK_STATUS) {
+      if (printMSG) Serial.print("got request for status\n");
       // reading color & nfc
       readColor();
       readNFC();
       SendBackStatus();
-      Serial.print("sent status\n");
-
+      if (printMSG) Serial.print("sent status\n");
     }
+    else if (printMSG) Serial.print("received unknown command\n");
   }
+  //sendColor();
+}
+
+void sendColor() {
+  char str[80];
+  readColor();
+  sprintf(str, "%d|%d|%d\0", redFrequency, greenFrequency, blueFrequency);
+  hc06.println(str);
 }
 
 void SendBackStatus() {
@@ -213,7 +224,7 @@ void readColor(){
 
   // Reading the output frequency
   redFrequency = pulseIn(clrOut, LOW);
-  //redFrequency = map(redFrequency, 25,72,255,0);
+  //redFrequency = map(redFrequency, 25,72,0,255);
 
    // Printing the RED (R) value
   if (printRGB) Serial.print("R = ");
@@ -226,7 +237,7 @@ void readColor(){
 
   // Reading the output frequency
   greenFrequency = pulseIn(clrOut, LOW);
-  //greenFrequency = map(greenFrequency, 30,90,255,0);
+  //greenFrequency = map(greenFrequency, 30,90, 0, 255);
 
   // Printing the GREEN (G) value
   if (printRGB) Serial.print(" G = ");
@@ -239,7 +250,7 @@ void readColor(){
 
   // Reading the output frequency
   blueFrequency = pulseIn(clrOut, LOW);
-  //blueFrequency = map(blueFrequency, 25,70,255,0);
+  //blueFrequency = map(blueFrequency, 25,70,0, 255);
 
   // Printing the BLUE (B) value
   if (printRGB) Serial.print(" B = ");

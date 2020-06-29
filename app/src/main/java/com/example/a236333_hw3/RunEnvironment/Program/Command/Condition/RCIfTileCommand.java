@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.RunEnvironment.Program.Color;
+import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCIfTileCommand extends RCIfCommand {
     private Color color;      // can only be VAR_COLOR_...
+    private int actual_next_jump_index;
+
 
     public Color getColor() {
         return color;
@@ -14,6 +17,10 @@ public class RCIfTileCommand extends RCIfCommand {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public RCIfTileCommand() {
+        actual_next_jump_index = NOT_DEF;
     }
 
     @NonNull
@@ -27,17 +34,16 @@ public class RCIfTileCommand extends RCIfCommand {
                 color == Color.GREEN ? "green" :
                 color == Color.YELLOW ? "yellow" :
                 color == Color.WHITE ? "white" :
-                /*color = Color.COLOR_BLACK?*/   "black" ) + "\n";
+                color == Color.BLACK ? "black" : "unknown") + "\n";
     }
 
     @Override
     public void execute(ArduinoConnector connector) {
-        // TODO : implement
+        actual_next_jump_index = (RCProgramStatus.getInstance().getClr() == getColor() ? getNextTrue() : getNextFalse());
     }
 
     @Override
-    public int getNextNoJumpIndex() {
-        // TODO : Complete
-        return -1;
+    public int getNextActualIndex() {
+        return actual_next_jump_index;
     }
 }
