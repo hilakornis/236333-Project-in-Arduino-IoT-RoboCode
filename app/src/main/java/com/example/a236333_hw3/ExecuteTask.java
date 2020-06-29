@@ -10,10 +10,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.a236333_hw3.RunEnvironment.Compiler.RCCompiler;
+import com.example.a236333_hw3.RunEnvironment.Compiler.RCCompilerException;
+import com.example.a236333_hw3.RunEnvironment.Executor.RCProgramExecutor;
+import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -25,8 +30,10 @@ public class ExecuteTask extends AppCompatActivity {
     private int arrived = 0;
     ArrayList<String> arrivals;
 
-    LinearLayout Step1, Step2;
-    TextView r1, r2, r3, r4, r5;
+    LinearLayout Step1_cloud, Step2_compile, Step3_run, Step4_success, Step4_fail;
+    Button backButton;
+    TextView errorText;
+    //TextView r1, r2, r3, r4, r5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,18 +48,29 @@ public class ExecuteTask extends AppCompatActivity {
         arrived = 0;
         arrivals = new ArrayList<String>();
 
-        Step1 = findViewById(R.id.Step1Panel);
-        Step2 = findViewById(R.id.Step2Panel);
-        r1 = findViewById(R.id.res_1);
+        Step1_cloud = findViewById(R.id.Step1Panel);
+        Step2_compile = findViewById(R.id.Step2Panel);
+        Step3_run = findViewById(R.id.Step3Panel);
+        Step4_success = findViewById(R.id.Step4SucPanel);
+        Step4_fail = findViewById(R.id.StepFailPanel);
+        backButton = findViewById(R.id.backToTasksButton);
+        errorText = findViewById(R.id.hint_textView);
+        /*r1 = findViewById(R.id.res_1);
         r2 = findViewById(R.id.res_2);
         r3 = findViewById(R.id.res_3);
         r4 = findViewById(R.id.res_4);
-        r5 = findViewById(R.id.res_5);
-        Step1.setVisibility(View.VISIBLE);
-        Step2.setVisibility(View.GONE);
+        r5 = findViewById(R.id.res_5);*/
+        Step1_cloud.setVisibility(View.VISIBLE);
+        Step2_compile.setVisibility(View.GONE);
+        Step3_run.setVisibility(View.GONE);
+        Step4_success.setVisibility(View.GONE);
+        Step4_fail.setVisibility(View.GONE);
+        backButton.setVisibility(View.GONE);
+        errorText.setVisibility(View.GONE);
 
-
-        FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
+        // TODO : retrive this when working with firebase server!!!
+        //FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
+        Step1_over(); // TODO : Remove this !!
     }
 
     // Capture Service ============================================================================
@@ -76,18 +94,150 @@ public class ExecuteTask extends AppCompatActivity {
                 ExecuteTask.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Step1.setVisibility(View.GONE);
-                        Step2.setVisibility(View.VISIBLE);
-                        r1.setText(arrivals.get(0));
+                        Step1_cloud.setVisibility(View.GONE);
+                        Step2_compile.setVisibility(View.VISIBLE);
+                        /*r1.setText(arrivals.get(0));
                         r2.setText(arrivals.get(1));
-                        /*r3.setText(arrivals.get(2));
+                        r3.setText(arrivals.get(2));
                         r4.setText(arrivals.get(3));
                         r5.setText(arrivals.get(4));*/
                     }
                 });
+
+                // TOTDO : merge all results, save under step1_result_code and call Step1_over();
+                // step1_result_code = ...
+                Step1_over();
             }
         }
     };
+
+    // ============================================================================================
+    // here the output of step 1 is saved
+    private String step1_result_code =  "T_L,NaN,NaN,NaN,NaN,NaN,"  +
+                                        "T_R,NaN,NaN,NaN,NaN,NaN,"  +
+                                        "T_U,NaN,NaN,NaN,NaN,NaN,"  +
+                                        "G_FW,NaN,NaN,NaN,NaN,NaN," +
+                                        "G_BK,NaN,NaN,NaN,NaN,NaN," +
+                                        "F_U,NaN,NaN,NaN,NaN,NaN,"  +
+                                        "F_D,NaN,NaN,NaN,NaN,NaN,"  +
+                                        "NaN,NaN,NaN,NaN,NaN,NaN";
+
+    private void Step1_over() {
+        Thread d = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO - its a fake sleep, remove this!
+                try {
+                    Thread.sleep(20000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                ExecuteTask.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ExecuteTask.this.Step1_cloud.setVisibility(View.GONE);
+                        ExecuteTask.this.Step2_compile.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                try {
+                   ExecuteTask.this.step2_compiledProgram =
+                            RCCompiler.getInstance().Compile(ExecuteTask.this.step1_result_code);
+
+
+                } catch (RCCompilerException e) {
+                    e.printStackTrace();
+                    errorMsg = "Compilation falied.\n" +
+                               "try to look ar row " + e.getRowId() + "cell number " + e.getColId() + "\n" + e.getMessage();
+                    DoStep4_fail();
+
+                }
+            }
+        });
+        d.start();
+    }
+
+    // ============================================================================================
+    // here the output of step 2 is saved - the actual program to run!
+    RCProgram step2_compiledProgram;
+
+    private void Step2_over() {
+        Thread d = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO : add run parameters according to task
+                RCProgramExecutor.getInstance().runProgram(step2_compiledProgram,
+                        RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
+                        RCProgramExecutor.NO_STEPS_LIMIT,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                // success
+                                DoStep4_success();
+                            }
+                        },
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                // error
+                                // TODO : save the run error under errorMsg
+                                DoStep4_fail();
+                            }
+                        });
+            }
+        });
+        d.start();
+    }
+
+    // ============================================================================================
+    // success
+
+    private void DoStep4_success() {
+        Thread d = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ExecuteTask.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ExecuteTask.this.Step1_cloud.setVisibility(View.GONE);
+                        ExecuteTask.this.Step2_compile.setVisibility(View.GONE);
+                        ExecuteTask.this.Step3_run.setVisibility(View.GONE);
+                        ExecuteTask.this.Step4_fail.setVisibility(View.GONE);
+                        ExecuteTask.this.Step4_success.setVisibility(View.VISIBLE);
+                        ExecuteTask.this.backButton.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        });
+        d.start();
+    }
+
+    // ============================================================================================
+    // error
+    private String errorMsg;
+
+    private void DoStep4_fail() {
+        Thread d = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ExecuteTask.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ExecuteTask.this.Step1_cloud.setVisibility(View.GONE);
+                        ExecuteTask.this.Step2_compile.setVisibility(View.GONE);
+                        ExecuteTask.this.Step3_run.setVisibility(View.GONE);
+                        ExecuteTask.this.Step4_success.setVisibility(View.GONE);
+                        ExecuteTask.this.Step4_fail.setVisibility(View.VISIBLE);
+                        ExecuteTask.this.backButton.setVisibility(View.VISIBLE);
+                        ExecuteTask.this.errorText.setText(errorMsg);
+                    }
+                });
+            }
+        });
+        d.start();
+    }
+
 
     @Override
     protected void onDestroy() {

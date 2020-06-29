@@ -14,6 +14,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <!-- step 1 - receive from server -->
             <LinearLayout
                 android:visibility="visible"
                 android:layout_width="wrap_content"
@@ -37,20 +39,177 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" />
                 <ImageView
-                    android:id="@+id/imageView2"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/logono_bg"
+                    android:src="@drawable/cloud"
+                    android:layout_marginBottom="60dp"
                     android:layout_gravity="center"
-                    />
+                    />=
             </LinearLayout>
+            <!-- step 2 - compilation -->
+            <LinearLayout
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:id="@+id/Step2Panel">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Compiling..."
+                android:textSize="30dp"
+                android:layout_gravity="center"
+                />
+            <ProgressBar
+                android:layout_margin="15dp"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/compile"
+                android:layout_marginBottom="60dp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
+            <!-- step 3 - running -->
             <LinearLayout
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical"
-                android:id="@+id/Step2Panel">
+                android:id="@+id/Step3Panel">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Running..."
+                    android:textSize="30dp"
+                    android:layout_gravity="center"
+                    />
+                <ProgressBar
+                    android:layout_margin="15dp"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/running"
+                    android:layout_marginBottom="60dp"
+                    android:layout_gravity="center"
+                    />
+
+            </LinearLayout>
+            <!-- result success -->
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/Step4SucPanel">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="YOU DID IT!"
+                    android:textSize="30dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="you've managed to solve the task."
+                    android:textSize="25dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="how about another one?"
+                    android:textSize="25dp"
+                    android:layout_gravity="center"
+                    />
+                <ImageView
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/success"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_gravity="center"
+                    />
+
+            </LinearLayout>
+
+
+            <!-- result fail -->
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/StepFailPanel">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="NOT QUITE THERE"
+                    android:textSize="30dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="yo did not solve the task"
+                    android:textSize="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="30dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Here's a small hint:"
+                    android:textSize="25dp"
+                    android:layout_gravity="center"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="{error_msg}"
+                    android:id="@+id/hint_textView"
+                    android:textSize="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="30dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Don't stop now! Try again!"
+                    android:textSize="25dp"
+                    android:layout_gravity="center"
+                    />
+                <ImageView
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:src="@drawable/fail"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:layout_gravity="center"
+                    />
+
+            </LinearLayout>
+            <!--LinearLayout
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/Step2Panel_old">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -70,7 +229,7 @@
                     android:id="@+id/res_1"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="----"
+                    android:text=""
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:textSize="20dp"
@@ -85,7 +244,7 @@
                     />
                 <TextView
                     android:id="@+id/res_2"
-                    android:text="----"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="30dp"
@@ -102,7 +261,7 @@
                     />
                 <TextView
                     android:id="@+id/res_3"
-                    android:text="----"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="30dp"
@@ -119,7 +278,7 @@
                     />
                 <TextView
                     android:id="@+id/res_4"
-                    android:text="----"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="30dp"
@@ -136,7 +295,7 @@
                     />
                 <TextView
                     android:id="@+id/res_5"
-                    android:text="----"
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="30dp"
@@ -144,7 +303,26 @@
                     android:textSize="20dp"
                     android:layout_gravity="center"
                     />
-            </LinearLayout>
+            </LinearLayout-->
+
+            <!-- back button -->
+            <Button
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GO BACK TO TASKS LIST"
+                android:id="@+id/backToTasksButton"
+                android:layout_gravity="center"/>
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/logono_bg"
+                android:layout_gravity="center"
+                />
     </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
