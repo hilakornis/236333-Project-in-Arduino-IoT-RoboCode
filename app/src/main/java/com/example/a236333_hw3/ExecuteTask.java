@@ -142,15 +142,25 @@ public class ExecuteTask extends AppCompatActivity {
                 });
 
                 try {
+
                    ExecuteTask.this.step2_compiledProgram =
                             RCCompiler.getInstance().Compile(ExecuteTask.this.step1_result_code);
 
+                    // TODO - its a fake sleep, remove this!
+                    try {
+                        Thread.sleep(20000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    Step2_over();
 
                 } catch (RCCompilerException e) {
                     e.printStackTrace();
                     errorMsg = "Compilation falied.\n" +
                                "try to look ar row " + e.getRowId() + "cell number " + e.getColId() + "\n" + e.getMessage();
-                    DoStep4_fail();
+
+                    Do_fail();
 
                 }
             }
@@ -166,25 +176,40 @@ public class ExecuteTask extends AppCompatActivity {
         Thread d = new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO : add run parameters according to task
-                RCProgramExecutor.getInstance().runProgram(step2_compiledProgram,
-                        RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
-                        RCProgramExecutor.NO_STEPS_LIMIT,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                // success
-                                DoStep4_success();
-                            }
-                        },
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                // error
-                                // TODO : save the run error under errorMsg
-                                DoStep4_fail();
-                            }
+                ExecuteTask.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ExecuteTask.this.Step2_compile.setVisibility(View.GONE);
+                        ExecuteTask.this.Step3_run.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                if (RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector() == null) {
+                    errorMsg = "Bluetooth connection is not defined - you cant solve the task without connecting to RoboCode...";
+                } else if (!RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector().isConnected()) {
+                    errorMsg = "Connection to RoboCode is lost... you need him in order to solve the task";
+                } else {
+                    // TODO : add run parameters according to task
+                    RCProgramExecutor.getInstance().
+                        runProgram(step2_compiledProgram,
+                            RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
+                            RCProgramExecutor.NO_STEPS_LIMIT,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    // success
+                                    Do_success();
+                                }
+                            },
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    // error
+                                    errorMsg = RCProgramExecutor.getInstance().getErrorMessage();
+                                    Do_fail();
+                                }
                         });
+                }
             }
         });
         d.start();
@@ -193,7 +218,7 @@ public class ExecuteTask extends AppCompatActivity {
     // ============================================================================================
     // success
 
-    private void DoStep4_success() {
+    private void Do_success() {
         Thread d = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -217,7 +242,7 @@ public class ExecuteTask extends AppCompatActivity {
     // error
     private String errorMsg;
 
-    private void DoStep4_fail() {
+    private void Do_fail() {
         Thread d = new Thread(new Runnable() {
             @Override
             public void run() {

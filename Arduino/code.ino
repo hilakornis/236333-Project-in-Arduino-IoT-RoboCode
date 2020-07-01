@@ -16,10 +16,10 @@
 #define CMD_CHECK_STATUS  '9'
 
 // motors
-#define rightForward 22
-#define rightBackward 24
-#define leftForward 26
-#define leftBackward 28
+#define rightForward  2//22
+#define rightBackward 3//24
+#define leftForward   5//26
+#define leftBackward  6//28
 
 // Color sensor
 #define clrS0 30
@@ -29,7 +29,7 @@
 #define clrOut 38
 
 // Lift up-down
-#define lifterUp 42
+#define lifterUp 45
 #define lifterDown 44
 
 // log
@@ -38,10 +38,12 @@
 #define printMSG true
 
 // DELAY TIMINGS
-#define HALF_STEP_DELAY     220
-#define ONE_STEP_DELAY      500
-#define ONE_TURN_DELAY      250
-#define FORK_UP_DOWN_DELAY  150
+#define HALF_STEP_DELAY     500
+#define ONE_STEP_DELAY      1000
+#define ONE_TURN_DELAY      1300
+
+#define FORK_UP_DELAY     450
+#define FORK_DOWN_DELAY   180
 
 #define FORK_UP 1
 #define FORK_DOWN 0
@@ -278,9 +280,9 @@ void readNFC() {
 
 void forkliftUp()
 {
-  digitalWrite(lifterUp , HIGH);
+  analogWrite(lifterUp, 140);
   digitalWrite(lifterDown , LOW);
-  delay(FORK_UP_DOWN_DELAY);
+  delay(FORK_UP_DELAY);
   digitalWrite(lifterUp , LOW);
   digitalWrite(lifterDown , LOW);
 }
@@ -288,41 +290,41 @@ void forkliftUp()
 void forkliftDown()
 {
   digitalWrite(lifterUp , LOW);
-  digitalWrite(lifterDown , HIGH);
-  delay(FORK_UP_DOWN_DELAY);
+  analogWrite(lifterDown, 130);
+  delay(FORK_DOWN_DELAY);
   digitalWrite(lifterUp , LOW);
   digitalWrite(lifterDown , LOW);
 }
 
 void goForward()
 {
-  digitalWrite(leftForward , HIGH);
+  analogWrite(leftForward, 140);
   digitalWrite(leftBackward , LOW);
-  digitalWrite(rightForward , HIGH);
+  analogWrite(rightForward, 140);
   digitalWrite(rightBackward , LOW);
 }
 
 void goBackward()
 {
   digitalWrite(leftForward , LOW);
-  digitalWrite(leftBackward , HIGH);
+  analogWrite(leftBackward, 140);
   digitalWrite(rightForward , LOW);
-  digitalWrite(rightBackward , HIGH);
+  analogWrite(rightBackward, 140);
 }
 
 void TurnRight()
 {
-  digitalWrite(leftForward , HIGH);
+  analogWrite(leftForward, 140);
   digitalWrite(leftBackward , LOW);
   digitalWrite(rightForward , LOW);
-  digitalWrite(rightBackward , HIGH);
+  analogWrite(rightBackward, 140);
 }
 
 void TurnLeft()
 {
   digitalWrite(leftForward , LOW);
-  digitalWrite(leftBackward , HIGH);
-  digitalWrite(rightForward , HIGH);
+  analogWrite(leftBackward, 140);
+  analogWrite(rightForward, 140);
   digitalWrite(rightBackward , LOW);
 }
 void dontMove()

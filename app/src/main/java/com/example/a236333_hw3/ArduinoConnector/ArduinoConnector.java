@@ -79,7 +79,7 @@ public class ArduinoConnector {
         }
     }
 
-    private void initiateBluetoothProcess(){
+    private void initiateBluetoothProcess() {
         if(bta.isEnabled()){
             //attempt to connect to bluetooth module
             BluetoothSocket tmp = null;
@@ -139,5 +139,9 @@ public class ArduinoConnector {
             // TODO : Log this!
             return false;
         }
+    }
+
+    public boolean isConnected() {
+        return mmSocket != null && mmSocket.isConnected();
     }
 }

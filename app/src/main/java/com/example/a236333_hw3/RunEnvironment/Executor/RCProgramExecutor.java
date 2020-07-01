@@ -16,6 +16,7 @@ public class RCProgramExecutor {
     private ArduinoConnector connector;
     private int stepsLimit;
     private Runnable successHanlder, errorHanlder;
+    private String errorMessage;
 
     public static RCProgramExecutor getInstance() {
         if (_inst == null) _inst = new RCProgramExecutor();
@@ -26,12 +27,18 @@ public class RCProgramExecutor {
     }
 
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+
     public void runProgram(RCProgram _program, ArduinoConnector _connector, int _stepsLimit, Runnable _successHanlder, final Runnable _errorHanlder) {
         program=_program;
         connector=_connector;
         stepsLimit=_stepsLimit;
         successHanlder=_successHanlder;
         errorHanlder=_errorHanlder;
+        errorMessage="";
         final Thread th = new Thread(new Runnable() {
             @Override
             public void run() {

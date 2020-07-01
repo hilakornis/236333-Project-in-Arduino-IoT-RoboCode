@@ -113,7 +113,9 @@ public class HomeFragment extends Fragment {
 
                             RCProgram commands = RCCompiler.getInstance().Compile("T_L,NaN,NaN,NaN,NaN,NaN,T_R,NaN,NaN,NaN,NaN,NaN,T_U,NaN,NaN,NaN,NaN,NaN,G_FW,NaN,NaN,NaN,NaN,NaN,G_BK,NaN,NaN,NaN,NaN,NaN,F_U,NaN,NaN,NaN,NaN,NaN,F_D,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN");
                             Log.i("[home fragment]", commands.toString());
-                            RCProgramExecutor.getInstance().runProgram(commands, RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(), RCProgramExecutor.NO_STEPS_LIMIT,
+                            RCProgramExecutor.getInstance().runProgram(commands,
+                                    RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
+                                    RCProgramExecutor.NO_STEPS_LIMIT,
                                     new Runnable() {
                                         @Override
                                         public void run() {
