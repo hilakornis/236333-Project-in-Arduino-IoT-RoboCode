@@ -16,8 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round2"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".ExecuteTask"
-
+        <activity android:name=".ui.ReacheckActivity">
+        </activity>
+        <activity
+            android:name=".ExecuteTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".CaptureModeActivity"
@@ -27,7 +29,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

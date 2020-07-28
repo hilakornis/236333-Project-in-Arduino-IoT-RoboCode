@@ -20,6 +20,7 @@ import com.example.a236333_hw3.RunEnvironment.Compiler.RCCompilerException;
 import com.example.a236333_hw3.RunEnvironment.Executor.RCProgramExecutor;
 import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
+import com.example.a236333_hw3.ui.ReacheckActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
@@ -127,11 +128,26 @@ public class ExecuteTask extends AppCompatActivity {
             @Override
             public void run() {
                 // TODO - its a fake sleep, remove this!
-                try {
+                /*try {
                     Thread.sleep(20000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
+
+                // calling debug screen - set the text for buttons
+                ReacheckActivity.step1_result_code = step1_result_code;
+
+                // call the activity
+                ExecuteTask.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(ExecuteTask.this, ReacheckActivity.class));
+                    }
+                });
+
+                // end debug screen - get fixed result
+                step1_result_code = ReacheckActivity.step1_result_code;
+
 
                 ExecuteTask.this.runOnUiThread(new Runnable() {
                     @Override
