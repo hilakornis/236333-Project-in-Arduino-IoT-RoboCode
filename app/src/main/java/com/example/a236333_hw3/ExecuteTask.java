@@ -24,6 +24,7 @@ import com.example.a236333_hw3.ui.ReacheckActivity;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 public class ExecuteTask extends AppCompatActivity {
 
@@ -144,6 +145,12 @@ public class ExecuteTask extends AppCompatActivity {
                         startActivity(new Intent(ExecuteTask.this, ReacheckActivity.class));
                     }
                 });
+
+                try {
+                    ReacheckActivity.get_reacheckSemaphore().acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 // end debug screen - get fixed result
                 step1_result_code = ReacheckActivity.step1_result_code;

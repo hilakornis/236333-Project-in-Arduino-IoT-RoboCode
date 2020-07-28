@@ -1,10 +1,13 @@
 package com.example.a236333_hw3.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,6 +18,7 @@ import com.example.a236333_hw3.RunEnvironment.Compiler.DataToEnumsConverter;
 import com.example.a236333_hw3.RunEnvironment.Compiler.QREnums;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 public class ReacheckActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -27,6 +31,15 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             "F_U,NaN,NaN,NaN,NaN,NaN,"  +
             "F_D,NaN,NaN,NaN,NaN,NaN,"  +
             "NaN,NaN,NaN,NaN,NaN,NaN";
+
+    private static Semaphore reacheckSemaphore;
+
+    public static Semaphore get_reacheckSemaphore() {
+        if (reacheckSemaphore == null) reacheckSemaphore = new Semaphore(0);
+        return reacheckSemaphore;
+    }
+
+
 
     private Button[][]  table_buttons;
 
@@ -510,9 +523,8 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
                 updateEnumAccordingToTable();
                 Log.i("Info",this.enums_in_table.toString());
                 Log.i("Info",this.step1_result_code);
+                get_reacheckSemaphore().release();
                 ReacheckActivity.this.finish();
-                //todo: Alon : here I think you to take 'this.enums_in_table'
-                //  -Hila
                 break;
 
             // --- Row 0
@@ -632,5 +644,9 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-
+    @Override
+    public void onPanelClosed(int featureId, @NonNull Menu menu) {
+        super.onPanelClosed(featureId, menu);
+        // here release semaphore
+    }
 }
