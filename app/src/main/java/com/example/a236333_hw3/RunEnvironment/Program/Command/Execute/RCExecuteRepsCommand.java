@@ -3,6 +3,9 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Execute;
 import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemMovement;
+import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemMovementType;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 
 public abstract class RCExecuteRepsCommand extends RCExecuteCommand {
 
@@ -27,14 +30,23 @@ public abstract class RCExecuteRepsCommand extends RCExecuteCommand {
                 "NumberOfReps = " + (getNumberOfRepsToExcute() == NOT_DEF ? "not defined" : getNumberOfRepsToExcute()) + "\n";
     }
 
-    protected void executeWithReps(ArduinoConnector connector, String cmd) throws InterruptedException {
+    protected void executeWithReps(ArduinoConnector connector, String cmd, RCProgramLogItemMovementType type) throws InterruptedException {
         // execute with or without reps
-        if (getNumberOfRepsToExcute() == NOT_DEF) connector.trySendData(cmd);
-        else for (int i=0; i< getNumberOfRepsToExcute(); i++) connector.trySendData(cmd);
+        int repsCount =
+                getNumberOfRepsToExcute() == NOT_DEF ?
+                        1 : getNumberOfRepsToExcute();
 
-        // ask for status
-        updateStatus(connector);
+        for (int i=0; i< repsCount; i++) {
 
-        // TODO : Log the shit out of this execution - both action & new status
+            // Do the command
+            connector.trySendData(cmd);
+
+            // log it
+            RCProgramLog.getInstance().log(new RCProgramLogItemMovement(type));
+
+            // ask for status and log it
+            updateStatus(connector);
+            logStatus();
+        }
     }
 }

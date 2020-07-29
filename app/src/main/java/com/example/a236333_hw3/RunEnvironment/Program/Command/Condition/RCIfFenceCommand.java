@@ -29,8 +29,6 @@ public class RCIfFenceCommand extends RCIfCommand {
         // wait until an answer comes back
         while (connector.getResults().size() == 0) Thread.sleep(5);
 
-        // asset (connector.getResults().size() > 0)
-
         // take the status string
         String statusString = connector.getResults().pop();
 

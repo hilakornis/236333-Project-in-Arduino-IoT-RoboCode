@@ -44,6 +44,7 @@ public class RCProgramExecutor {
             public void run() {
                 try {
                     doTheProgramRunning();
+                    // TODO : check here that run OK
                     if (successHanlder!=null) successHanlder.run();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -75,7 +76,7 @@ public class RCProgramExecutor {
         } while (nextCmdIndex != RCCommand.NOT_DEF &&
                 ((stepsLimit == NO_STEPS_LIMIT) || (steps <= stepsLimit)));
 
-        // TODO : here we will return an object that will retrieve a tuple object { logger , status , steps }
+        // TODO : here we will return an object that will retrieve a tuple object { logger , steps }
         // TODO : in case we passed STEPS_LIMIT we need to return an error using _errorHanlder!!!
     }
 }

@@ -3,6 +3,9 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command.Execute;
 import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemMovement;
+import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemMovementType;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
 public class RCExecuteForkDownCommand extends RCExecuteCommand {
@@ -18,7 +21,10 @@ public class RCExecuteForkDownCommand extends RCExecuteCommand {
     public void execute(ArduinoConnector connector) throws InterruptedException {
         if (RCProgramStatus.getInstance().isForkLiftUp()) {
             connector.trySendData(CMD_FORK_DOWN);
+            RCProgramLog.getInstance().
+                    log(new RCProgramLogItemMovement(RCProgramLogItemMovementType.FORKLIFT_DOWN));
             updateStatus(connector);
+            logStatus();
         }
     }
 }

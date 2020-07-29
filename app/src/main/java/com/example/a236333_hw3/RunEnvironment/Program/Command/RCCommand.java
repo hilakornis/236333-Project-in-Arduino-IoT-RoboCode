@@ -3,6 +3,8 @@ package com.example.a236333_hw3.RunEnvironment.Program.Command;
 import androidx.annotation.NonNull;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
+import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemStatus;
+import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.Program.Color;
 import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 
@@ -123,5 +125,13 @@ public abstract class RCCommand {
         else if (r >= 30 && r <= 45 && g >= 15 && g <= 35 && b >= 30 && b <= 50)        return Color.GREEN;
         else if (r >= 135 && r <= 170 && g >= 130 && g <= 170 && b >= 130 && b <= 170)  return Color.BLACK;
         else                                                                            return Color.NON_COLOR;
+    }
+
+    protected void logStatus() {
+        RCProgramLog.getInstance().log(new RCProgramLogItemStatus(
+            RCProgramStatus.getInstance().getBoxId(),
+            RCProgramStatus.getInstance().isForkLiftUp(),
+            RCProgramStatus.getInstance().getClr()
+        ));
     }
 }
