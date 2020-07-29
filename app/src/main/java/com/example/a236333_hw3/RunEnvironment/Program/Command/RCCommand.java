@@ -118,7 +118,7 @@ public abstract class RCCommand {
 
     protected Color getColor(int r, int g, int b) {
         // TODO : white and yellow are very similar. can we do something about it?
-        if      (r >= 10 && r <= 20 && g >= 10 && g < 15 && b >= 10 && b <= 20)        return Color.WHITE;
+        if      (r >= 10 && r <= 20 && g >= 10 && g < 15 && b >= 10 && b <= 20)         return Color.WHITE;
         else if (r >= 10 && r <= 20 && g >= 15 && g <= 20 && b >= 10 && b <= 20)        return Color.YELLOW;
         else if (r >= 20 && r <= 25 && g >= 15 && g <= 30 && b >= 25 && b <= 40)        return Color.BLUE;
         else if (r >= 20 && r <= 30 && g >= 70 && g <= 100 && b >= 15 && b <= 35)       return Color.RED;

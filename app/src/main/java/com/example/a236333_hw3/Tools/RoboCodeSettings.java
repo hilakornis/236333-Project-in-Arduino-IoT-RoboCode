@@ -114,7 +114,18 @@ public class RoboCodeSettings {
                                         task.Description    = documentSnapshot.getString("Description");
                                         task.Hints          = documentSnapshot.getString("Hints");
                                         task.Arrangement    = documentSnapshot.getString("Arrangement");
+
+                                        task.checkCond       = documentSnapshot.getBoolean("CheckCond");
+                                        task.checkCondValue  = documentSnapshot.getString("CheckCondValue");
+                                        task.checkExact      = documentSnapshot.getBoolean("CheckExact");
+                                        task.checkExactValue = documentSnapshot.getString("CheckExactValue");
+
+                                        task.FillFenceColors(documentSnapshot.getString("FenceColors"));
+
+                                        // TODO : implement
+                                        // TODO : add this to firebase
                                         task.Accomplished   = false;
+
                                         roboCodeTasks.add(task);
                                     }
                                 }

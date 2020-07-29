@@ -51,6 +51,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
     TextView DescriptionData;
     TextView DescriptionHints;
     TextView DescriptionArrangement;
+    TextView DescriptionColors;
 
     // Action
     Button      backButton;
@@ -73,6 +74,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         DescriptionHints = findViewById(R.id.hints);
         DescriptionArrangement = findViewById(R.id.arrangement);
         backButton = findViewById(R.id.backButton);
+        DescriptionColors = findViewById(R.id.FenceColors);
 
         setTask(RoboCodeSettings.getInstance().current);
 
@@ -155,6 +157,18 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                 DescriptionData.setText(task.Description);
                 DescriptionHints.setText(task.Hints);
                 DescriptionArrangement.setText(task.Arrangement);
+
+                if (task.FenceColors.size() > 0) {
+                    DescriptionColors.setVisibility(View.VISIBLE);
+                    DescriptionColors.setText(
+                            "RoboCode MUST NOT step on the following fence tiles: " +
+                            task.getFenceColorsString()
+                    );
+
+
+                } else {
+                    DescriptionColors.setVisibility(View.GONE);
+                }
             }
         });
     }
