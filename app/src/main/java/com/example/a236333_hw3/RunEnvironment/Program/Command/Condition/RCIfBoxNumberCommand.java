@@ -27,8 +27,7 @@ public class RCIfBoxNumberCommand extends RCIfCommand {
 
     @Override
     public void execute(ArduinoConnector connector) {
-        actual_next_jump_index = (RCProgramStatus.getInstance().getBoxId() != RCProgramStatus.NO_BOX &&
-                                  RCProgramStatus.getInstance().getBoxId() == getBoxId() ? getNextTrue() : getNextFalse());
+        actual_next_jump_index = (RCProgramStatus.getInstance().getBoxId() != RCProgramStatus.NO_BOX ? getNextTrue() : getNextFalse());
     }
 
     @Override

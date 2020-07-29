@@ -205,6 +205,7 @@ public class EnumsToCommandConverter {
         int length = 0;
         RCCommand cmd;
         boolean startsWithJumpTo = false;
+        int jumpToCardsCount = 0;
 
         while (contains(JumpToCards, enumsRow[currIndex]) && currIndex < COLS) {
             startsWithJumpTo = true;
@@ -214,6 +215,7 @@ public class EnumsToCommandConverter {
             JumpToIndex[i] = commandIndex;
             currIndex++;
             length++;
+            jumpToCardsCount++;
         }
 
         if (currIndex >= COLS || !contains(spinalCards, enumsRow[currIndex])) {
@@ -225,20 +227,29 @@ public class EnumsToCommandConverter {
         // beginning of the current command.
         if (enumsRow[currIndex] == QREnums.CONDITION) {
             cmd = readCondCommand(enumsRow, currIndex, length);
-        } else if (contains(JumpFromCards, enumsRow[currIndex])) {
-            int i = enumsRow[currIndex] == QREnums.JMP_FROM_1 ? 0 :
-                    enumsRow[currIndex] == QREnums.JMP_FROM_2 ? 1 :
-                    /*enumsRow[currIndex] = QREnums.JMP_FORM_3*/2;
-            JumpFromIndex[i] = commandIndex;
-            cmd = readJumpCommand(enumsRow, currIndex, length);
-        } else {
-            cmd = readExcuteCommand(enumsRow, currIndex, length);
+
+            // Add to commands queue, and save command index & spinal index
+            commands.add(cmd);
+            cmd.setCommandIndex(commands.size()-1);
+            cmd.setSpinalIndex(startIndex + jumpToCardsCount);
+        } else
+        {
+            if (contains(JumpFromCards, enumsRow[currIndex])) {
+                int i = enumsRow[currIndex] == QREnums.JMP_FROM_1 ? 0 :
+                        enumsRow[currIndex] == QREnums.JMP_FROM_2 ? 1 :
+                        /*enumsRow[currIndex] = QREnums.JMP_FORM_3*/2;
+                JumpFromIndex[i] = commandIndex;
+                cmd = readJumpCommand(enumsRow, currIndex, length);
+            } else {
+                cmd = readExcuteCommand(enumsRow, currIndex, length);
+            }
+
+            // Add to commands queue, and save command index & spinal index
+            commands.add(cmd);
+            cmd.setCommandIndex(commands.size()-1);
+            cmd.setSpinalIndex(startIndex);
         }
 
-        // Add to commands queue, and save command index & spinal index
-        commands.add(cmd);
-        cmd.setCommandIndex(commands.size()-1);
-        cmd.setSpinalIndex(startIndex);
         cmd.setLineIndex(currentLineIndex);
 
         // if command starts with jump_to -> set reachable to true (will cause a known issue bug)

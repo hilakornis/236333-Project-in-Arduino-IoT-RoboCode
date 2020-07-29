@@ -11,7 +11,7 @@ public class RCIfBoxColorCommand extends RCIfCommand {
     private int actual_next_jump_index;
 
     // TODO : update boxes colors constants
-    private final Color boxesColors[] = { Color.NON_COLOR /*no box with id 0*/, Color.BLACK, Color.BLUE , Color.YELLOW };
+    private final Color boxesColors[] = { Color.NON_COLOR /*no box with id 0*/, Color.RED };
 
 
     public Color getColor() {

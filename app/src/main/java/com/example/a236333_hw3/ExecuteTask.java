@@ -115,14 +115,14 @@ public class ExecuteTask extends AppCompatActivity {
 
     // ============================================================================================
     // here the output of step 1 is saved
-    private String step1_result_code =  "T_L,NaN,NaN,NaN,NaN,NaN,"  +
-                                        "T_R,NaN,NaN,NaN,NaN,NaN,"  +
-                                        "T_U,NaN,NaN,NaN,NaN,NaN,"  +
-                                        "G_FW,NaN,NaN,NaN,NaN,NaN," +
-                                        "G_BK,NaN,NaN,NaN,NaN,NaN," +
-                                        "F_U,NaN,NaN,NaN,NaN,NaN,"  +
-                                        "F_D,NaN,NaN,NaN,NaN,NaN,"  +
-                                        "NaN,NaN,NaN,NaN,NaN,NaN";
+    private String step1_result_code =  "NaN,"      +     "NaN,"  +   "JMP_T1,"+  "CND,"+     "BOX,"+       "CL_R,"  +
+                                        "NaN,"      +     "NaN,"  +   "T_R,"+     "NaN,"+     "F_U,"+       "NaN,"  +
+                                        "NaN,"      +     "NaN,"  +   "CND,"+     "FN,"+      "NaN,"+       "NaN,"  +
+                                        "JMP_T2,"   +     "G_FW,"  +  "NaN,"+     "JMP_T3,"+  "T_L,"+       "NaN," +
+                                        "JMP_F1,"+        "NaN,"+     "NaN,"+     "CND,"+     "FN," +       "NaN,"      +
+                                        "NaN,"+           "NaN,"+     "JMP_F2,"+  "NaN,"+     "JMP_F3,"  +  "NaN,"      +
+                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
+                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN";
 
     private void Step1_over() {
         Thread d = new Thread(new Runnable() {
