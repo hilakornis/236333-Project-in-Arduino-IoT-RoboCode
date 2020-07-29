@@ -3,6 +3,7 @@ package com.example.a236333_hw3.RunEnvironment.Executor;
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
 import com.example.a236333_hw3.RunEnvironment.PostRunLogChecker.RCPostRunLogChecker;
+import com.example.a236333_hw3.RunEnvironment.PostRunLogChecker.RCPostRunLogCheckerException;
 import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
 import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
@@ -49,13 +50,17 @@ public class RCProgramExecutor {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     if (errorHanlder!=null) errorHanlder.run();
+                }catch (RCPostRunLogCheckerException e) {
+                    e.printStackTrace();
+                    errorMessage = e.getMessage();
+                    if (errorHanlder!=null) errorHanlder.run();
                 }
             }
         });
         th.start();
     }
 
-    private void doTheProgramRunning() throws InterruptedException {
+    private void doTheProgramRunning() throws InterruptedException, RCPostRunLogCheckerException {
         // Reset variables
         RCProgramStatus.getInstance().init();
         RCProgramLog.getInstance().init();
