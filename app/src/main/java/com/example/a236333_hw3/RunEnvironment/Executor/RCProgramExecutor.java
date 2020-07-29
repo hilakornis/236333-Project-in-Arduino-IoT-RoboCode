@@ -82,5 +82,7 @@ public class RCProgramExecutor {
                 ((stepsLimit == NO_STEPS_LIMIT) || (steps <= stepsLimit)));
 
         RCPostRunLogChecker.getInstance().CheckRunLog(RCProgramLog.getInstance().getLogger(), steps);
+
+        //todo: Add a user compeleted tasks list and Update the user's completed tasks accordingly.
     }
 }

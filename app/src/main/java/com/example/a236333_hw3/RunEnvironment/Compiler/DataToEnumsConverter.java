@@ -152,4 +152,6 @@ public class DataToEnumsConverter {
         }
         return arr_qr;
     }
+
+
 }
