@@ -52,6 +52,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
     TextView DescriptionHints;
     TextView DescriptionArrangement;
     TextView DescriptionColors;
+    TextView DescriptionStepsLimit;
 
     // Action
     Button      backButton;
@@ -75,6 +76,7 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         DescriptionArrangement = findViewById(R.id.arrangement);
         backButton = findViewById(R.id.backButton);
         DescriptionColors = findViewById(R.id.FenceColors);
+        DescriptionStepsLimit = findViewById(R.id.taskStepsLimit);
 
         setTask(RoboCodeSettings.getInstance().current);
 
@@ -164,11 +166,15 @@ public class roboCodeTaskActivity extends AppCompatActivity {
                             "RoboCode MUST NOT step on the following fence tiles: " +
                             task.getFenceColorsString()
                     );
-
-
                 } else {
                     DescriptionColors.setVisibility(View.GONE);
                 }
+
+                DescriptionStepsLimit.setText( task.stepsLimit == -1 ?
+                        "This task does not have any steps limit" :
+                        "RoboCode must not execute more then " + String.valueOf(task.stepsLimit) + " steps"
+                );
+
             }
         });
     }

@@ -115,7 +115,9 @@ public class HomeFragment extends Fragment {
                             Log.i("[home fragment]", commands.toString());
                             RCProgramExecutor.getInstance().runProgram(commands,
                                     RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
-                                    RCProgramExecutor.NO_STEPS_LIMIT,
+                                    (RoboCodeSettings.getInstance().current.stepsLimit != -1 ?
+                                            RoboCodeSettings.getInstance().current.stepsLimit :
+                                            RCProgramExecutor.NO_STEPS_LIMIT),
                                     new Runnable() {
                                         @Override
                                         public void run() {

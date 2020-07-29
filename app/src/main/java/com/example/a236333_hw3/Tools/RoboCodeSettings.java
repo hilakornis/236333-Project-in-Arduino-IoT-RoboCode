@@ -119,6 +119,7 @@ public class RoboCodeSettings {
                                         task.checkCondValue  = documentSnapshot.getString("CheckCondValue");
                                         task.checkExact      = documentSnapshot.getBoolean("CheckExact");
                                         task.checkExactValue = documentSnapshot.getString("CheckExactValue");
+                                        task.stepsLimit      = documentSnapshot.getLong("StepsLimit").intValue();
 
                                         task.FillFenceColors(documentSnapshot.getString("FenceColors"));
 

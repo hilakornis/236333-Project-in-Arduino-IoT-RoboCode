@@ -2,6 +2,7 @@ package com.example.a236333_hw3.RunEnvironment.Executor;
 
 import com.example.a236333_hw3.ArduinoConnector.ArduinoConnector;
 import com.example.a236333_hw3.RunEnvironment.Log.RCProgramLog;
+import com.example.a236333_hw3.RunEnvironment.PostRunLogChecker.RCPostRunLogChecker;
 import com.example.a236333_hw3.RunEnvironment.Status.RCProgramStatus;
 import com.example.a236333_hw3.RunEnvironment.Program.Command.RCCommand;
 import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
@@ -44,7 +45,6 @@ public class RCProgramExecutor {
             public void run() {
                 try {
                     doTheProgramRunning();
-                    // TODO : check here that run OK
                     if (successHanlder!=null) successHanlder.run();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -76,7 +76,6 @@ public class RCProgramExecutor {
         } while (nextCmdIndex != RCCommand.NOT_DEF &&
                 ((stepsLimit == NO_STEPS_LIMIT) || (steps <= stepsLimit)));
 
-        // TODO : here we will return an object that will retrieve a tuple object { logger , steps }
-        // TODO : in case we passed STEPS_LIMIT we need to return an error using _errorHanlder!!!
+        RCPostRunLogChecker.getInstance().CheckRunLog(RCProgramLog.getInstance().getLogger(), steps);
     }
 }

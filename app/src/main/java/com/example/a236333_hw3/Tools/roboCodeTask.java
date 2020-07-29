@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class roboCodeTask {
     public int      ID;
     public int      Points;
+    public int      stepsLimit;
     public String   Title;
     public String   Description;
     public String   Hints;

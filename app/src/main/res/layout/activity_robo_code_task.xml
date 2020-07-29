@@ -107,6 +107,18 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:text="Steps Limit"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/taskStepsLimit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="000" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:text="Some Hints..."
                             android:textStyle="bold" />

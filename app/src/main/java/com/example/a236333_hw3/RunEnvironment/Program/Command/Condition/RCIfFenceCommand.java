@@ -38,11 +38,10 @@ public class RCIfFenceCommand extends RCIfCommand {
                 Integer.parseInt(statusString.split("\\|")[1]),
                 Integer.parseInt(statusString.split("\\|")[2]));
 
-        // TODO : take the fence colors from the task definition, not always black!
-        //          we need to save the colors that the robot can go on to the firebase db, under task definition
-        // update!
-        // RoboCodeSettings.getInstance().current.allowedColors
-        actual_next_jump_index = (color == Color.NON_COLOR || color == Color.BLACK ? getNextTrue() : getNextFalse());
+        actual_next_jump_index =
+                (color == Color.NON_COLOR ||
+                 RoboCodeSettings.getInstance().current.FenceColors.contains(color) ?
+                    getNextTrue() : getNextFalse());
     }
 
     @Override
