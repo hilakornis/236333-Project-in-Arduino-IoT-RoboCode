@@ -16,10 +16,10 @@
 #define CMD_CHECK_STATUS  '9'
 
 // motors
-#define rightForward  2//22
-#define rightBackward 3//24
-#define leftForward   5//26
-#define leftBackward  6//28
+#define rightForward  3//2//22
+#define rightBackward 2//3//24
+#define leftForward   6//5//26
+#define leftBackward  5//6//28
 
 // Color sensor
 #define clrS0 30
@@ -40,7 +40,7 @@
 // DELAY TIMINGS
 #define HALF_STEP_DELAY     500
 #define ONE_STEP_DELAY      1000
-#define ONE_TURN_DELAY      1300
+#define ONE_TURN_DELAY      1200
 
 #define FORK_UP_DELAY     450
 #define FORK_DOWN_DELAY   180
@@ -161,7 +161,7 @@ void loop() {
     else if (val == CMD_TURN_U) {
       if (printMSG) Serial.print("Turning arround\n");
       TurnRight();
-      delay(2 * ONE_TURN_DELAY);
+      delay(1.8 * ONE_TURN_DELAY);
       dontMove();
     }
     // TODO : test this
