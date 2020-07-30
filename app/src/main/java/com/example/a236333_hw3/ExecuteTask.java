@@ -234,22 +234,22 @@ public class ExecuteTask extends AppCompatActivity {
                     RCProgramExecutor.getInstance().
                         runProgram(step2_compiledProgram,
                             RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
-                            RCProgramExecutor.NO_STEPS_LIMIT,
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    // success
-                                    Do_success();
-                                }
-                            },
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    // error
-                                    errorMsg = RCProgramExecutor.getInstance().getErrorMessage();
-                                    Do_fail();
-                                }
-                        });
+                            RCProgramExecutor.NO_STEPS_LIMIT);
+
+                    try {
+                        RCProgramExecutor.getInstance().getSemaphoreForEndOfExecution().acquire();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (RCProgramExecutor.getInstance().getErrorMessage().isEmpty()) {
+                        // success
+                        Do_success();
+                    } else {
+                        // error
+                        errorMsg = RCProgramExecutor.getInstance().getErrorMessage();
+                        Do_fail();
+                    }
                 }
             }
         });

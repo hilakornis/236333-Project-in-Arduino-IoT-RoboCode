@@ -38,9 +38,9 @@
 #define printMSG true
 
 // DELAY TIMINGS
-#define HALF_STEP_DELAY     500
-#define ONE_STEP_DELAY      1000
-#define ONE_TURN_DELAY      1200
+#define HALF_STEP_DELAY     475
+#define ONE_STEP_DELAY      950
+#define ONE_TURN_DELAY      900
 
 #define FORK_UP_DELAY     450
 #define FORK_DOWN_DELAY   180

@@ -117,31 +117,7 @@ public class HomeFragment extends Fragment {
                                     RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
                                     (RoboCodeSettings.getInstance().current.stepsLimit != -1 ?
                                             RoboCodeSettings.getInstance().current.stepsLimit :
-                                            RCProgramExecutor.NO_STEPS_LIMIT),
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // success
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    testBtn.setEnabled(true);
-                                                }
-                                            });
-                                        }
-                                    },
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            // error
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    testBtn.setEnabled(true);
-                                                }
-                                            });
-                                        }
-                                    });
+                                            RCProgramExecutor.NO_STEPS_LIMIT));
                         }  catch (RCCompilerException ex) {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
