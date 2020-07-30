@@ -4,6 +4,7 @@ import com.example.a236333_hw3.RunEnvironment.Executor.RCProgramExecutor;
 import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItem;
 import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemMovement;
 import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemMovementType;
+import com.example.a236333_hw3.RunEnvironment.Log.Item.RCProgramLogItemStatus;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class RCPostRunLogChecker {
             ArrayList<RCProgramLogItemMovementType> expected =
                     getExpectedListFromString(RoboCodeSettings.getInstance().current.checkExactValue);
             ArrayList<RCProgramLogItemMovementType> actual =
-                    getExpectedListFromLogs(logs);
+                    getActualListFromLogs(logs);
 
             if (expected.size() > actual.size()) {
                 throw new RCPostRunLogCheckerException(
@@ -58,9 +59,43 @@ public class RCPostRunLogChecker {
         }
 
         if (RoboCodeSettings.getInstance().current.checkCond) {
-            // TODO : check cond
+            for (String currCond: RoboCodeSettings.getInstance().current.checkCondValue.split(",")) {
+                if (currCond.startsWith("CheckNeverStepedOnFence")) {
+                    CheckNeverStepedOnFence(logs);
+                } else if (currCond.startsWith("CheckLastActionWas")) {
+                    RCProgramLogItemMovementType action =
+                            MovementTypeFromString(currCond.substring(
+                                currCond.indexOf('(')+1,
+                                currCond.indexOf(')')-1));
+                    CheckLastAction(logs, action);
+                }
+            }
         }
+    }
 
+    private void CheckNeverStepedOnFence(ArrayList<RCProgramLogItem> logs) throws RCPostRunLogCheckerException {
+        for ( RCProgramLogItem curr: logs ) {
+            if (curr instanceof RCProgramLogItemStatus) {
+                if (RoboCodeSettings.getInstance().current.FenceColors.contains (
+                        ((RCProgramLogItemStatus)curr).getClr())) {
+                            throw new RCPostRunLogCheckerException(
+                                    "It seems like RoboCode stepped on an illegal fence tile. Recheck your solution and try again!");
+                }
+            }
+        }
+    }
+
+    private void CheckLastAction(ArrayList<RCProgramLogItem> logs, RCProgramLogItemMovementType action) throws RCPostRunLogCheckerException {
+        ArrayList<RCProgramLogItemMovementType> moves = getActualListFromLogs(logs);
+        if (moves.get(moves.size()-1) != action) {
+            throw new RCPostRunLogCheckerException(
+                    "RoboCode's last move was suppose to be to " +
+                            convToNowString(action) +
+                            " but instead it " +
+                            convToPastString(moves.get(moves.size()-1)) +
+                            ". Recheck your solution and try again!");
+
+        }
     }
 
     private String convToNowString(RCProgramLogItemMovementType type) {
@@ -83,7 +118,7 @@ public class RCPostRunLogChecker {
         else  /*(type == RCProgramLogItemMovementType.FORKLIFT_DOWN)*/    return "placed down a box";
     }
 
-    private ArrayList<RCProgramLogItemMovementType> getExpectedListFromLogs(ArrayList<RCProgramLogItem> logs) {
+    private ArrayList<RCProgramLogItemMovementType> getActualListFromLogs(ArrayList<RCProgramLogItem> logs) {
         ArrayList<RCProgramLogItemMovementType> lst = new ArrayList<RCProgramLogItemMovementType>();
         for (RCProgramLogItem curr : logs) {
             if (curr instanceof RCProgramLogItemMovement) {
@@ -96,14 +131,18 @@ public class RCPostRunLogChecker {
     private ArrayList<RCProgramLogItemMovementType> getExpectedListFromString(String checkExactValue) {
         ArrayList<RCProgramLogItemMovementType> lst = new ArrayList<RCProgramLogItemMovementType>();
         for (String curr : checkExactValue.split(",")) {
-            if      (curr.equals("TURN_LEFT"))      lst.add(RCProgramLogItemMovementType.TURN_LEFT   );
-            else if (curr.equals("TURN_RIGHT"))     lst.add(RCProgramLogItemMovementType.TURN_RIGHT  );
-            else if (curr.equals("TURN_AROUND"))    lst.add(RCProgramLogItemMovementType.TURN_AROUND );
-            else if (curr.equals("GO_FORWARD"))     lst.add(RCProgramLogItemMovementType.GO_FORWARD  );
-            else if (curr.equals("GO_BACKWARD"))    lst.add(RCProgramLogItemMovementType.GO_BACKWARD );
-            else if (curr.equals("FORKLIFT_UP"))    lst.add(RCProgramLogItemMovementType.FORKLIFT_UP );
-            else if (curr.equals("FORKLIFT_DOWN"))  lst.add(RCProgramLogItemMovementType.FORKLIFT_DOWN);
+            lst.add(MovementTypeFromString(curr));
         }
         return lst;
+    }
+
+    private RCProgramLogItemMovementType MovementTypeFromString(String str) {
+        if      (str.equals("TURN_LEFT"))           return RCProgramLogItemMovementType.TURN_LEFT   ;
+        else if (str.equals("TURN_RIGHT"))          return RCProgramLogItemMovementType.TURN_RIGHT  ;
+        else if (str.equals("TURN_AROUND"))         return RCProgramLogItemMovementType.TURN_AROUND ;
+        else if (str.equals("GO_FORWARD"))          return RCProgramLogItemMovementType.GO_FORWARD  ;
+        else if (str.equals("GO_BACKWARD"))         return RCProgramLogItemMovementType.GO_BACKWARD ;
+        else if (str.equals("FORKLIFT_UP"))         return RCProgramLogItemMovementType.FORKLIFT_UP ;
+        else /*if (curr.equals("FORKLIFT_DOWN"))*/  return RCProgramLogItemMovementType.FORKLIFT_DOWN;
     }
 }

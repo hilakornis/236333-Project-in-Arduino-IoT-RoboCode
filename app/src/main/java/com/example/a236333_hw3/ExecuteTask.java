@@ -70,6 +70,13 @@ public class ExecuteTask extends AppCompatActivity {
         backButton.setVisibility(View.GONE);
         errorText.setVisibility(View.GONE);
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ExecuteTask.this.finish();
+            }
+        });
+
         // TODO : retrive this when working with firebase server!!!
         //FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
         Step1_over(); // TODO : Remove this !!
@@ -115,14 +122,25 @@ public class ExecuteTask extends AppCompatActivity {
 
     // ============================================================================================
     // here the output of step 1 is saved
-    private String step1_result_code =  "NaN,"      +     "NaN,"  +   "JMP_T1,"+  "CND,"+     "BOX,"+       "CL_R,"  +
-                                        "NaN,"      +     "NaN,"  +   "T_R,"+     "NaN,"+     "F_U,"+       "NaN,"  +
-                                        "NaN,"      +     "NaN,"  +   "CND,"+     "FN,"+      "NaN,"+       "NaN,"  +
-                                        "JMP_T2,"   +     "G_FW,"  +  "NaN,"+     "JMP_T3,"+  "T_L,"+       "NaN," +
-                                        "JMP_F1,"+        "NaN,"+     "NaN,"+     "CND,"+     "FN," +       "NaN,"      +
-                                        "NaN,"+           "NaN,"+     "JMP_F2,"+  "NaN,"+     "JMP_F3,"  +  "NaN,"      +
-                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
-                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN";
+    //private String step1_result_code =  "NaN,"      +     "NaN,"  +   "JMP_T1,"+  "CND,"+     "BOX,"+       "CL_R,"  +
+    //                                    "NaN,"      +     "NaN,"  +   "T_R,"+     "NaN,"+     "F_U,"+       "NaN,"  +
+    //                                    "NaN,"      +     "NaN,"  +   "CND,"+     "FN,"+      "NaN,"+       "NaN,"  +
+    //                                    "JMP_T2,"   +     "G_FW,"  +  "NaN,"+     "JMP_T3,"+  "T_L,"+       "NaN," +
+    //                                    "JMP_F1,"+        "NaN,"+     "NaN,"+     "CND,"+     "FN," +       "NaN,"      +
+    //                                    "NaN,"+           "NaN,"+     "JMP_F2,"+  "NaN,"+     "JMP_F3,"  +  "NaN,"      +
+    //                                    "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
+    //                                    "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN";
+
+    private String step1_result_code =
+            "JMP_T1,"   +     "G_FW," +   "VAR_5,"  +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "T_U,"      +     "NaN,"  +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "JMP_F1,"   +     "VAR_3," +   "NaN,"   +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "T_L,"      +     "NaN,"  +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "JMP_T2,"   +     "G_FW,"  +   "VAR_5," +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "T_U,"      +     "NaN,"  +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "JMP_F2,"   +     "VAR_2," +   "NaN,"   +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "NaN,"      +     "NaN,"  +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN"  ;
+
 
     private void Step1_over() {
         Thread d = new Thread(new Runnable() {
@@ -171,7 +189,7 @@ public class ExecuteTask extends AppCompatActivity {
 
                     // TODO - its a fake sleep, remove this!
                     try {
-                        Thread.sleep(20000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -242,6 +260,8 @@ public class ExecuteTask extends AppCompatActivity {
     // success
 
     private void Do_success() {
+        // TODO : save on firebase that user solved the current task
+
         Thread d = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -285,7 +305,6 @@ public class ExecuteTask extends AppCompatActivity {
         });
         d.start();
     }
-
 
     @Override
     protected void onDestroy() {

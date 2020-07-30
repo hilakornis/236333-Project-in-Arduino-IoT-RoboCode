@@ -164,9 +164,21 @@ void loop() {
       delay(2 * ONE_TURN_DELAY);
       dontMove();
     }
+    // TODO : test this
     else if (val == CMD_FORK_UP) {
       if (printMSG) Serial.print("picking up a box\n");
-      if (IsForkUp == FORK_DOWN) forkliftUp();
+      if (IsForkUp == FORK_DOWN) {
+        goBackward();
+        TurnRight();
+        delay(2 * ONE_TURN_DELAY);
+        goBackward();
+        forkliftUp();
+        goForward();
+        TurnRight();
+        delay(2 * ONE_TURN_DELAY);
+        goForward();
+        dontMove();
+      }
       // TODO : Fix this code
       dontMove();
       IsForkUp = FORK_UP;
