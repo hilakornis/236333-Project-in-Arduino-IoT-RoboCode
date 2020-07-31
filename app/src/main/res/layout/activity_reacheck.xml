@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ReacheckActivity">
-    <ScrollView android:background="#FFFFFF"
+    tools:context=".ui.ReacheckActivity"
+    android:background="@drawable/sign_bg">
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="15dp">
@@ -17,7 +18,6 @@
                 android:id="@+id/tableLayout2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#ffffff"
                 android:shrinkColumns="*"
                 android:stretchColumns="*"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -538,7 +538,6 @@ android:scaleType="fitCenter"
                 android:layout_marginStart="162dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="162dp"
-                android:backgroundTint="#FF9800"
                 android:text="Done"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
