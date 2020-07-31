@@ -383,6 +383,7 @@
                         android:layout_height="60dp"
                         android:scaleType="fitCenter"
                         android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
