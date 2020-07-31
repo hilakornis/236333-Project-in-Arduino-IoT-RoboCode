@@ -134,6 +134,7 @@
                     android:textSize="30dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textAlignment="center"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -142,6 +143,7 @@
                     android:textSize="25dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textAlignment="center"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -150,6 +152,7 @@
                     android:textSize="25dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textAlignment="center"
                     />
                 <ImageView
                     android:layout_width="140dp"
@@ -180,6 +183,7 @@
                     android:textSize="30dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textAlignment="center"
                     />
 
                 <TextView
@@ -189,7 +193,8 @@
                     android:gravity="center"
                     android:layout_marginBottom="30dp"
                     android:text="yo did not solve the task"
-                    android:textSize="25dp" />
+                    android:textSize="25dp"
+                    android:textAlignment="center" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -197,6 +202,7 @@
                     android:textSize="25dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textAlignment="center"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -207,6 +213,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginBottom="30dp"
+                    android:textAlignment="center"
                     />
 
                 <TextView
@@ -216,6 +223,7 @@
                     android:textSize="25dp"
                     android:layout_gravity="center"
                     android:gravity="center"
+                    android:textAlignment="center"
                     />
                 <ImageView
                     android:layout_width="140dp"

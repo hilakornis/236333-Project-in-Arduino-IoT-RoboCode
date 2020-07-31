@@ -20,14 +20,14 @@
             android:id="@+id/nav_high_score"
             android:icon="@drawable/nav_high_score"
             android:title="High Scores" />
-        <item
+        <!--<item
             android:id="@+id/nav_settings"
             android:icon="@drawable/nav_settings"
             android:title="User Settings" />
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/nav_help"
-            android:title="Help" />
+            android:title="Help" />-->
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/nav_signout"

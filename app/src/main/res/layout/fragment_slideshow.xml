@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.slideshow.SlideshowFragment"
-    android:background="@drawable/sign_bg">
+    >
 
-    <!-- step 1 - receive from server -->
+
     <LinearLayout
         android:visibility="visible"
         android:layout_width="match_parent"
@@ -15,27 +15,63 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:id="@+id/Step1Panel">
+        android:id="@+id/Step1Panel"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="80dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/sign_bg"
+        >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="High Score"
+            android:text="High Scores"
             android:textSize="30dp"
             android:layout_gravity="center"
             android:gravity="center"
+            android:layout_marginBottom="20dp"
+            android:textStyle="italic"
+            android:textAlignment="center"
             />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
         <ImageView
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:src="@drawable/success"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="20dp"
             android:layout_gravity="center"
             android:gravity="center"
+            android:textAlignment="center"
             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/first_place"
+            android:text=""
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/second_place"
+            android:text=""
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/third_place"
+            android:text=""
+            android:textSize="20dp"
+            android:textStyle="bold"
+            />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
