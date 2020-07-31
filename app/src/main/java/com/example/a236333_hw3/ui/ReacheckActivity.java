@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
-import android.content.IntentSender;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,7 +55,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             "JMP_F2", "JMP_T2", "JMP_F3", "JMP_T3", "T_L", "T_R",
             "T_U", "G_FW", "G_BK", "F_U", "F_D", "STP",
             "CL_R", "CL_BL", "CL_G", "CL_Y", "CL_W", "CL_BK",
-            "TILE", "BOX", "FN"};
+            "TILE", "BOX", "FN", "NaN"};
 
     public ArrayList<QREnums> getQrEnumsFromString(String input){
         DataToEnumsConverter StreamToEnums = new DataToEnumsConverter();
@@ -448,6 +447,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             for(int j = 0; j < 6 ; j++){
                 qrEnums = vals.get(i*6+j);
                 qr_str = enumToString(qrEnums);
+
                 //this.table_buttons[i][j].setText(qr_str);
                 this.table_buttons[i][j].setImageResource(R.drawable.pairing);
                 // this.table_buttons[i][j].setBackground(pairing.png);
@@ -455,6 +455,113 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 
+    }
+
+    public String getImageCode(Drawable draw){
+        String qr_str = "0";
+        if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n0).getConstantState())){
+            qr_str = "0";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n1).getConstantState())){
+            qr_str = "1";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n2).getConstantState())){
+            qr_str = "2";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n3).getConstantState())){
+            qr_str = "3";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n4).getConstantState())){
+            qr_str = "4";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n5).getConstantState())){
+            qr_str = "5";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n6).getConstantState())){
+            qr_str = "6";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n7).getConstantState())){
+            qr_str = "7";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n8).getConstantState())){
+            qr_str = "8";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.n9).getConstantState())){
+            qr_str = "9";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cnd).getConstantState())){
+            qr_str = "CND";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.jmp_f1).getConstantState())){
+            qr_str = "JMP_F1";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.jmp_f2).getConstantState())){
+            qr_str = "JMP_F2";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.jmp_f3).getConstantState())){
+            qr_str = "JMP_F3";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.box).getConstantState())){
+            qr_str = "BOX";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cl_bk).getConstantState())){
+            qr_str = "CL_BK";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cl_bl).getConstantState())){
+            qr_str = "CL_CL";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cl_g).getConstantState())){
+            qr_str = "CL_G";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cl_r).getConstantState())){
+            qr_str = "CL_R";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cl_w).getConstantState())){
+            qr_str = "CL_W";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.cl_y).getConstantState())){
+            qr_str = "CL_Y";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.f_d).getConstantState())){
+            qr_str = "F_D";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.f_u).getConstantState())){
+            qr_str = "F_U";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.fn).getConstantState())){
+            qr_str = "FN";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.g_bk).getConstantState())){
+            qr_str = "G_BK";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.g_fw).getConstantState())){
+            qr_str = "G_FW";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.jmp_t1).getConstantState())){
+            qr_str = "JMP_T1";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.jmp_t2).getConstantState())){
+            qr_str = "JMP_T2";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.jmp_t3).getConstantState())){
+            qr_str = "JMP_T3";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.nan).getConstantState())){
+            qr_str = "NaN";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.stp).getConstantState())){
+            qr_str = "STP";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.t_l).getConstantState())){
+            qr_str = "T_L";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.t_r).getConstantState())){
+            qr_str = "T_R";
+        }
+        else if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.t_u).getConstantState())){
+            qr_str = "T_U";
+        }
+        return qr_str;
     }
 
     protected ArrayList<QREnums> updateEnumAccordingToTable(){
@@ -467,9 +574,8 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             for(int j = 0; j < 6 ; j++) {
                 qr_str = "0";
                 Drawable draw = this.table_buttons[i][j].getDrawable();
-                if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.pairing).getConstantState())){
-                    qr_str = "1";
-                }
+
+                qr_str = getImageCode(draw);
                 //qr_str = this.table_buttons[i][j].getText().toString();
                 qrEnums = stringToEnum(qr_str);
                 this.enums_in_table.set(i*6+j, qrEnums);
@@ -497,10 +603,116 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
         Log.i("Info","Setting the buttons according to step1_result_code variable");
         this.enums_in_table = getQrEnumsFromString(step1_result_code);
         setAllButtonsOfTable(this.enums_in_table);
+    }
 
 
-
-
+    public int chosenImage(String choice){
+        if(choice.equals("0")){
+            return R.drawable.n0;
+        }
+        else if(choice.equals("1")){
+            return R.drawable.n1;
+        }
+        else if(choice.equals("2")){
+            return R.drawable.n2;
+        }
+        else if(choice.equals("3")){
+            return R.drawable.n3;
+        }
+        else if(choice.equals("4")){
+            return R.drawable.n4;
+        }
+        else if(choice.equals("5")){
+            return R.drawable.n5;
+        }
+        else if(choice.equals("6")){
+            return R.drawable.n6;
+        }
+        else if(choice.equals("7")){
+            return R.drawable.n7;
+        }
+        else if(choice.equals("8")){
+            return R.drawable.n8;
+        }
+        else if(choice.equals("9")){
+            return R.drawable.n9;
+        }
+        else if(choice.equals("CND")){
+            return R.drawable.cnd;
+        }
+        else if(choice.equals("JMP_F1")){
+            return R.drawable.jmp_f1;
+        }
+        else if(choice.equals("JMP_T1")){
+            return R.drawable.jmp_t1;
+        }
+        else if(choice.equals("JMP_F2")){
+            return R.drawable.jmp_f2;
+        }
+        else if(choice.equals("JMP_T2")){
+            return R.drawable.jmp_t2;
+        }
+        else if(choice.equals("JMP_F3")){
+            return R.drawable.jmp_f3;
+        }
+        else if(choice.equals("JMP_T3")){
+            return R.drawable.jmp_f3;
+        }
+        else if(choice.equals("T_L")){
+            return R.drawable.t_l;
+        }
+        else if(choice.equals("T_R")){
+            return R.drawable.t_r;
+        }
+        else if(choice.equals("T_U")){
+            return R.drawable.t_u;
+        }
+        else if(choice.equals("G_FW")){
+            return R.drawable.g_fw;
+        }
+        else if(choice.equals("G_BK")){
+            return R.drawable.g_bk;
+        }
+        else if(choice.equals("F_U")){
+            return R.drawable.f_u;
+        }
+        else if(choice.equals("F_D")){
+            return R.drawable.f_d;
+        }
+        else if(choice.equals("STP")){
+            return R.drawable.stp;
+        }
+        else if(choice.equals("CL_R")){
+            return R.drawable.cl_r;
+        }
+        else if(choice.equals("CL_BL")){
+            return R.drawable.cl_bl;
+        }
+        else if(choice.equals("CL_BG")){
+            return R.drawable.cl_g;
+        }
+        else if(choice.equals("CL_Y")){
+            return R.drawable.cl_y;
+        }
+        else if(choice.equals("CL_W")){
+            return R.drawable.cl_w;
+        }
+        else if(choice.equals("CL_BK")){
+            return R.drawable.cl_bk;
+        }
+        else if(choice.equals("TILE")){
+            return R.drawable.tile;
+        }
+        else if(choice.equals("BOX")){
+            return R.drawable.box;
+        }
+        else if(choice.equals("FN")){
+            return R.drawable.fn;
+        }
+        else if(choice.equals("NaN")){
+            return R.drawable.nan;
+        }
+        return R.drawable.nan;
     }
 
     protected void showDialog(final int line, final int col){
@@ -510,7 +722,9 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Here we set the button appearance according to the choice.
-                table_buttons[line][col].setImageResource(R.drawable.cloud);
+                // table_buttons[line][col].setText(listCards[which]);
+                String choice = listCards[which];
+                table_buttons[line][col].setImageResource(chosenImage(choice));
                 dialog.dismiss();
             }
         });

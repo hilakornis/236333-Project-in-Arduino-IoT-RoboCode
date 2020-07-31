@@ -36,36 +36,54 @@
                         android:id="@+id/ImageButton00"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton01"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton02"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton03"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton04"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton05"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -81,36 +99,54 @@
                         android:id="@+id/ImageButton10"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton11"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton12"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton13"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton14"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton15"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -126,36 +162,54 @@
                         android:id="@+id/ImageButton20"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton21"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton22"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton23"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton24"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton25"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -171,36 +225,54 @@
                         android:id="@+id/ImageButton30"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton31"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton32"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton33"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton34"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton35"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -216,36 +288,54 @@
                         android:id="@+id/ImageButton40"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton41"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton42"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton43"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton44"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton45"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -261,36 +351,54 @@
                         android:id="@+id/ImageButton50"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton51"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton52"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton53"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton54"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton55"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -306,36 +414,54 @@
                         android:id="@+id/ImageButton60"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton61"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton62"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton63"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton64"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
                         android:id="@+id/ImageButton65"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="5" />
 
 
@@ -351,30 +477,46 @@
                         android:id="@+id/ImageButton70"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="0" />
 
                     <ImageButton
                         android:id="@+id/ImageButton71"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="1" />
 
                     <ImageButton
                         android:id="@+id/ImageButton72"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="2" />
 
                     <ImageButton
                         android:id="@+id/ImageButton73"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="3" />
 
                     <ImageButton
                         android:id="@+id/ImageButton74"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:padding="20dp"
                         android:text="4" />
 
                     <ImageButton
