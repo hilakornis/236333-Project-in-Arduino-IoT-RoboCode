@@ -18,7 +18,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 public class RoboCodeSettings {
@@ -96,52 +98,74 @@ public class RoboCodeSettings {
         if (roboCodeTasks != null) {
             handler.onSuccess();
         } else {
-            CollectionReference tasks = db.collection("Tasks");
+            DocumentReference getUser = FirebaseFirestore.getInstance().collection("Users").
+                    document(RoboCodeSettings.getInstance().user.getEmail());
 
-            tasks.get().addOnSuccessListener(
-                    new OnSuccessListener<QuerySnapshot>() {
+            getUser.get().addOnSuccessListener(
+                    new OnSuccessListener<DocumentSnapshot>() {
                         @Override
-                        public void onSuccess(QuerySnapshot documentSnapshots) {
-                            roboCodeTasks = new Vector<roboCodeTask>();
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                            if (!documentSnapshots.isEmpty()) {
-                                for (DocumentSnapshot documentSnapshot : documentSnapshots) {
-                                    if (documentSnapshot.exists()) {
-                                        roboCodeTask task = new roboCodeTask();
-                                        task.ID             = documentSnapshot.getLong("ID").intValue();
-                                        task.Points         = documentSnapshot.getLong("Points").intValue();
-                                        task.Title          = documentSnapshot.getString("Title");
-                                        task.Description    = documentSnapshot.getString("Description");
-                                        task.Hints          = documentSnapshot.getString("Hints");
-                                        task.Arrangement    = documentSnapshot.getString("Arrangement");
+                            final Map<String,Integer> FinishedTasks =
+                                    (Map<String,Integer>)documentSnapshot.get("FinishedTasks");
 
-                                        task.checkCond       = documentSnapshot.getBoolean("CheckCond");
-                                        task.checkCondValue  = documentSnapshot.getString("CheckCondValue");
-                                        task.checkExact      = documentSnapshot.getBoolean("CheckExact");
-                                        task.checkExactValue = documentSnapshot.getString("CheckExactValue");
-                                        task.stepsLimit      = documentSnapshot.getLong("StepsLimit").intValue();
+                            CollectionReference tasks = db.collection("Tasks");
 
-                                        task.FillFenceColors(documentSnapshot.getString("FenceColors"));
+                            tasks.get().addOnSuccessListener(
+                                    new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot documentSnapshots) {
+                                            roboCodeTasks = new Vector<roboCodeTask>();
 
-                                        // TODO : implement
-                                        // TODO : add this to firebase
-                                        task.Accomplished   = false;
+                                            if (!documentSnapshots.isEmpty()) {
+                                                for (DocumentSnapshot documentSnapshot : documentSnapshots) {
+                                                    if (documentSnapshot.exists()) {
+                                                        roboCodeTask task = new roboCodeTask();
+                                                        task.ID             = documentSnapshot.getLong("ID").intValue();
+                                                        task.Points         = documentSnapshot.getLong("Points").intValue();
+                                                        task.Title          = documentSnapshot.getString("Title");
+                                                        task.Description    = documentSnapshot.getString("Description");
+                                                        task.Hints          = documentSnapshot.getString("Hints");
+                                                        task.Arrangement    = documentSnapshot.getString("Arrangement");
+                                                        task.Active         = documentSnapshot.getBoolean("Active");
 
-                                        roboCodeTasks.add(task);
+                                                        task.checkCond       = documentSnapshot.getBoolean("CheckCond");
+                                                        task.checkCondValue  = documentSnapshot.getString("CheckCondValue");
+                                                        task.checkExact      = documentSnapshot.getBoolean("CheckExact");
+                                                        task.checkExactValue = documentSnapshot.getString("CheckExactValue");
+                                                        task.stepsLimit      = documentSnapshot.getLong("StepsLimit").intValue();
+
+                                                        task.FillFenceColors(documentSnapshot.getString("FenceColors"));
+
+                                                        // Set Accomplished
+                                                        task.Accomplished   = FinishedTasks.containsKey(String.valueOf(task.ID));
+
+                                                        roboCodeTasks.add(task);
+                                                    }
+                                                }
+                                            }
+                                            /*roboCodeTasks = getTasksHardCoded();*/
+                                            handler.onSuccess();
+                                        }
                                     }
-                                }
-                            }
-                            /*roboCodeTasks = getTasksHardCoded();*/
-                            handler.onSuccess();
+                            ).addOnFailureListener(new OnFailureListener() {
+                                                       @Override
+                                                       public void onFailure(@NonNull Exception e) {
+                                                           handler.onFailure();
+                                                       }
+                                                   }
+                            );
+
                         }
-                    }
-            ).addOnFailureListener(new OnFailureListener() {
-                                       @Override
-                                       public void onFailure(@NonNull Exception e) {
-                                           handler.onFailure();
-                                       }
-                                   }
-            );
+                    }).addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        handler.onFailure();
+                                                                    }
+                                                                }
+                     );
+
+
         }
     }
 }

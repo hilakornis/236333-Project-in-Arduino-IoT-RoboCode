@@ -1,5 +1,6 @@
 package com.example.a236333_hw3;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -21,9 +23,16 @@ import com.example.a236333_hw3.RunEnvironment.Executor.RCProgramExecutor;
 import com.example.a236333_hw3.RunEnvironment.Program.RCProgram;
 import com.example.a236333_hw3.Tools.RoboCodeSettings;
 import com.example.a236333_hw3.ui.ReacheckActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 public class ExecuteTask extends AppCompatActivity {
@@ -261,6 +270,52 @@ public class ExecuteTask extends AppCompatActivity {
 
     private void Do_success() {
         // TODO : save on firebase that user solved the current task
+
+        DocumentReference tasks = FirebaseFirestore.getInstance().collection("Users").
+                document(RoboCodeSettings.getInstance().user.getEmail());
+
+        tasks.get().addOnSuccessListener(
+                new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Map<String,Integer> FinishedTasks =
+                                    (Map<String,Integer>)documentSnapshot.get("FinishedTasks");
+                            int Grade = documentSnapshot.getLong("Grade").intValue();
+
+                            FinishedTasks.put(String.valueOf(RoboCodeSettings.getInstance().current.ID),
+                                         (RoboCodeSettings.getInstance().current.ID));
+                            Grade += RoboCodeSettings.getInstance().current.Points;
+
+                            Map<String,Object> user = new HashMap<>();
+
+                            user.put("Grade",Grade);
+                            user.put("FinishedTasks",FinishedTasks);
+
+                            FirebaseFirestore.getInstance().collection("Users")
+                                    .document(RoboCodeSettings.getInstance().user.getEmail())
+                                    .set(user)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.w("Execute Activity", "Update Score: success");
+                                            RoboCodeSettings.getInstance().current.Accomplished = true;
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("Execute Activity", "Update Score: failure", e);
+                                        }
+                                    });
+                        }
+                    }
+                }
+        ).addOnFailureListener(new OnFailureListener() {
+                                   @Override
+                                   public void onFailure(@NonNull Exception e) {    }
+                               });
+
 
         Thread d = new Thread(new Runnable() {
             @Override

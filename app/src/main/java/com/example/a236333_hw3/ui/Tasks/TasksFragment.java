@@ -56,6 +56,7 @@ public class TasksFragment extends Fragment {
                         public void run() {
                             ProgressBarLoadTasks.setVisibility(View.GONE);
                             for (roboCodeTask task : RoboCodeSettings.getInstance().roboCodeTasks) {
+                                if (!task.Active) continue;
                                 final roboCodeTaskButton btn = new roboCodeTaskButton(selfContext);
                                 btn.RCTask = task;
                                 btn.setText(task.Title);
@@ -65,6 +66,7 @@ public class TasksFragment extends Fragment {
                                 params.setMargins(10, 10, 10, 0);
                                 btn.setLayoutParams(params);
                                 ButtonsLayout.addView(btn);
+                                btn.setEnabled( ! task.Accomplished );
                                 btn.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {

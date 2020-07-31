@@ -13,7 +13,7 @@ public class roboCodeTask {
     public String   Hints;
     public String   Arrangement;
     public Boolean  Accomplished;
-
+    public Boolean  Active;
 
     // rules to check
     public ArrayList<Color> FenceColors;
