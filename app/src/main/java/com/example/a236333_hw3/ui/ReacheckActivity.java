@@ -449,7 +449,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
                 qr_str = enumToString(qrEnums);
 
                 //this.table_buttons[i][j].setText(qr_str);
-                this.table_buttons[i][j].setImageResource(R.drawable.pairing);
+                this.table_buttons[i][j].setImageResource(chosenImage(qr_str));
                 // this.table_buttons[i][j].setBackground(pairing.png);
                 // TODO : Set image and not text
             }
