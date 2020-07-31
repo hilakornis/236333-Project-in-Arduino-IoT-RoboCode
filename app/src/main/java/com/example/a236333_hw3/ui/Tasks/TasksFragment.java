@@ -66,7 +66,8 @@ public class TasksFragment extends Fragment {
                                 params.setMargins(10, 10, 10, 0);
                                 btn.setLayoutParams(params);
                                 ButtonsLayout.addView(btn);
-                                btn.setEnabled( ! task.Accomplished );
+                                btn.setEnabled( (! task.Accomplished) &&
+                                                RoboCodeSettings.getInstance().hasPairingCode );
                                 btn.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {

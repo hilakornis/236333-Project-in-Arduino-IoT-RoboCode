@@ -20,6 +20,11 @@ public class logoutFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         RoboCodeSettings.getInstance().current = null;
         RoboCodeSettings.getInstance().userNickname = null;
+        RoboCodeSettings.getInstance().hasPairingCode = false;
+        RoboCodeSettings.getInstance().a = "0";
+        RoboCodeSettings.getInstance().b = "0";
+        RoboCodeSettings.getInstance().c = "0";
+        RoboCodeSettings.getInstance().d = "0";
         getActivity().finish();
         return v;
     }
