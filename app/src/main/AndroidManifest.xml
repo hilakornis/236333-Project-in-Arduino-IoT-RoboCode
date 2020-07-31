@@ -16,8 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round2"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.ReacheckActivity">
-        </activity>
+        <activity android:name=".ShowCarpetActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.ReacheckActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ExecuteTask"
             android:theme="@style/AppTheme.NoActionBar" />

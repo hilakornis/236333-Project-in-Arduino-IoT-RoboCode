@@ -91,46 +91,71 @@ public class roboCodeTaskActivity extends AppCompatActivity {
         loadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-                String time = sdf.format(cal.getTime());
-                final String taskId = String.format("%03d", RoboCodeSettings.getInstance().current.ID);
 
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                Map<String, Object> docData = new HashMap<>();
-                docData.put("senderId",     RoboCodeSettings.getInstance().user.getEmail());
-                docData.put("recipientId",  RoboCodeSettings.getInstance().user.getEmail());
-                docData.put("senderName",   RoboCodeSettings.getInstance().user.getEmail());
-                docData.put("taskId",       taskId);
-                docData.put("text",         "A picture of the board is required");
-                docData.put("date",         sdf.format(cal.getTime()));
-                final String pairingCode =  RoboCodeSettings.getInstance().a +
-                                            RoboCodeSettings.getInstance().b +
-                                            RoboCodeSettings.getInstance().c +
-                                            RoboCodeSettings.getInstance().d;
-                docData.put("pairingCode", pairingCode);
+                loadImageButton.setEnabled(false);
 
-                String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
+                if (RoboCodeSettings.getInstance().current.UseCarpet) {
+                    startActivity(new Intent(roboCodeTaskActivity.this,
+                            ShowCarpetActivity.class));
+                }
+
+                Thread d = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (RoboCodeSettings.getInstance().current.UseCarpet) {
+                            try {
+                                ShowCarpetActivity.ShowCarpetActivitySemaphore.acquire();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        Calendar cal = Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+                        String time = sdf.format(cal.getTime());
+                        final String taskId = String.format("%03d", RoboCodeSettings.getInstance().current.ID);
+
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        Map<String, Object> docData = new HashMap<>();
+                        docData.put("senderId",     RoboCodeSettings.getInstance().user.getEmail());
+                        docData.put("recipientId",  RoboCodeSettings.getInstance().user.getEmail());
+                        docData.put("senderName",   RoboCodeSettings.getInstance().user.getEmail());
+                        docData.put("taskId",       taskId);
+                        docData.put("text",         "A picture of the board is required");
+                        docData.put("date",         sdf.format(cal.getTime()));
+                        final String pairingCode =  RoboCodeSettings.getInstance().a +
+                                RoboCodeSettings.getInstance().b +
+                                RoboCodeSettings.getInstance().c +
+                                RoboCodeSettings.getInstance().d;
+                        docData.put("pairingCode", pairingCode);
+
+                        String docName = RoboCodeSettings.getInstance().user.getEmail() + "_" +
                                 time +"_" + RoboCodeSettings.getInstance().user.getUid();
 
-                db.collection("requestMessages").document(docName).set(docData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            RoboCodeSettings.getInstance().currentAnswerTopic = taskId + "_captured_" + pairingCode;
+                        db.collection("requestMessages").document(docName).set(docData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        RoboCodeSettings.getInstance().currentAnswerTopic = taskId + "_captured_" + pairingCode;
 
-                            // Calling and closing execute task
-                            startActivity(new Intent(roboCodeTaskActivity.this, ExecuteTask.class));
-                            roboCodeTaskActivity.this.finish();
+                                        // Calling and closing execute task
+                                        startActivity(new Intent(roboCodeTaskActivity.this, ExecuteTask.class));
+                                        roboCodeTaskActivity.this.finish();
+                                        loadImageButton.setEnabled(true);
 
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            showToast("requesting for an image: failure with connecting server!");
-                        }
-                    });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        showToast("requesting for an image: failure with connecting server!");
+                                        loadImageButton.setEnabled(true);
+                                    }
+                                });
+                    }
+                });
+
+                d.start();
             }
         });
     }

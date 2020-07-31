@@ -128,6 +128,7 @@ public class RoboCodeSettings {
                                                         task.Hints          = documentSnapshot.getString("Hints");
                                                         task.Arrangement    = documentSnapshot.getString("Arrangement");
                                                         task.Active         = documentSnapshot.getBoolean("Active");
+                                                        task.UseCarpet      = documentSnapshot.getBoolean("useCarpet");
 
                                                         task.checkCond       = documentSnapshot.getBoolean("CheckCond");
                                                         task.checkCondValue  = documentSnapshot.getString("CheckCondValue");

@@ -14,6 +14,7 @@ public class roboCodeTask {
     public String   Arrangement;
     public Boolean  Accomplished;
     public Boolean  Active;
+    public Boolean  UseCarpet;
 
     // rules to check
     public ArrayList<Color> FenceColors;
