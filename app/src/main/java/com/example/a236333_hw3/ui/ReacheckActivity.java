@@ -46,7 +46,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
     private ImageButton[][]  table_buttons;
 
 
-    private ImageButton done_button;
+    private Button done_button;
 
     private ArrayList<QREnums> enums_in_table ;
 
@@ -488,7 +488,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
         this.table_buttons = new ImageButton[8][6];
         setIdForTableButtons();
 
-        this.done_button = (ImageButton) (ImageButton)findViewById(R.id.done_button);
+        this.done_button = findViewById(R.id.done_button);
         this.done_button.setOnClickListener(this);
 
 
