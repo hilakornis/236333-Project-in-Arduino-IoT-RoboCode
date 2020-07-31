@@ -5,11 +5,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.IntentSender;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
@@ -41,9 +43,10 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
 
 
 
-    private Button[][]  table_buttons;
+    private ImageButton[][]  table_buttons;
 
-    private Button done_button;
+
+    private ImageButton done_button;
 
     private ArrayList<QREnums> enums_in_table ;
 
@@ -132,69 +135,70 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
     protected void setIdForTableButtons(){
 
         // --- Row 0
-        this.table_buttons[0][0] =  findViewById(R.id.button00);
-        this.table_buttons[0][1] =  findViewById(R.id.button01);
-        this.table_buttons[0][2] =  findViewById(R.id.button02);
-        this.table_buttons[0][3] =  findViewById(R.id.button03);
-        this.table_buttons[0][4] =  findViewById(R.id.button04);
-        this.table_buttons[0][5] =  findViewById(R.id.button05);
+        this.table_buttons[0][0] =  ((ImageButton)findViewById(R.id.ImageButton00));
+
+        this.table_buttons[0][1] =  ((ImageButton)findViewById(R.id.ImageButton01));
+        this.table_buttons[0][2] =  (ImageButton)findViewById(R.id.ImageButton02);
+        this.table_buttons[0][3] =  (ImageButton)findViewById(R.id.ImageButton03);
+        this.table_buttons[0][4] =  (ImageButton)findViewById(R.id.ImageButton04);
+        this.table_buttons[0][5] =  (ImageButton)findViewById(R.id.ImageButton05);
 
         // --- Row 1
-        this.table_buttons[1][0] =  findViewById(R.id.button10);
-        this.table_buttons[1][1] =  findViewById(R.id.button11);
-        this.table_buttons[1][2] =  findViewById(R.id.button12);
-        this.table_buttons[1][3] =  findViewById(R.id.button13);
-        this.table_buttons[1][4] =  findViewById(R.id.button14);
-        this.table_buttons[1][5] =  findViewById(R.id.button15);
+        this.table_buttons[1][0] =  (ImageButton)findViewById(R.id.ImageButton10);
+        this.table_buttons[1][1] =  (ImageButton)findViewById(R.id.ImageButton11);
+        this.table_buttons[1][2] =  (ImageButton)findViewById(R.id.ImageButton12);
+        this.table_buttons[1][3] =  (ImageButton)findViewById(R.id.ImageButton13);
+        this.table_buttons[1][4] =  (ImageButton)findViewById(R.id.ImageButton14);
+        this.table_buttons[1][5] =  (ImageButton)findViewById(R.id.ImageButton15);
 
         // --- Row 2
-        this.table_buttons[2][0] =  findViewById(R.id.button20);
-        this.table_buttons[2][1] =  findViewById(R.id.button21);
-        this.table_buttons[2][2] =  findViewById(R.id.button22);
-        this.table_buttons[2][3] =  findViewById(R.id.button23);
-        this.table_buttons[2][4] =  findViewById(R.id.button24);
-        this.table_buttons[2][5] =  findViewById(R.id.button25);
+        this.table_buttons[2][0] =  (ImageButton)findViewById(R.id.ImageButton20);
+        this.table_buttons[2][1] =  (ImageButton)findViewById(R.id.ImageButton21);
+        this.table_buttons[2][2] =  (ImageButton)findViewById(R.id.ImageButton22);
+        this.table_buttons[2][3] =  (ImageButton)findViewById(R.id.ImageButton23);
+        this.table_buttons[2][4] =  (ImageButton)findViewById(R.id.ImageButton24);
+        this.table_buttons[2][5] =  (ImageButton)findViewById(R.id.ImageButton25);
 
         // --- Row 3
-        this.table_buttons[3][0] =  findViewById(R.id.button30);
-        this.table_buttons[3][1] =  findViewById(R.id.button31);
-        this.table_buttons[3][2] =  findViewById(R.id.button32);
-        this.table_buttons[3][3] =  findViewById(R.id.button33);
-        this.table_buttons[3][4] =  findViewById(R.id.button34);
-        this.table_buttons[3][5] =  findViewById(R.id.button35);
+        this.table_buttons[3][0] =  (ImageButton)findViewById(R.id.ImageButton30);
+        this.table_buttons[3][1] =  (ImageButton)findViewById(R.id.ImageButton31);
+        this.table_buttons[3][2] =  (ImageButton)findViewById(R.id.ImageButton32);
+        this.table_buttons[3][3] =  (ImageButton)findViewById(R.id.ImageButton33);
+        this.table_buttons[3][4] =  (ImageButton)findViewById(R.id.ImageButton34);
+        this.table_buttons[3][5] =  (ImageButton)findViewById(R.id.ImageButton35);
 
         // --- Row 4
-        this.table_buttons[4][0] =  findViewById(R.id.button40);
-        this.table_buttons[4][1] =  findViewById(R.id.button41);
-        this.table_buttons[4][2] =  findViewById(R.id.button42);
-        this.table_buttons[4][3] =  findViewById(R.id.button43);
-        this.table_buttons[4][4] =  findViewById(R.id.button44);
-        this.table_buttons[4][5] =  findViewById(R.id.button45);
+        this.table_buttons[4][0] =  (ImageButton)findViewById(R.id.ImageButton40);
+        this.table_buttons[4][1] =  (ImageButton)findViewById(R.id.ImageButton41);
+        this.table_buttons[4][2] =  (ImageButton)findViewById(R.id.ImageButton42);
+        this.table_buttons[4][3] =  (ImageButton)findViewById(R.id.ImageButton43);
+        this.table_buttons[4][4] =  (ImageButton)findViewById(R.id.ImageButton44);
+        this.table_buttons[4][5] =  (ImageButton)findViewById(R.id.ImageButton45);
 
 
         // --- Row 5
-        this.table_buttons[5][0] =  findViewById(R.id.button50);
-        this.table_buttons[5][1] =  findViewById(R.id.button51);
-        this.table_buttons[5][2] =  findViewById(R.id.button52);
-        this.table_buttons[5][3] =  findViewById(R.id.button53);
-        this.table_buttons[5][4] =  findViewById(R.id.button54);
-        this.table_buttons[5][5] =  findViewById(R.id.button55);
+        this.table_buttons[5][0] =  (ImageButton)findViewById(R.id.ImageButton50);
+        this.table_buttons[5][1] =  (ImageButton)findViewById(R.id.ImageButton51);
+        this.table_buttons[5][2] =  (ImageButton)findViewById(R.id.ImageButton52);
+        this.table_buttons[5][3] =  (ImageButton)findViewById(R.id.ImageButton53);
+        this.table_buttons[5][4] =  (ImageButton)findViewById(R.id.ImageButton54);
+        this.table_buttons[5][5] =  (ImageButton)findViewById(R.id.ImageButton55);
 
         // --- Row 6
-        this.table_buttons[6][0] =  findViewById(R.id.button60);
-        this.table_buttons[6][1] =  findViewById(R.id.button61);
-        this.table_buttons[6][2] =  findViewById(R.id.button62);
-        this.table_buttons[6][3] =  findViewById(R.id.button63);
-        this.table_buttons[6][4] =  findViewById(R.id.button64);
-        this.table_buttons[6][5] =  findViewById(R.id.button65);
+        this.table_buttons[6][0] =  (ImageButton)findViewById(R.id.ImageButton60);
+        this.table_buttons[6][1] =  (ImageButton)findViewById(R.id.ImageButton61);
+        this.table_buttons[6][2] =  (ImageButton)findViewById(R.id.ImageButton62);
+        this.table_buttons[6][3] =  (ImageButton)findViewById(R.id.ImageButton63);
+        this.table_buttons[6][4] =  (ImageButton)findViewById(R.id.ImageButton64);
+        this.table_buttons[6][5] =  (ImageButton)findViewById(R.id.ImageButton65);
 
         // --- Row 7
-        this.table_buttons[7][0] =  findViewById(R.id.button70);
-        this.table_buttons[7][1] =  findViewById(R.id.button71);
-        this.table_buttons[7][2] =  findViewById(R.id.button72);
-        this.table_buttons[7][3] =  findViewById(R.id.button73);
-        this.table_buttons[7][4] =  findViewById(R.id.button74);
-        this.table_buttons[7][5] =  findViewById(R.id.button75);
+        this.table_buttons[7][0] =  (ImageButton)findViewById(R.id.ImageButton70);
+        this.table_buttons[7][1] =  (ImageButton)findViewById(R.id.ImageButton71);
+        this.table_buttons[7][2] =  (ImageButton)findViewById(R.id.ImageButton72);
+        this.table_buttons[7][3] =  (ImageButton)findViewById(R.id.ImageButton73);
+        this.table_buttons[7][4] =  (ImageButton)findViewById(R.id.ImageButton74);
+        this.table_buttons[7][5] =  (ImageButton)findViewById(R.id.ImageButton75);
 
     }
 
@@ -444,7 +448,9 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             for(int j = 0; j < 6 ; j++){
                 qrEnums = vals.get(i*6+j);
                 qr_str = enumToString(qrEnums);
-                this.table_buttons[i][j].setText(qr_str);
+                //this.table_buttons[i][j].setText(qr_str);
+                this.table_buttons[i][j].setImageResource(R.drawable.pairing);
+                // this.table_buttons[i][j].setBackground(pairing.png);
                 // TODO : Set image and not text
             }
         }
@@ -459,7 +465,12 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
 
         for (int i = 0 ; i < 8; i++) {
             for(int j = 0; j < 6 ; j++) {
-                qr_str = this.table_buttons[i][j].getText().toString();
+                qr_str = "0";
+                Drawable draw = this.table_buttons[i][j].getDrawable();
+                if (draw.getConstantState().equals(getResources().getDrawable(R.drawable.pairing).getConstantState())){
+                    qr_str = "1";
+                }
+                //qr_str = this.table_buttons[i][j].getText().toString();
                 qrEnums = stringToEnum(qr_str);
                 this.enums_in_table.set(i*6+j, qrEnums);
                 step1_result_code = step1_result_code + qr_str + ( i == 7 && j == 5 ? "" : ",");
@@ -474,10 +485,10 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reacheck);
 
-        this.table_buttons = new Button[8][6];
+        this.table_buttons = new ImageButton[8][6];
         setIdForTableButtons();
 
-        this.done_button = findViewById(R.id.done_button);
+        this.done_button = (ImageButton) (ImageButton)findViewById(R.id.done_button);
         this.done_button.setOnClickListener(this);
 
 
@@ -499,7 +510,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Here we set the button appearance according to the choice.
-                table_buttons[line][col].setText(listCards[which]);
+                table_buttons[line][col].setImageResource(R.drawable.cloud);
                 dialog.dismiss();
             }
         });
@@ -529,115 +540,115 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             // --- Row 0
-            case R.id.button00: showDialog(0,0);
+            case R.id.ImageButton00: showDialog(0,0);
                 break;
-            case R.id.button01: showDialog(0,1);
+            case R.id.ImageButton01: showDialog(0,1);
                 break;
-            case R.id.button02: showDialog(0,2);
+            case R.id.ImageButton02: showDialog(0,2);
                 break;
-            case R.id.button03: showDialog(0,3);
+            case R.id.ImageButton03: showDialog(0,3);
                 break;
-            case R.id.button04: showDialog(0,4);
+            case R.id.ImageButton04: showDialog(0,4);
                 break;
-            case R.id.button05: showDialog(0,5);
+            case R.id.ImageButton05: showDialog(0,5);
                 break;
 
             // --- Row 1
-            case R.id.button10: showDialog(1,0);
+            case R.id.ImageButton10: showDialog(1,0);
                 break;
-            case R.id.button11: showDialog(1,1);
+            case R.id.ImageButton11: showDialog(1,1);
                 break;
-            case R.id.button12: showDialog(1,2);
+            case R.id.ImageButton12: showDialog(1,2);
                 break;
-            case R.id.button13: showDialog(1,3);
+            case R.id.ImageButton13: showDialog(1,3);
                 break;
-            case R.id.button14: showDialog(1,4);
+            case R.id.ImageButton14: showDialog(1,4);
                 break;
-            case R.id.button15: showDialog(1,5);
+            case R.id.ImageButton15: showDialog(1,5);
                 break;
 
             // --- Row 2
-            case R.id.button20: showDialog(2,0);
+            case R.id.ImageButton20: showDialog(2,0);
                 break;
-            case R.id.button21: showDialog(2,1);
+            case R.id.ImageButton21: showDialog(2,1);
                 break;
-            case R.id.button22: showDialog(2,2);
+            case R.id.ImageButton22: showDialog(2,2);
                 break;
-            case R.id.button23: showDialog(2,3);
+            case R.id.ImageButton23: showDialog(2,3);
                 break;
-            case R.id.button24: showDialog(2,4);
+            case R.id.ImageButton24: showDialog(2,4);
                 break;
-            case R.id.button25: showDialog(2,5);
+            case R.id.ImageButton25: showDialog(2,5);
                 break;
 
             // --- Row 3
-            case R.id.button30: showDialog(3,0);
+            case R.id.ImageButton30: showDialog(3,0);
                 break;
-            case R.id.button31: showDialog(3,1);
+            case R.id.ImageButton31: showDialog(3,1);
                 break;
-            case R.id.button32: showDialog(3,2);
+            case R.id.ImageButton32: showDialog(3,2);
                 break;
-            case R.id.button33: showDialog(3,3);
+            case R.id.ImageButton33: showDialog(3,3);
                 break;
-            case R.id.button34: showDialog(3,4);
+            case R.id.ImageButton34: showDialog(3,4);
                 break;
-            case R.id.button35: showDialog(3,5);
+            case R.id.ImageButton35: showDialog(3,5);
                 break;
 
             // --- Row 4
-            case R.id.button40: showDialog(4,0);
+            case R.id.ImageButton40: showDialog(4,0);
                 break;
-            case R.id.button41: showDialog(4,1);
+            case R.id.ImageButton41: showDialog(4,1);
                 break;
-            case R.id.button42: showDialog(4,2);
+            case R.id.ImageButton42: showDialog(4,2);
                 break;
-            case R.id.button43: showDialog(4,3);
+            case R.id.ImageButton43: showDialog(4,3);
                 break;
-            case R.id.button44: showDialog(4,4);
+            case R.id.ImageButton44: showDialog(4,4);
                 break;
-            case R.id.button45: showDialog(4,5);
+            case R.id.ImageButton45: showDialog(4,5);
                 break;
 
             // --- Row 5
-            case R.id.button50: showDialog(5,0);
+            case R.id.ImageButton50: showDialog(5,0);
                 break;
-            case R.id.button51: showDialog(5,1);
+            case R.id.ImageButton51: showDialog(5,1);
                 break;
-            case R.id.button52: showDialog(5,2);
+            case R.id.ImageButton52: showDialog(5,2);
                 break;
-            case R.id.button53: showDialog(5,3);
+            case R.id.ImageButton53: showDialog(5,3);
                 break;
-            case R.id.button54: showDialog(5,4);
+            case R.id.ImageButton54: showDialog(5,4);
                 break;
-            case R.id.button55: showDialog(5,5);
+            case R.id.ImageButton55: showDialog(5,5);
                 break;
 
             // --- Row 6
-            case R.id.button60: showDialog(6,0);
+            case R.id.ImageButton60: showDialog(6,0);
                 break;
-            case R.id.button61: showDialog(6,1);
+            case R.id.ImageButton61: showDialog(6,1);
                 break;
-            case R.id.button62: showDialog(6,2);
+            case R.id.ImageButton62: showDialog(6,2);
                 break;
-            case R.id.button63: showDialog(6,3);
+            case R.id.ImageButton63: showDialog(6,3);
                 break;
-            case R.id.button64: showDialog(6,4);
+            case R.id.ImageButton64: showDialog(6,4);
                 break;
-            case R.id.button65: showDialog(6,5);
+            case R.id.ImageButton65: showDialog(6,5);
                 break;
 
             // --- Row 7
-            case R.id.button70: showDialog(7,0);
+            case R.id.ImageButton70: showDialog(7,0);
                 break;
-            case R.id.button71: showDialog(7,1);
+            case R.id.ImageButton71: showDialog(7,1);
                 break;
-            case R.id.button72: showDialog(7,2);
+            case R.id.ImageButton72: showDialog(7,2);
                 break;
-            case R.id.button73: showDialog(7,3);
+            case R.id.ImageButton73: showDialog(7,3);
                 break;
-            case R.id.button74: showDialog(7,4);
+            case R.id.ImageButton74: showDialog(7,4);
                 break;
-            case R.id.button75: showDialog(7,5);
+            case R.id.ImageButton75: showDialog(7,5);
                 break;
             default:
                 Toast.makeText(this, "a Button was clicked", Toast.LENGTH_SHORT).show();
