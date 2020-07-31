@@ -656,7 +656,7 @@ public class ReacheckActivity extends AppCompatActivity implements View.OnClickL
             return R.drawable.jmp_f3;
         }
         else if(choice.equals("JMP_T3")){
-            return R.drawable.jmp_f3;
+            return R.drawable.jmp_t3;
         }
         else if(choice.equals("T_L")){
             return R.drawable.t_l;
