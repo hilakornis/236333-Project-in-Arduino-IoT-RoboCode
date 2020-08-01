@@ -169,11 +169,11 @@
 
             <!-- result fail -->
             <LinearLayout
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                    android:gravity="center"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:id="@+id/StepFailPanel">
                 <TextView
@@ -192,7 +192,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginBottom="30dp"
-                    android:text="yo did not solve the task"
+                    android:text="you did not solve the task"
                     android:textSize="25dp"
                     android:textAlignment="center" />
                 <TextView
@@ -209,10 +209,12 @@
                     android:layout_height="match_parent"
                     android:text="{error_msg}"
                     android:id="@+id/hint_textView"
-                    android:textSize="25dp"
+                    android:textSize="20dp"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_marginBottom="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
                     android:textAlignment="center"
                     />
 

@@ -86,9 +86,7 @@ public class ExecuteTask extends AppCompatActivity {
             }
         });
 
-        // TODO : retrive this when working with firebase server!!!
-        //FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
-        Step1_over(); // TODO : Remove this !!
+        FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
     }
 
     // Capture Service ============================================================================
@@ -97,10 +95,10 @@ public class ExecuteTask extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             //String userId = intent.getExtras().get("title").toString();
             String data = intent.getExtras().get("message").toString();
-            showToast(data);
+            //showToast(data);
             arrivals.add(data);
             arrived++;
-            showToast(arrived + ": " + data);
+            //showToast(arrived + ": " + data);
 
             if (arrived >= RoboCodeSettings.NUM_OF_CAPTURES) {
                 try {
@@ -122,8 +120,8 @@ public class ExecuteTask extends AppCompatActivity {
                     }
                 });
 
-                // TOTDO : merge all results, save under step1_result_code and call Step1_over();
-                // step1_result_code = ...
+                // TODO : merge all results, save under step1_result_code and call Step1_over();
+                step1_result_code = arrivals.get(0);
                 Step1_over();
             }
         }
@@ -155,13 +153,6 @@ public class ExecuteTask extends AppCompatActivity {
         Thread d = new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO - its a fake sleep, remove this!
-                /*try {
-                    Thread.sleep(20000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-
                 // calling debug screen - set the text for buttons
                 ReacheckActivity.step1_result_code = step1_result_code;
 
@@ -182,7 +173,6 @@ public class ExecuteTask extends AppCompatActivity {
                 // end debug screen - get fixed result
                 step1_result_code = ReacheckActivity.step1_result_code;
 
-
                 ExecuteTask.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -198,7 +188,7 @@ public class ExecuteTask extends AppCompatActivity {
 
                     // TODO - its a fake sleep, remove this!
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -208,7 +198,7 @@ public class ExecuteTask extends AppCompatActivity {
                 } catch (RCCompilerException e) {
                     e.printStackTrace();
                     errorMsg = "Compilation falied.\n" +
-                               "try to look ar row " + e.getRowId() + "cell number " + e.getColId() + "\n" + e.getMessage();
+                               "try to look at row " + e.getRowId() +1+ " cell number " + e.getColId() +1+ ".\n" + e.getMessage();
 
                     Do_fail();
 
@@ -243,7 +233,9 @@ public class ExecuteTask extends AppCompatActivity {
                     RCProgramExecutor.getInstance().
                         runProgram(step2_compiledProgram,
                             RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector(),
-                            RCProgramExecutor.NO_STEPS_LIMIT);
+                            RoboCodeSettings.getInstance().current.stepsLimit == RCProgramExecutor.NO_STEPS_LIMIT ?
+                                    RCProgramExecutor.NO_STEPS_LIMIT :
+                                    RoboCodeSettings.getInstance().current.stepsLimit );
 
                     try {
                         RCProgramExecutor.getInstance().getSemaphoreForEndOfExecution().acquire();
@@ -269,8 +261,6 @@ public class ExecuteTask extends AppCompatActivity {
     // success
 
     private void Do_success() {
-        // TODO : save on firebase that user solved the current task
-
         DocumentReference tasks = FirebaseFirestore.getInstance().collection("Users").
                 document(RoboCodeSettings.getInstance().user.getEmail());
 
@@ -354,6 +344,7 @@ public class ExecuteTask extends AppCompatActivity {
                         ExecuteTask.this.Step4_fail.setVisibility(View.VISIBLE);
                         ExecuteTask.this.backButton.setVisibility(View.VISIBLE);
                         ExecuteTask.this.errorText.setText(errorMsg);
+                        errorText.setVisibility(View.VISIBLE);
                     }
                 });
             }

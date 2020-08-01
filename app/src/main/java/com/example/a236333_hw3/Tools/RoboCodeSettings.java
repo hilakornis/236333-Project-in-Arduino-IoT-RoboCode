@@ -25,7 +25,7 @@ import java.util.Vector;
 
 public class RoboCodeSettings {
 
-    public static final int NUM_OF_CAPTURES = 2;
+    public static final int NUM_OF_CAPTURES = 1;
 
     private static RoboCodeSettings _inst;
     private FirebaseFirestore db;
