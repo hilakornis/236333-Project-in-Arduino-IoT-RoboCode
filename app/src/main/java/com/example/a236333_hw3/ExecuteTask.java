@@ -279,6 +279,8 @@ public class ExecuteTask extends AppCompatActivity {
 
                             Map<String,Object> user = new HashMap<>();
 
+                            user.put("Name",RoboCodeSettings.getInstance().userNickname);
+                            user.put("UID",RoboCodeSettings.getInstance().user.getUid());
                             user.put("Grade",Grade);
                             user.put("FinishedTasks",FinishedTasks);
 
