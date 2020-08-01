@@ -27,6 +27,7 @@
 #define clrS2 34
 #define clrS3 36
 #define clrOut 38
+#define COLOR_CHECK_TIMES 8
 
 // Lift up-down
 #define lifterUp 45
@@ -38,9 +39,9 @@
 #define printMSG true
 
 // DELAY TIMINGS
-#define HALF_STEP_DELAY     475
-#define ONE_STEP_DELAY      950
-#define ONE_TURN_DELAY      900
+#define HALF_STEP_DELAY     375
+#define ONE_STEP_DELAY      750
+#define ONE_TURN_DELAY      680
 
 #define FORK_UP_DELAY     450
 #define FORK_DOWN_DELAY   180
@@ -161,7 +162,7 @@ void loop() {
     else if (val == CMD_TURN_U) {
       if (printMSG) Serial.print("Turning arround\n");
       TurnRight();
-      delay(1.8 * ONE_TURN_DELAY);
+      delay(2 * ONE_TURN_DELAY);
       dontMove();
     }
     // TODO : test this
@@ -169,14 +170,18 @@ void loop() {
       if (printMSG) Serial.print("picking up a box\n");
       if (IsForkUp == FORK_DOWN) {
         goBackward();
+        delay(ONE_STEP_DELAY);
         TurnRight();
         delay(2 * ONE_TURN_DELAY);
         goBackward();
+        delay(ONE_STEP_DELAY);
         forkliftUp();
         goForward();
+        delay(ONE_STEP_DELAY);
         TurnRight();
         delay(2 * ONE_TURN_DELAY);
         goForward();
+        delay(ONE_STEP_DELAY);
         dontMove();
       }
       // TODO : Fix this code
@@ -231,44 +236,51 @@ void SendBackStatus() {
 }
 
 void readColor(){
-  // Setting RED (R) filtered photodiodes to be read
-  digitalWrite(clrS2,LOW);
-  digitalWrite(clrS3,LOW);
-  delay(100);
+  redFrequency = 0;
+  greenFrequency = 0;
+  blueFrequency = 0;
 
-  // Reading the output frequency
-  redFrequency = pulseIn(clrOut, LOW);
-  //redFrequency = map(redFrequency, 25,72,0,255);
+  for (int i = 0; i < COLOR_CHECK_TIMES; i++) {
+    // Setting RED (R) filtered photodiodes to be read
+    digitalWrite(clrS2,LOW);
+    digitalWrite(clrS3,LOW);
+    delay(100);
 
-   // Printing the RED (R) value
-  if (printRGB) Serial.print("R = ");
-  if (printRGB) Serial.print(redFrequency);
+    // Reading the output frequency
+    redFrequency += pulseIn(clrOut, LOW);
 
-  // Setting GREEN (G) filtered photodiodes to be read
-  digitalWrite(clrS2,HIGH);
-  digitalWrite(clrS3,HIGH);
-  delay(50);
+     // Printing the RED (R) value
+    if (printRGB) Serial.print("R = ");
+    if (printRGB) Serial.print(redFrequency);
 
-  // Reading the output frequency
-  greenFrequency = pulseIn(clrOut, LOW);
-  //greenFrequency = map(greenFrequency, 30,90, 0, 255);
+    // Setting GREEN (G) filtered photodiodes to be read
+    digitalWrite(clrS2,HIGH);
+    digitalWrite(clrS3,HIGH);
+    delay(50);
 
-  // Printing the GREEN (G) value
-  if (printRGB) Serial.print(" G = ");
-  if (printRGB) Serial.print(greenFrequency);
+    // Reading the output frequency
+    greenFrequency += pulseIn(clrOut, LOW);
 
-  // Setting BLUE (B) filtered photodiodes to be read
-  digitalWrite(clrS2,LOW);
-  digitalWrite(clrS3,HIGH);
-  delay(50);
+    // Printing the GREEN (G) value
+    if (printRGB) Serial.print(" G = ");
+    if (printRGB) Serial.print(greenFrequency);
 
-  // Reading the output frequency
-  blueFrequency = pulseIn(clrOut, LOW);
-  //blueFrequency = map(blueFrequency, 25,70,0, 255);
+    // Setting BLUE (B) filtered photodiodes to be read
+    digitalWrite(clrS2,LOW);
+    digitalWrite(clrS3,HIGH);
+    delay(50);
 
-  // Printing the BLUE (B) value
-  if (printRGB) Serial.print(" B = ");
-  if (printRGB) Serial.println(blueFrequency);
+    // Reading the output frequency
+    blueFrequency += pulseIn(clrOut, LOW);
+
+    // Printing the BLUE (B) value
+    if (printRGB) Serial.print(" B = ");
+    if (printRGB) Serial.println(blueFrequency);
+  }
+
+  redFrequency = redFrequency / COLOR_CHECK_TIMES;
+  greenFrequency = greenFrequency / COLOR_CHECK_TIMES;
+  blueFrequency = blueFrequency / COLOR_CHECK_TIMES;
 
 }
 

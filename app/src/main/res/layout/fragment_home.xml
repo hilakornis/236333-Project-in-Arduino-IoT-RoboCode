@@ -101,6 +101,19 @@
                                                         <TextView
                                                             android:layout_width="match_parent"
                                                             android:layout_height="wrap_content"
+                                                            android:text="2/8/2020"
+                                                            android:textStyle="bold" />
+
+                                                        <TextView
+                                                            android:layout_width="match_parent"
+                                                            android:layout_height="wrap_content"
+                                                            android:text="Its final presentation day!" />
+
+
+                                                        <TextView
+                                                            android:layout_marginTop="20dp"
+                                                            android:layout_width="match_parent"
+                                                            android:layout_height="wrap_content"
                                                             android:text="26/5/2020"
                                                             android:textStyle="bold" />
 
@@ -155,11 +168,11 @@
                                         <TextView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="Robot Control"
+                                            android:text="Robot Controls For Demo"
                                             android:textStyle="italic"
                                             android:textSize="20dp"/>
                                 </LinearLayout>
-                                <LinearLayout
+                                <!--LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -175,7 +188,15 @@
                                             android:text="here will have the status text"
                                             android:id="@+id/homeFragment_bluetoothStatus"
                                             />
-                                </LinearLayout>
+                                </LinearLayout-->
+                                <Button
+                                    android:layout_width="200dp"
+                                    android:layout_height="50dp"
+                                    android:layout_margin="5dp"
+                                    android:text="stand-alone mode on"
+                                    android:layout_gravity="center"
+                                    android:id="@+id/homeFragment_cloud_btn"
+                                    />
 
                                 <LinearLayout
                                     android:layout_width="wrap_content"

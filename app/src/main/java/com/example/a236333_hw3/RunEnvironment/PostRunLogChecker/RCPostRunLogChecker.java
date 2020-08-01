@@ -66,7 +66,7 @@ public class RCPostRunLogChecker {
                     RCProgramLogItemMovementType action =
                             MovementTypeFromString(currCond.substring(
                                 currCond.indexOf('(')+1,
-                                currCond.indexOf(')')-1));
+                                currCond.indexOf(')')));
                     CheckLastAction(logs, action);
                 }
             }

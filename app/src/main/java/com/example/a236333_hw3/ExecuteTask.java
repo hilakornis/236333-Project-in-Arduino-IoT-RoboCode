@@ -86,7 +86,20 @@ public class ExecuteTask extends AppCompatActivity {
             }
         });
 
-        FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
+        if (RoboCodeSettings.USE_CLUDE) {
+            FirebaseMessaging.getInstance().subscribeToTopic(RoboCodeSettings.getInstance().currentAnswerTopic);
+        } else {
+            if (RoboCodeSettings.getInstance().current.ID == 1)
+                step1_result_code = id1_result_code;
+            else if (RoboCodeSettings.getInstance().current.ID == 4)
+                step1_result_code = id4_result_code;
+            else if (RoboCodeSettings.getInstance().current.ID == 5)
+                step1_result_code = id5_result_code;
+            else //if (RoboCodeSettings.getInstance().current.ID == 6)
+                step1_result_code = id6_result_code;
+
+            Step1_over();
+        }
     }
 
     // Capture Service ============================================================================
@@ -129,24 +142,49 @@ public class ExecuteTask extends AppCompatActivity {
 
     // ============================================================================================
     // here the output of step 1 is saved
-    private String step1_result_code =  "NaN,"      +     "NaN,"  +   "JMP_T1,"+  "CND,"+     "BOX,"+       "CL_R,"  +
-                                        "NaN,"      +     "NaN,"  +   "T_R,"+     "NaN,"+     "F_U,"+       "NaN,"  +
-                                        "NaN,"      +     "NaN,"  +   "CND,"+     "FN,"+      "NaN,"+       "NaN,"  +
-                                        "JMP_T2,"   +     "G_FW,"  +  "NaN,"+     "JMP_T3,"+  "T_L,"+       "NaN," +
-                                        "JMP_F1,"+        "NaN,"+     "NaN,"+     "CND,"+     "FN," +       "NaN,"      +
-                                        "NaN,"+           "NaN,"+     "JMP_F2,"+  "NaN,"+     "JMP_F3,"  +  "NaN,"      +
+    private String step1_result_code;
+
+    // horizon
+    private String id6_result_code =
+            "NaN,"      +     "JMP_T1," +   "CND,"  +  "BOX,"     +     "CL_R,"   +       "NaN,"  +
+            "NaN,"      +     "G_FW,"   +   "NaN,"  +  "F_U,"     +     "NaN,"    +       "NaN,"  +
+            "NaN,"      +     "JMP_F1," +   "NaN,"  +  "NaN,"     +     "NaN,"    +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"  +  "NaN,"     +     "NaN,"    +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"  +  "NaN,"     +     "NaN,"    +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"  +  "NaN,"     +     "NaN,"    +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"  +  "NaN,"     +     "NaN,"    +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"  +  "NaN,"     +     "NaN,"    +       "NaN";
+
+
+    // The floor is lava
+    private String id5_result_code =  "NaN,"      +     "JMP_T1,"  +   "CND,"+  "TILE,"+     "CL_BL,"+       "NaN,"  +
+                                        "NaN,"      +     "STP,"+     "NaN,"+     "G_FW,"+     "NaN,"+       "NaN,"  +
+                                        "NaN,"      +     "NaN,"+     "NaN,"+     "JMP_F1,"+     "NaN,"+       "NaN,"  +
+                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
+                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
+                                        "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
                                         "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
                                         "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN";
 
-    //private String step1_result_code =
-    //        "JMP_T1,"   +     "G_FW,"   +   "2,"      +  "NaN,"   +   "NaN,"  +       "NaN,"  +
-    //        "T_U,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
-    //        "JMP_F1,"   +     "2,"      +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
-    //        "T_L,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
-    //        "G_FW,"     +     "2,"      +   "NaN,"    +  "NaN,"  +    "NaN,"  +       "NaN,"  +
-    //        "T_U,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
-    //        "NaN,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
-    //        "NaN,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN"  ;
+    // Solve a maze
+   private String id4_result_code =  "NaN,"      +     "NaN,"  +   "JMP_T1,"+  "CND,"+     "BOX,"+       "CL_R,"  +
+                                       "NaN,"      +     "NaN,"  +   "T_R,"+     "NaN,"+     "F_U,"+       "NaN,"  +
+                                       "NaN,"      +     "NaN,"  +   "CND,"+     "FN,"+      "NaN,"+       "NaN,"  +
+                                       "JMP_T2,"   +     "G_FW,"  +  "NaN,"+     "JMP_T3,"+  "T_L,"+       "NaN," +
+                                       "JMP_F1,"+        "NaN,"+     "NaN,"+     "CND,"+     "FN," +       "NaN,"      +
+                                       "NaN,"+           "NaN,"+     "JMP_F2,"+  "NaN,"+     "JMP_F3,"  +  "NaN,"      +
+                                       "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN,"  +
+                                       "NaN,"      +     "NaN,"+     "NaN,"+     "NaN,"+     "NaN,"+       "NaN";
+
+    private String id1_result_code =
+            "JMP_T1,"   +     "G_FW,"   +   "2,"      +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "T_U,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "JMP_F1,"   +     "2,"      +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "T_L,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "G_FW,"     +     "2,"      +   "NaN,"    +  "NaN,"  +    "NaN,"  +       "NaN,"  +
+            "T_U,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN,"  +
+            "NaN,"      +     "NaN,"    +   "NaN,"    +  "NaN,"   +   "NaN,"  +       "NaN"  ;
 
 
     private void Step1_over() {

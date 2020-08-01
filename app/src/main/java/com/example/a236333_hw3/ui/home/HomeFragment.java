@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment {
     Button forkliftUpBtn;
     Button forkliftDownBtn;
     Button testBtn;
+    Button cloud;
 
 
     // Bluetooth code <-----------------------------------------------------------------------------
@@ -86,6 +87,27 @@ public class HomeFragment extends Fragment {
         forkliftUpBtn   = v.findViewById(R.id.homeFragment_bluetoothLiftUp_NS);
         forkliftDownBtn = v.findViewById(R.id.homeFragment_bluetoothLiftDown_NS);
         testBtn         = v.findViewById(R.id.homeFragment_runTest);
+        cloud           = v.findViewById((R.id.homeFragment_cloud_btn));
+
+        if (RoboCodeSettings.USE_CLUDE == false) {
+            cloud.setText("stand-alone mode on");
+        } else {
+            cloud.setText("stand-alone mode off");
+        }
+
+        cloud.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (RoboCodeSettings.USE_CLUDE == false) {
+                    RoboCodeSettings.USE_CLUDE = true;
+                    cloud.setText("stand-alone mode on");
+                } else {
+                    RoboCodeSettings.USE_CLUDE = false;
+                    cloud.setText("stand-alone mode off");
+                }
+
+            }
+        });
 
         if (RoboCodeSettings.getInstance().getRoboCodeBluetoothConnector() == null) {
             RoboCodeSettings.getInstance().setRoboCodeBluetoothConnector(new ArduinoConnector());
